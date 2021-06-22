@@ -2,3 +2,15 @@ html, body, #root {
   height: 100%;
   width: 100%;
 }
+
+#root {
+  /* background-color: rgb(33, 36, 41); */
+  background-color: rgb(247 248 250);
+}
+
+.border-rad {
+  border-radius: 11px;
+}
+.btn:focus {
+  box-shadow: none;
+}
