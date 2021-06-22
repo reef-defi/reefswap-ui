@@ -1,6 +1,5 @@
 import React from 'react';
 import logo from './logo.svg';
-import './App.css';
 
 import {
   web3Accounts,
@@ -18,6 +17,8 @@ import {
 } from "@reef-defi/evm-provider";
 
 import { TypeRegistry } from '@polkadot/types';
+
+import { BrowserRouter as Router } from "react-router-dom";
 
 const signUp = async (): Promise<void> => {
   try {
@@ -45,32 +46,14 @@ const signUp = async (): Promise<void> => {
   }
 }
 
-function App(): JSX.Element {
+const App = (): JSX.Element => {
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit
-          {' '}
-          <code>src/App.tsx</code>
-          {' '}
-          and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <button className="btn btn-primary" onClick={() => signUp()}>
-          Connect
-        </button>
-      </header>
-    </div>
+    <Router>
+      <div className="w-100 h-100 d-flex justify-content-center align-content-center">
+        Hello world
+      </div>
+    </Router>
   );
 }
 
