@@ -19,6 +19,7 @@ import {
 import { TypeRegistry } from '@polkadot/types';
 
 import { BrowserRouter as Router } from "react-router-dom";
+import NavBar from './components/navigation/NavBar';
 
 const signUp = async (): Promise<void> => {
   try {
@@ -50,7 +51,8 @@ const App = (): JSX.Element => {
 
   return (
     <Router>
-      <div className="w-100 h-100 d-flex justify-content-center align-content-center">
+      <div className="w-100 h-100 d-flex flex-column">
+        <NavBar />
         Hello world
       </div>
     </Router>
