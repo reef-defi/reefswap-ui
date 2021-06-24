@@ -18,3 +18,29 @@ html, body, #root {
   max-width: 600px;
   min-width: 500px;
 }
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input {
+  font-family: 'Inter var', sans-serif;
+}
+
+.btn-reef {
+  background-color: #5531a9;
+  border-color: #5531a9;
+  color: white;
+}
+.btn-reef:hover {
+  background-color: #46288b;
+  border-color: #46288b;
+  color: white;
+}
