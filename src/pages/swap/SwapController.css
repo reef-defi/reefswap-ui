@@ -5,3 +5,20 @@
 .swap-field:hover {
   border: 1px solid rgb(225, 226, 232);
 }
+
+.swap-input-field {
+  background-color: rgb(247, 248, 250);
+  border: none;
+  outline: none;
+}
+.btn-swap {
+  padding: 4px 8px 4px 8px;
+  background-color: rgb(247, 248, 250);
+}
+.btn-swap-field {
+  padding: 3px;
+  z-index: 5;
+  margin-top: -18px;
+  margin-bottom: -18px;
+  background-color: white;
+}
