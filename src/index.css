@@ -70,3 +70,6 @@ input {
   margin-bottom: -18px;
   background-color: white;
 }
+.hover-border:hover {
+  border: 2px solid #46288b;
+}
