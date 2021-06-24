@@ -2,3 +2,7 @@
   background-color: white;
   box-shadow: rgb(0 0 0 / 8%) 0px 6px 10px;
 } 
+
+.select-token-content {
+  max-height: 350px;
+}

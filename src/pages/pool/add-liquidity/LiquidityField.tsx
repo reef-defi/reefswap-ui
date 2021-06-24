@@ -1,11 +1,11 @@
 import React from "react"
-import SelectToken from "../../components/buttons/SelectToken";
+import SelectToken from "../../../components/buttons/SelectToken";
 
-interface SwapFieldProps {
+interface LiquidityFieldProps {
 
 }
 
-const SwapField = ({} : SwapFieldProps) => {
+const LiquidityField = ({} : LiquidityFieldProps) => {
   return (
     <div className="field p-3 border-rad">
       <div className="d-flex mb-2">
@@ -23,4 +23,4 @@ const SwapField = ({} : SwapFieldProps) => {
   );
 }
 
-export default SwapField;
+export default LiquidityField;
