@@ -14,7 +14,7 @@ const SwapController = ({} : SwapControllerProps) => {
 
   return (
     <Card>
-      <h5 className="">Swap</h5>
+      <h5 className="ms-2">Swap</h5>
       <SwapField />
       <div className="d-flex justify-content-center">
         <div className="btn-swap-field border-rad">
@@ -27,7 +27,7 @@ const SwapController = ({} : SwapControllerProps) => {
       </div>
       <SwapField />
       <div className="d-flex justify-content-center mt-2">
-        <button className="btn btn-reef w-25">Swap</button>
+        <button className="btn btn-reef border-rad w-100">Swap</button>
       </div>
     </Card>
   );
