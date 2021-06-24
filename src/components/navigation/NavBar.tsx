@@ -1,5 +1,5 @@
 import React from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { BIND_URL, POOL_URL, SWAP_URL } from "../../urls";
 import "./NavBar.css";
 
@@ -14,6 +14,7 @@ const Button = ({to, name, selected}: Button): JSX.Element => (
 )
 
 const NavBar = (): JSX.Element => {
+  const {pathname} = useLocation();
   const accName = "Frenki-Account (Extension)";
   const name = accName.length > 13 ? accName.slice(0, 12) + "..." + accName.slice(accName.length-4) : accName;
   
@@ -23,9 +24,9 @@ const NavBar = (): JSX.Element => {
       <div className="col-sm-4 p-0">
         <div className="d-flex justify-content-center">
           <div className="d-flex w-auto nav-selection border-rad">
-            <Button to="" name="Pool" selected/>
-            <Button to="" name="Swap"/>
-            <Button to="" name="Bind"/>
+            <Button to={POOL_URL} name="Pool" selected={pathname === POOL_URL} />
+            <Button to={SWAP_URL} name="Swap" selected={pathname === SWAP_URL} />
+            <Button to={BIND_URL} name="Bind" selected={pathname === BIND_URL} />
           </div>
         </div>
       </div>
