@@ -19,8 +19,8 @@ const PoolContoller = ({} : PoolContollerProps) => {
       <div className="d-flex flex-row justify-content-between mx-2 mb-2">
         <h5 className="my-auto">Your liquidity</h5>
         <div>
-          <button className="btn btn-reef" onClick={onImportPoolClick}>Import pool</button>
-          <button className="btn btn-reef ms-1" onClick={onAddLiquidityClick}>Add liquidity</button>
+          <button className="btn btn-reef border-rad" onClick={onImportPoolClick}>Import pool</button>
+          <button className="btn btn-reef border-rad ms-1" onClick={onAddLiquidityClick}>Add liquidity</button>
         </div>
       </div>
 

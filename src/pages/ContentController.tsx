@@ -1,7 +1,7 @@
 import React from "react"
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ADD_LIQUIDITY_URL, BIND_URL, IMPORT_POOL_URL, POOL_URL, SWAP_URL } from "../urls";
-import AddLiquidity from "./pool/AddLiquidity";
+import AddLiquidity from "./pool/add-liquidity/AddLiquidity";
 import ImportPool from "./pool/ImportPool";
 import PoolContoller from "./pool/PoolContoller";
 import SwapController from "./swap/SwapController";
