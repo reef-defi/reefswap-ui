@@ -42,7 +42,8 @@ const SelectTokenContent = ({}: SelectTokenContent) => {
 
             <hr className="mx-3" />
 
-            <ul className="list-group mx-3">
+            <ul className="list-group list-group-flush mx-3">
+              <li className="list-group-item px-2"><h6 className="my-auto">Existing tokens</h6></li>
               <li className="list-group-item list-group-item-action">REEF</li>
               <li className="list-group-item list-group-item-action">RUSD</li>
               <li className="list-group-item list-group-item-action">REEF</li>
