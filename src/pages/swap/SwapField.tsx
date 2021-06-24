@@ -7,7 +7,7 @@ interface SwapFieldProps {
 
 const SwapField = ({} : SwapFieldProps) => {
   return (
-    <div className="swap-field p-3 border-rad">
+    <div className="field p-3 border-rad">
       <div className="d-flex mb-2">
         <SelectToken />
         <input
@@ -15,7 +15,7 @@ const SwapField = ({} : SwapFieldProps) => {
           min={0}
           max={1000}
           placeholder="0.0"
-          className="swap-input-field ms-2 flex-grow-1 text-end"
+          className="field-input ms-2 flex-grow-1 text-end"
         />
       </div>
       <small className="ms-2">Balance: 1000 REEF</small>
