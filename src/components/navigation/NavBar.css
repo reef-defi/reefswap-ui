@@ -1,0 +1,37 @@
+.nav-button, .nav-selected {
+  text-decoration: none;
+}
+.nav-button {
+  color: rgba(86, 90, 105, 0.8);
+}
+.nav-button:hover {
+  color: rgba(86, 90, 105, 1);
+}
+.nav-selected {
+  color: black;
+  background-color: rgb(237, 238, 242);
+}
+
+.nav-selection {
+  /* background-color: green; */
+  background-color: white; 
+  padding: 2px;
+}
+
+.nav-acc {
+  padding-top: 2px;
+  padding-right: 2px;
+  padding-bottom: 2px;
+  background-color: rgb(237, 238, 242);
+}
+
+.nav-acc-button, .nav-acc-button:focus, .nav-acc-button:hover {
+  color: grey;
+  background-color: white;
+}
+.nav-acc-button {
+  border-color: white;
+}
+.nav-acc-button:hover {
+  border-color: red;
+}

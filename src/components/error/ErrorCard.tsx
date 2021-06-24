@@ -1,0 +1,16 @@
+import React from "react"
+import Card from "../card/Card";
+
+interface ErrorCardProps {
+  title: string;
+  message: string;
+}
+
+const ErrorCard = ({title, message} : ErrorCardProps) => (
+  <Card>
+    <h5 className="card-title">{title}</h5>
+    <p className="card-text text-danger">{message}</p>
+  </Card>
+);
+
+export default ErrorCard;

@@ -1,0 +1,7 @@
+.swap-field {
+  background-color: rgb(247, 248, 250);
+  border: 1px solid rgb(237, 238, 242);
+}
+.swap-field:hover {
+  border: 1px solid rgb(225, 226, 232);
+}
