@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import Card from "../../components/card/Card";
+import Card, { CardTitle } from "../../components/card/Card";
 
 import { AppContext } from "../../context/contexts";
 import SwapField from "./SwapField";
@@ -13,7 +13,7 @@ const SwapController = ({} : SwapControllerProps) => {
 
   return (
     <Card>
-      <h5 className="ms-2">Swap</h5>
+      <CardTitle title="Swap" />
       <SwapField />
       <div className="d-flex justify-content-center">
         <div className="btn-content-field border-rad">
