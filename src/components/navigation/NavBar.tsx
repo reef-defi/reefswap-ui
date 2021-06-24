@@ -24,9 +24,9 @@ const NavBar = (): JSX.Element => {
       <div className="col-sm-4 p-0">
         <div className="d-flex justify-content-center">
           <div className="d-flex w-auto nav-selection border-rad">
-            <Button to={POOL_URL} name="Pool" selected={pathname === POOL_URL} />
-            <Button to={SWAP_URL} name="Swap" selected={pathname === SWAP_URL} />
-            <Button to={BIND_URL} name="Bind" selected={pathname === BIND_URL} />
+            <Button to={POOL_URL} name="Pool" selected={pathname.startsWith(POOL_URL)} />
+            <Button to={SWAP_URL} name="Swap" selected={pathname.startsWith(SWAP_URL)} />
+            <Button to={BIND_URL} name="Bind" selected={pathname.startsWith(BIND_URL)} />
           </div>
         </div>
       </div>
