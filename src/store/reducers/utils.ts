@@ -2,20 +2,20 @@ import { UTILS_SET_ACCOUNTS, UTILS_SET_IS_LOADED, UTILS_SET_POLKADT_EXTENSION, U
 import { ReefswapSigner, UtilsActions } from "../actions/utils";
 import { Provider, Signer } from "@reef-defi/evm-provider";
 
-export interface UtilsState {
+export interface UtilsReducer {
   isLoaded: boolean;
   selectedAccount: number;
   accounts: ReefswapSigner[];
   provider?: Provider;
 }
 
-const defaultUtilsState: UtilsState = {
+const defaultUtilsState: UtilsReducer = {
   isLoaded: false,
   selectedAccount: -1,
   accounts: [],
 };
 
-export const utilsReducer = (state=defaultUtilsState, action: UtilsActions): UtilsState => {
+export const utilsReducer = (state=defaultUtilsState, action: UtilsActions): UtilsReducer => {
   switch (action.type) {
     case UTILS_SET_PROVIDER: return {...state, provider: action.provider};
     case UTILS_SET_ACCOUNTS: return {...state, accounts: action.accounts};

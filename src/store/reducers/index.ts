@@ -1,12 +1,15 @@
 import {combineReducers} from "redux";
-import { utilsReducer, UtilsState } from "./utils";
+import { TokensReducer, tokensReducer } from "./tokens";
+import { utilsReducer, UtilsReducer } from "./utils";
 
 const rootReducer = combineReducers({
-  utils: utilsReducer
+  utils: utilsReducer,
+  tokens: tokensReducer,
 });
 
 export interface ReducerState {
-  utils: UtilsState;
+  utils: UtilsReducer;
+  tokens: TokensReducer;
 }
 
 export default rootReducer;
