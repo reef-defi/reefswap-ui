@@ -9,7 +9,10 @@ const SwapField = ({} : SwapFieldProps) => {
   return (
     <div className="field p-3 border-rad">
       <div className="d-flex mb-2">
-        <SelectToken />
+        <SelectToken 
+          onTokenSelect={(token) => {}}
+          selectedTokenName="REEF"
+        />
         <input
           type="number"
           min={0}

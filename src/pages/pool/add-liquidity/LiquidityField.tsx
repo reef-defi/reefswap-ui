@@ -9,7 +9,10 @@ const LiquidityField = ({} : LiquidityFieldProps) => {
   return (
     <div className="field p-3 border-rad">
       <div className="d-flex mb-2">
-        <SelectToken />
+        <SelectToken 
+          selectedTokenName="REEF"
+          onTokenSelect={(token) => {}}
+        />
         <input
           type="number"
           min={0}
