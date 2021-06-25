@@ -6,9 +6,9 @@ import ErrorCard from "../components/error/ErrorCard";
 import ContentController from "./ContentController";
 import { AppContext, defaultTokenContext, TokenContext } from "../context/contexts";
 import { WsProvider } from "@polkadot/api";
-import { Provider } from "@reef-defi/evm-provider";
+import { Provider, Signer } from "@reef-defi/evm-provider";
 import { ReducerState } from "../store/reducers";
-import { utilsSetPolkadotExtension, utilsSetAccounts, utilsSetIsLoaded, utilsSetProvider, utilsSetSelectedAccount } from "../store/actions/utils";
+import { ReefswapSigner, utilsSetAccounts, utilsSetIsLoaded, utilsSetProvider, utilsSetSelectedAccount } from "../store/actions/utils";
 
 interface AppInitializationProps { }
 
@@ -24,7 +24,6 @@ const AppInitialization = ({} : AppInitializationProps) => {
   const [state, setState] = useState<State>(State.SUCCESS);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
-  // const [context, setContext] = useState<AppContext>();
 
   useEffect(() => {
     const load = async () => {
@@ -40,9 +39,20 @@ const AppInitialization = ({} : AppInitializationProps) => {
           provider: new WsProvider("wss://rpc-testnet.reefscan.com/ws")
         });
         await provider.api.isReadyOrError;
+        setStatus("Creating signers...");
+        const signers = await Promise.all(
+          accounts
+          .map((account) => ({
+            signer: new Signer(provider, account.address, inj[0].signer),
+            name: account.meta.name || "",
+          }))
+          .map(async (signer): Promise<ReefswapSigner> => ({...signer,
+            address: await signer.signer.getAddress()
+          }))
+        );
+
         dispatch(utilsSetProvider(provider));
-        dispatch(utilsSetAccounts(accounts));
-        dispatch(utilsSetPolkadotExtension(inj[0]));
+        dispatch(utilsSetAccounts(signers));
         dispatch(utilsSetIsLoaded(true));
         if (accounts.length > 0) {
           dispatch(utilsSetSelectedAccount(0));

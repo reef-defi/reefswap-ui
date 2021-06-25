@@ -23,7 +23,7 @@ const trim = (value: string, size=19): string => value.length < size
 
 const NavBar = (): JSX.Element => {
   const dispatch = useDispatch();
-  const {accounts, selectedAccount, provider, extension} = useSelector((state: ReducerState) => state.utils);
+  const {accounts, selectedAccount, provider} = useSelector((state: ReducerState) => state.utils);
   const {pathname} = useLocation();
   const [balance, setBalance] = useState("0");
 
@@ -31,9 +31,7 @@ const NavBar = (): JSX.Element => {
     const loadBalance = async () => {
       if (selectedAccount === -1) { return; }
       try {
-        const account = accounts[selectedAccount];
-        const wallet = new Signer(provider!, account.address, extension!.signer);
-        const address = await wallet.getAddress();
+        const {address} = accounts[selectedAccount];
         const accountBalance = await provider!.getBalance(address);
         const value = accountBalance.toString();
         setBalance(value.length > 18 ? value.slice(0, value.length - 18) : "0");
@@ -46,15 +44,12 @@ const NavBar = (): JSX.Element => {
   
   const selectAccount = (index: number) => dispatch(utilsSetSelectedAccount(index));
 
-  const accName = (selectedAccount === -1 || !accounts[selectedAccount].meta.name) 
-    ? "" 
-    : accounts[selectedAccount].meta.name!;
-
+  const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : "";
   const accountsView = accounts
     .map((account, index) => (
       <li key={index}>
         <button className="dropdown-item" onClick={() => selectAccount(index)}>
-          { trim(account.meta.name ? account.meta.name : account.address) }
+          { trim(account.name) }
         </button>
       </li>
     ))
