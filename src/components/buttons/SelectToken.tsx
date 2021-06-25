@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { addToken, Token } from "../../store/actions/tokens";
 import { ReducerState } from "../../store/reducers";
 import { trim } from "../../utils";
-import Card, { CardTitle } from "../card/Card";
+import { CardTitle } from "../card/Card";
 import "./Buttons.css";
 
 interface SelectTokenProps { 
