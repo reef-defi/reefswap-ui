@@ -1,4 +1,4 @@
-import { UTILS_SET_ACCOUNTS, UTILS_SET_IS_LOADED, UTILS_SET_POLKADT_EXTENSION, UTILS_SET_PROVIDER } from "../actionCreator";
+import { UTILS_SET_ACCOUNTS, UTILS_SET_IS_LOADED, UTILS_SET_POLKADT_EXTENSION, UTILS_SET_PROVIDER, UTILS_SET_SELECTED_ACCOUNT } from "../actionCreator";
 import { Provider } from "@reef-defi/evm-provider";
 import type { InjectedAccountWithMeta, InjectedExtension } from '@polkadot/extension-inject/types';
 
@@ -22,10 +22,16 @@ interface SetIsLoadingAction {
   isLoaded: boolean;
 }
 
+interface SetSelectedAccount {
+  type: typeof UTILS_SET_SELECTED_ACCOUNT;
+  index: number;
+}
+
 export type UtilsActions =
   | SetAccountsAction
   | SetProviderAction
   | SetIsLoadingAction
+  | SetSelectedAccount
   | SetPolkadotExtensionAction;
 
 export const utilsSetProvider = (provider: Provider): SetProviderAction => ({
@@ -43,7 +49,12 @@ export const utilsSetIsLoaded = (isLoaded: boolean): SetIsLoadingAction => ({
   isLoaded
 });
 
-export const setPolkadotExtension = (extension: InjectedExtension): SetPolkadotExtensionAction => ({
+export const utilsSetSelectedAccount = (index: number): SetSelectedAccount => ({
+  type: UTILS_SET_SELECTED_ACCOUNT,
+  index
+});
+
+export const utilsSetPolkadotExtension = (extension: InjectedExtension): SetPolkadotExtensionAction => ({
   type: UTILS_SET_POLKADT_EXTENSION,
   extension
 })
