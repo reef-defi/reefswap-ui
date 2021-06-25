@@ -1,7 +1,6 @@
-import React, { useContext } from "react"
+import React from "react"
 import Card, { CardTitle } from "../../components/card/Card";
 
-import { AppContext } from "../../context/contexts";
 import SwapField from "./SwapField";
 
 interface SwapControllerProps {
@@ -9,7 +8,6 @@ interface SwapControllerProps {
 }
 
 const SwapController = ({} : SwapControllerProps) => {
-  const {accounts, extension, provider} = useContext(AppContext)!;
 
   return (
     <Card>
