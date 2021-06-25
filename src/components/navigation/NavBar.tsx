@@ -17,9 +17,9 @@ const Button = ({to, name, selected}: Button): JSX.Element => (
   <Link to={to} className={`border-rad h-100 fs-6 fw-bold px-3 py-2 ${selected ? "nav-selected" : "nav-button"}`}>{name}</Link>
 )
 
-const trim = (value: string, size=16): string => value.length < size 
+const trim = (value: string, size=19): string => value.length < size 
   ? value
-  : `${value.slice(0, size-3)}...${value.slice(value.length - 4)}`;
+  : `${value.slice(0, size-6)}...${value.slice(value.length - 3)}`;
 
 const NavBar = (): JSX.Element => {
   const dispatch = useDispatch();
