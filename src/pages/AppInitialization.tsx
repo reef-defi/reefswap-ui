@@ -4,7 +4,6 @@ import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { LoadingWithText } from "../components/loading/Loading";
 import ErrorCard from "../components/error/ErrorCard";
 import ContentController from "./ContentController";
-import { AppContext, defaultTokenContext, TokenContext } from "../context/contexts";
 import { WsProvider } from "@polkadot/api";
 import { Provider, Signer } from "@reef-defi/evm-provider";
 import { ReducerState } from "../store/reducers";
@@ -40,6 +39,7 @@ const AppInitialization = ({} : AppInitializationProps) => {
         });
         await provider.api.isReadyOrError;
         setStatus("Creating signers...");
+
         const signers = await Promise.all(
           accounts
           .map((account) => ({
@@ -74,13 +74,7 @@ const AppInitialization = ({} : AppInitializationProps) => {
           {state === State.LOADING && <LoadingWithText text={status} />}
           {state === State.ERROR && <ErrorCard title="Polkadot extension" message={error} />}
           {state === State.SUCCESS && !isLoaded && <ErrorCard title="Context error" message="Something went wrong..." />}
-          {state === State.SUCCESS && isLoaded && 
-            // <AppContext.Provider value={context}>
-              <TokenContext.Provider value={{...defaultTokenContext}}>
-                <ContentController />
-              </TokenContext.Provider>
-            // </AppContext.Provider>
-          }
+          {state === State.SUCCESS && isLoaded && <ContentController /> }
         </div>
       </div>
     </div>
