@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-
+import {useDispatch, useSelector} from "react-redux";
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { LoadingWithText } from "../components/loading/Loading";
 import ErrorCard from "../components/error/ErrorCard";
@@ -7,6 +7,8 @@ import ContentController from "./ContentController";
 import { AppContext, defaultTokenContext, TokenContext } from "../context/contexts";
 import { WsProvider } from "@polkadot/api";
 import { Provider } from "@reef-defi/evm-provider";
+import { ReducerState } from "../store/reducers";
+import { utilsSetPolkadotExtension, utilsSetAccounts, utilsSetIsLoaded, utilsSetProvider, utilsSetSelectedAccount } from "../store/actions/utils";
 
 interface AppInitializationProps { }
 
@@ -17,10 +19,12 @@ enum State {
 }
 
 const AppInitialization = ({} : AppInitializationProps) => {
+  const dispatch = useDispatch();
+  const {isLoaded} = useSelector((state: ReducerState) => state.utils);
   const [state, setState] = useState<State>(State.SUCCESS);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
-  const [context, setContext] = useState<AppContext>();
+  // const [context, setContext] = useState<AppContext>();
 
   useEffect(() => {
     const load = async () => {
@@ -36,11 +40,13 @@ const AppInitialization = ({} : AppInitializationProps) => {
           provider: new WsProvider("wss://rpc-testnet.reefscan.com/ws")
         });
         await provider.api.isReadyOrError;
-        setContext({
-          provider,
-          accounts,
-          extension: inj[0]
-        });
+        dispatch(utilsSetProvider(provider));
+        dispatch(utilsSetAccounts(accounts));
+        dispatch(utilsSetPolkadotExtension(inj[0]));
+        dispatch(utilsSetIsLoaded(true));
+        if (accounts.length > 0) {
+          dispatch(utilsSetSelectedAccount(0));
+        }
         setState(State.SUCCESS);
       } catch (error) {
         setError(error.message);
@@ -57,13 +63,13 @@ const AppInitialization = ({} : AppInitializationProps) => {
         <div className="col-sm-10 col-md-6 col-lg-4 col-xl-3 field-size">
           {state === State.LOADING && <LoadingWithText text={status} />}
           {state === State.ERROR && <ErrorCard title="Polkadot extension" message={error} />}
-          {state === State.SUCCESS && !context && <ErrorCard title="Context error" message="Something went wrong..." />}
-          {state === State.SUCCESS && context && 
-            <AppContext.Provider value={context}>
+          {state === State.SUCCESS && !isLoaded && <ErrorCard title="Context error" message="Something went wrong..." />}
+          {state === State.SUCCESS && isLoaded && 
+            // <AppContext.Provider value={context}>
               <TokenContext.Provider value={{...defaultTokenContext}}>
                 <ContentController />
               </TokenContext.Provider>
-            </AppContext.Provider>
+            // </AppContext.Provider>
           }
         </div>
       </div>
