@@ -8,9 +8,9 @@ import "./Buttons.css";
 
 interface SelectTokenProps { 
   id?: string;
+  fullWidth?: boolean;
   selectedTokenName: string;
   onTokenSelect: (token: Token) => void;
-  fullWidth?: boolean;
 }
 
 const getButtonText = (address: string, name: string): string => {
@@ -37,11 +37,19 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
     setName("");
     setAddress("");
     dispatch(addToken(address, name));
+    onTokenSelect({address, name});
   }
+
+  const selectToken = (index: number) => onTokenSelect(tokens[index])
   
   const tokensView = tokens
     .map((token, index) => (
-      <li className="list-group-item list-group-item-action row d-flex" key={index}>
+      <li 
+        key={index}
+        data-bs-dismiss="modal"
+        onClick={() => selectToken(index)}
+        className="list-group-item list-group-item-action row d-flex"
+      >
         <div className="col-3">
           {token.name}
         </div>
@@ -50,7 +58,6 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
         </div>
       </li>
     ));
-
 
   return (
     <>
@@ -74,6 +81,7 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
                       className="btn btn-sm btn-reef"
                       disabled={!isTokenValid}
                       onClick={onTokenAdd}
+                      data-bs-dismiss="modal"
                     >
                       {buttonText}
                     </button>
