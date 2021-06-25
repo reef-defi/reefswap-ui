@@ -23,6 +23,9 @@ const getButtonText = (address: string, name: string): string => {
   }
 }
 
+const checkIfTokenIsValid = (address: string, name: string): boolean => 
+  name.length !== 0 && address.length === 42;
+
 const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullWidth} : SelectTokenProps) => {
   const dispatch = useDispatch();
   const {tokens} = useSelector((state: ReducerState) => state.tokens);
@@ -30,7 +33,6 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   
-  const isTokenValid = name.length !== 0 && address.length === 42;
   const buttonText = getButtonText(address, name);
 
   const onTokenAdd = () => {
@@ -79,51 +81,9 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
                     <h6 className="my-auto">Add token</h6>
                     <button
                       className="btn btn-sm btn-reef"
-                      disabled={!isTokenValid}
+                      disabled={!checkIfTokenIsValid(address, name)}
                       onClick={onTokenAdd}
                       data-bs-dismiss="modal"
-                    >
-                      {buttonText}
-                    </button>
-                  </div>
-                  <div className="d-flex flex-column">
-                    <input
-                      placeholder="Token name"
-                      className="mt-1 form-control field-input"
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                    />
-                    <input
-                      placeholder="Token address"
-                      className="mt-1 form-control field-input"
-                      value={address}
-                      onChange={(event) => setAddress(event.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <hr className="mx-3" />
-
-                <ul className="list-group list-group-flush mx-3">
-                  <li className="list-group-item px-2"><h6 className="my-auto">Existing tokens</h6></li>
-                  {tokensView}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div><div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content border-rad">
-            <div className="modal-body">
-              <CardTitle title="Select token" />
-              <div className="w-75 mx-auto select-token-content overflow-auto mt-3">
-
-                <div className="border border-rad p-1 mx-3 field">
-                  <div className="d-flex justify-content-between mx-2">
-                    <h6 className="my-auto">Add token</h6>
-                    <button
-                      className="btn btn-sm btn-reef"
-                      disabled={!isTokenValid}
-                      onClick={onTokenAdd}
                     >
                       {buttonText}
                     </button>
