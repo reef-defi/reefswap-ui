@@ -4,6 +4,7 @@ import { addToken, Token } from "../../store/actions/tokens";
 import { ReducerState } from "../../store/reducers";
 import { trim } from "../../utils";
 import { CardTitle } from "../card/Card";
+import { Loading, LoadingButtonIcon } from "../loading/Loading";
 import "./Buttons.css";
 
 interface SelectTokenProps { 
@@ -32,14 +33,22 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
-  
+  const [isLoading, setIsLoading] = useState(false);
   const buttonText = getButtonText(address, name);
 
-  const onTokenAdd = () => {
-    setName("");
-    setAddress("");
-    dispatch(addToken(address, name));
-    onTokenSelect({address, name});
+  const onTokenAdd = async () => {
+    try {
+      setIsLoading(true);
+      setName("");
+      setAddress(""); 
+      const balance = "0";
+      dispatch(addToken(address, balance, name));
+      onTokenSelect({address, balance, name});
+    } catch (error) {
+      
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const selectToken = (index: number) => onTokenSelect(tokens[index])
@@ -81,11 +90,11 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
                     <h6 className="my-auto">Add token</h6>
                     <button
                       className="btn btn-sm btn-reef"
-                      disabled={!checkIfTokenIsValid(address, name)}
+                      disabled={!checkIfTokenIsValid(address, name) || isLoading}
                       onClick={onTokenAdd}
                       data-bs-dismiss="modal"
                     >
-                      {buttonText}
+                      {isLoading ? <LoadingButtonIcon /> : buttonText}
                     </button>
                   </div>
                   <div className="d-flex flex-column">
