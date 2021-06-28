@@ -18,9 +18,11 @@ import {
 
 import { TypeRegistry } from '@polkadot/types';
 
+import {Provider as StoreProvider} from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import NavBar from './components/navigation/NavBar';
 import AppInitialization from './pages/AppInitialization';
+import { configureStore } from './store';
 
 const signUp = async (): Promise<void> => {
   try {
@@ -48,14 +50,17 @@ const signUp = async (): Promise<void> => {
   }
 }
 
+const store = configureStore();
 const App = (): JSX.Element => {
 
   return (
     <Router>
-      <div className="w-100 h-100 d-flex flex-column">
-        <NavBar />
-        <AppInitialization />
-      </div>
+      <StoreProvider store={store}>
+        <div className="w-100 h-100 d-flex flex-column">
+          <NavBar />
+          <AppInitialization />
+        </div>
+      </StoreProvider>
     </Router>
   );
 }

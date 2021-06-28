@@ -1,13 +1,15 @@
-import React from "react"
-import { Redirect, Route, Switch } from "react-router-dom";
-import { ADD_LIQUIDITY_URL, BIND_URL, IMPORT_POOL_URL, POOL_URL, SWAP_URL } from "../urls";
-import BindController from "./bind/BindController";
-import AddLiquidity from "./pool/add-liquidity/AddLiquidity";
-import ImportPool from "./pool/import-pool/ImportPool";
-import PoolContoller from "./pool/PoolContoller";
-import SwapController from "./swap/SwapController";
+import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import {
+  ADD_LIQUIDITY_URL, BIND_URL, IMPORT_POOL_URL, POOL_URL, SWAP_URL,
+} from '../urls';
+import BindController from './bind/BindController';
+import AddLiquidity from './pool/add-liquidity/AddLiquidity';
+import ImportPool from './pool/import-pool/ImportPool';
+import PoolContoller from './pool/PoolContoller';
+import SwapController from './swap/SwapController';
 
-const ContentController = () => (
+const ContentController = (): JSX.Element => (
   <Switch>
     <Route exact path={BIND_URL} component={BindController} />
     <Route exact path={POOL_URL} component={PoolContoller} />

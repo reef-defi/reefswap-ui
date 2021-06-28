@@ -1,8 +1,10 @@
-import React from "react"
+import React, { useState } from "react"
 import { useHistory } from "react-router-dom";
-import Card, { CardWithBackTitle } from "../../../components/card/Card";
+import { CardWithBackTitle } from "../../../components/card/Card";
+import TokenAmountField from "../../../components/card/TokenAmountField";
+import { Token, TokenWithAmount } from "../../../store/actions/tokens";
+import { defaultReefToken, defaultRUSDToken } from "../../../store/reducers/tokens";
 import { POOL_URL } from "../../../urls";
-import LiquidityField from "./LiquidityField";
 
 interface AddLiquidityProps {
 
@@ -12,6 +14,15 @@ const AddLiquidity = ({} : AddLiquidityProps) => {
   const history = useHistory();
   const back = () => history.push(POOL_URL);
 
+  const [token1, setToken1] = useState<TokenWithAmount>({...defaultReefToken, amount: ""});
+  const [token2, setToken2] = useState<TokenWithAmount>({...defaultRUSDToken, amount: ""});
+
+  const changeToken1 = (token: Token) => setToken1({...token, amount: ""});
+  const changeToken2 = (token: Token) => setToken2({...token, amount: ""});
+
+  const setAmount1 = (amount: string) => setToken1({...token1, amount});
+  const setAmount2 = (amount: string) => setToken2({...token2, amount});
+
   return (
     <CardWithBackTitle title="Add liquidity" onClick={back}>
       <div className="alert alert-danger mt-2 border-rad" role="alert">
@@ -19,7 +30,11 @@ const AddLiquidity = ({} : AddLiquidityProps) => {
         When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.
       </div>
 
-      <LiquidityField />
+      <TokenAmountField
+        token={token1}
+        onTokenSelect={changeToken1}
+        onAmountChange={setAmount1}
+      />
       <div className="d-flex justify-content-center">
         <div className="btn-content-field border-rad">
           <button disabled className="btn btn-field">
@@ -29,7 +44,12 @@ const AddLiquidity = ({} : AddLiquidityProps) => {
           </button>
         </div>
       </div>
-      <LiquidityField />
+
+      <TokenAmountField
+        token={token2}
+        onTokenSelect={changeToken2}
+        onAmountChange={setAmount2}
+      />
 
       <button className="btn btn-reef border-rad w-100 mt-2">
         Add liquidity

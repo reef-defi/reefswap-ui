@@ -1,7 +1,13 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom"
+import { utilsSetSelectedAccount } from "../../store/actions/utils";
+import { ReducerState } from "../../store/reducers";
 import { BIND_URL, POOL_URL, SWAP_URL } from "../../urls";
 import "./NavBar.css";
+import { trim } from "../../utils";
+
+import logo from "./../../assets/logo.png";
 
 interface Button {
   to: string;
@@ -14,18 +20,50 @@ const Button = ({to, name, selected}: Button): JSX.Element => (
 )
 
 const NavBar = (): JSX.Element => {
+  const dispatch = useDispatch();
+  const {accounts, selectedAccount, provider} = useSelector((state: ReducerState) => state.utils);
   const {pathname} = useLocation();
-  const accName = "Frenki-Account (Extension)";
-  const name = accName.length > 13 ? accName.slice(0, 12) + "..." + accName.slice(accName.length-4) : accName;
+  const [balance, setBalance] = useState("0");
+
+  useEffect(() => {
+    const loadBalance = async () => {
+      if (selectedAccount === -1) { return; }
+      try {
+        const {address} = accounts[selectedAccount];
+        const accountBalance = await provider!.getBalance(address);
+        const value = accountBalance.toString();
+        setBalance(value.length > 18 ? value.slice(0, value.length - 18) : "0");
+      } catch (error) {
+        console.log("Get balance error: ", error.message);
+      }
+    };
+    loadBalance();
+  }, [selectedAccount, accounts])
   
+  const selectAccount = (index: number) => dispatch(utilsSetSelectedAccount(index));
+
+  const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : "";
+  const accountsView = accounts
+    .map((account, index) => (
+      <li key={index}>
+        <button className="dropdown-item" onClick={() => selectAccount(index)}>
+          { trim(account.name) }
+        </button>
+      </li>
+    ))
+
   return (
     <nav className="container-fluid m-1 mt-3 row">
-      <div className="col-md-4 col-sm-1 p-0"><img src="favicon.ico" alt="Not found!" /></div>
+      <div className="col-md-4 col-sm-1 p-0">
+        <Link to={SWAP_URL}>
+          <img src={logo} alt="Not found!" />
+        </Link>
+      </div>
       <div className="col-sm-4 p-0">
         <div className="d-flex justify-content-center">
           <div className="d-flex w-auto nav-selection border-rad">
-            <Button to={POOL_URL} name="Pool" selected={pathname.startsWith(POOL_URL)} />
             <Button to={SWAP_URL} name="Swap" selected={pathname.startsWith(SWAP_URL)} />
+            <Button to={POOL_URL} name="Pool" selected={pathname.startsWith(POOL_URL)} />
             <Button to={BIND_URL} name="Bind" selected={pathname.startsWith(BIND_URL)} />
           </div>
         </div>
@@ -33,20 +71,13 @@ const NavBar = (): JSX.Element => {
       <div className="col-md-4 col-sm-7 col-xs-7 p-0">
         <div className="d-flex justify-content-md-end justify-content-center">
           <div className="d-flex nav-acc border-rad">
-            <div className="my-auto mx-2 fs-6 fw-bold">1000 REEF</div>
-            <div className="btn-group">
-              <button type="button" className="btn btn-secondary d-flex flex-column no-shadow nav-acc-button border-rad">
-                {name}
-              </button>
-              <button type="button" className="btn btn-secondary dropdown-toggle dropdown-toggle-split no-shadow nav-acc-button border-rad" id="dropdownMenuReference" data-bs-toggle="dropdown" aria-expanded="false" data-bs-reference="parent">
-                <span className="visually-hidden">Toggle Dropdown</span>
+            <div className="my-auto mx-2 fs-6 fw-bold">{balance} REEF</div>
+            <div className="dropdown">
+              <button className="btn btn-secondary dropdown-toggle no-shadow nav-acc-button border-rad hover-border" type="button" id="dropdownMenuReference" data-bs-toggle="dropdown" aria-expanded="false">
+                {trim(accName)}
               </button>
               <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuReference">
-                <li><a className="dropdown-item" href="#">Action</a></li>
-                <li><a className="dropdown-item" href="#">Another action</a></li>
-                <li><a className="dropdown-item" href="#">Something else here</a></li>
-                <li><hr className="dropdown-divider"/></li>
-                <li><a className="dropdown-item" href="#">Separated link</a></li>
+                {accountsView}
               </ul>
             </div>
           </div>
