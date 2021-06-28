@@ -28,7 +28,6 @@ const SwapController = ({} : SwapControllerProps) => {
     <Card>
       <CardTitle title="Swap" />
       <TokenAmountField
-        amount={token1.amount}
         token={token1}
         onAmountChange={setAmount1}
         onTokenSelect={changeToken1}
@@ -43,7 +42,6 @@ const SwapController = ({} : SwapControllerProps) => {
         </div>
       </div>
       <TokenAmountField
-        amount={token2.amount}
         token={token2}
         onAmountChange={setAmount2}
         onTokenSelect={changeToken2}

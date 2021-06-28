@@ -1,16 +1,15 @@
 import React from "react"
 import SelectToken from "../../components/buttons/SelectToken";
-import { Token } from "../../store/actions/tokens";
+import { Token, TokenWithAmount } from "../../store/actions/tokens";
 
 interface TokenAmountFieldProps {
-  token: Token;
-  amount: string;
+  token: TokenWithAmount;
   onTokenSelect: (token: Token) => void;
   onAmountChange: (amount: string) => void;
 }
 
-const TokenAmountField = ({amount, token, onTokenSelect, onAmountChange} : TokenAmountFieldProps) => {
-  const {name} = token;
+const TokenAmountField = ({token, onTokenSelect, onAmountChange} : TokenAmountFieldProps) => {
+  const {name, amount} = token;
 
   return (
     <div className="field p-3 border-rad">

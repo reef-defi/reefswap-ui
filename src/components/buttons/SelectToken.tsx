@@ -108,6 +108,7 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
                       placeholder="Token address"
                       className="mt-1 form-control field-input"
                       value={address}
+                      maxLength={42}
                       onChange={(event) => setAddress(event.target.value)}
                     />
                   </div>
