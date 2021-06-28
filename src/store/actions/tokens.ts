@@ -6,6 +6,10 @@ export interface Token {
   name: string;
 }
 
+export interface TokenWithAmount extends Token {
+  amount: string;
+}
+
 interface AddToken {
   type: typeof TOKENS_ADD_TOKEN;
   token : Token;

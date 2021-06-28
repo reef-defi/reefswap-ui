@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import Card, { CardTitle } from "../../components/card/Card";
 import TokenAmountField from "../../components/card/TokenAmountField";
+import { Token, TokenWithAmount } from "../../store/actions/tokens";
 import { defaultReefToken, defaultRUSDToken } from "../../store/reducers/tokens";
 
 interface SwapControllerProps {
@@ -8,29 +9,29 @@ interface SwapControllerProps {
 }
 
 const SwapController = ({} : SwapControllerProps) => { 
-  const [token1, setToken1] = useState({...defaultReefToken});
-  const [token2, setToken2] = useState({...defaultRUSDToken});
+  const [token1, setToken1] = useState<TokenWithAmount>({...defaultReefToken, amount: ""});
+  const [token2, setToken2] = useState<TokenWithAmount>({...defaultRUSDToken, amount: ""});
 
-  const [amount1, setAmount1] = useState(0.0);
-  const [amount2, setAmount2] = useState(0.0);
+  const setAmount1 = (amount: string) => setToken1({...token1, amount});
+  const setAmount2 = (amount: string) => setToken2({...token1, amount});
+
+  const changeToken1 = (token: Token) => setToken1({...token, amount: ""});
+  const changeToken2 = (token: Token) => setToken2({...token, amount: ""});
 
   const onSwitch = () => {
-    const subAmount = amount1;
-    const subToken = token1;
-    setToken1(token2);
-    setToken2(subToken);
-    setAmount1(amount2);
-    setAmount2(subAmount);
+    const subToken = {...token1};
+    setToken1({...token2});
+    setToken2({...subToken});
   }
 
   return (
     <Card>
       <CardTitle title="Swap" />
       <TokenAmountField
-        amount={amount1}
+        amount={token1.amount}
         token={token1}
         onAmountChange={setAmount1}
-        onTokenSelect={setToken1}
+        onTokenSelect={changeToken1}
       />
       <div className="d-flex justify-content-center">
         <div className="btn-content-field border-rad">
@@ -42,10 +43,10 @@ const SwapController = ({} : SwapControllerProps) => {
         </div>
       </div>
       <TokenAmountField
-        amount={amount2}
+        amount={token2.amount}
         token={token2}
         onAmountChange={setAmount2}
-        onTokenSelect={setToken2}
+        onTokenSelect={changeToken2}
       />
       <div className="d-flex justify-content-center mt-2">
         <button className="btn btn-reef border-rad w-100">Swap</button>

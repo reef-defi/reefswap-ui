@@ -4,9 +4,9 @@ import { Token } from "../../store/actions/tokens";
 
 interface TokenAmountFieldProps {
   token: Token;
-  amount: number;
+  amount: string;
   onTokenSelect: (token: Token) => void;
-  onAmountChange: (amount: number) => void;
+  onAmountChange: (amount: string) => void;
 }
 
 const TokenAmountField = ({amount, token, onTokenSelect, onAmountChange} : TokenAmountFieldProps) => {
@@ -26,7 +26,7 @@ const TokenAmountField = ({amount, token, onTokenSelect, onAmountChange} : Token
           max={1000}
           placeholder="0.0"
           className="field-input ms-2 flex-grow-1 text-end"
-          onChange={(event) => onAmountChange(parseFloat(event.target.value))}
+          onChange={(event) => onAmountChange(event.target.value)}
         />
       </div>
       <small className="ms-2">Balance: 1000 {name}</small>
