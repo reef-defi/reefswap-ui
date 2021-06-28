@@ -1,12 +1,13 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom"
-import { Signer } from "@reef-defi/evm-provider";
 import { utilsSetSelectedAccount } from "../../store/actions/utils";
 import { ReducerState } from "../../store/reducers";
 import { BIND_URL, POOL_URL, SWAP_URL } from "../../urls";
 import "./NavBar.css";
 import { trim } from "../../utils";
+
+import logo from "./../../assets/logo.png";
 
 interface Button {
   to: string;
@@ -53,12 +54,16 @@ const NavBar = (): JSX.Element => {
 
   return (
     <nav className="container-fluid m-1 mt-3 row">
-      <div className="col-md-4 col-sm-1 p-0"><img src="favicon.ico" alt="Not found!" /></div>
+      <div className="col-md-4 col-sm-1 p-0">
+        <Link to={SWAP_URL}>
+          <img src={logo} alt="Not found!" />
+        </Link>
+      </div>
       <div className="col-sm-4 p-0">
         <div className="d-flex justify-content-center">
           <div className="d-flex w-auto nav-selection border-rad">
-            <Button to={POOL_URL} name="Pool" selected={pathname.startsWith(POOL_URL)} />
             <Button to={SWAP_URL} name="Swap" selected={pathname.startsWith(SWAP_URL)} />
+            <Button to={POOL_URL} name="Pool" selected={pathname.startsWith(POOL_URL)} />
             <Button to={BIND_URL} name="Bind" selected={pathname.startsWith(BIND_URL)} />
           </div>
         </div>

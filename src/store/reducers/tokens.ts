@@ -6,7 +6,7 @@ export interface TokensReducer {
 }
 
 export const defaultReefToken: Token = {
-  name: "Reef", 
+  name: "REEF", 
   address: "0x0000000000000000000000000000000001000000"
 };
 
