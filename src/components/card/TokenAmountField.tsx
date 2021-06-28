@@ -3,8 +3,8 @@ import SelectToken from "../../components/buttons/SelectToken";
 import { Token } from "../../store/actions/tokens";
 
 interface TokenAmountFieldProps {
-  amount: number;
   token: Token;
+  amount: number;
   onTokenSelect: (token: Token) => void;
   onAmountChange: (amount: number) => void;
 }
@@ -29,7 +29,7 @@ const TokenAmountField = ({amount, token, onTokenSelect, onAmountChange} : Token
           onChange={(event) => onAmountChange(parseFloat(event.target.value))}
         />
       </div>
-      <small className="ms-2">Balance: 1000 REEF</small>
+      <small className="ms-2">Balance: 1000 {name}</small>
     </div>
   );
 }
