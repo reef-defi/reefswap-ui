@@ -1,6 +1,8 @@
 import React from "react"
+import { Token } from "../../api/tokens";
 import SelectToken from "../../components/buttons/SelectToken";
-import { Token, TokenWithAmount } from "../../store/actions/tokens";
+import { TokenWithAmount } from "../../store/actions/tokens";
+import { calculateBalance } from "../../utils/math";
 
 interface TokenAmountFieldProps {
   token: TokenWithAmount;
@@ -9,7 +11,7 @@ interface TokenAmountFieldProps {
 }
 
 const TokenAmountField = ({token, onTokenSelect, onAmountChange} : TokenAmountFieldProps) => {
-  const {name, amount} = token;
+  const {name, amount, balance} = token;
 
   return (
     <div className="field p-3 border-rad">
@@ -28,7 +30,7 @@ const TokenAmountField = ({token, onTokenSelect, onAmountChange} : TokenAmountFi
           onChange={(event) => onAmountChange(event.target.value)}
         />
       </div>
-      <small className="ms-2">Balance: 1000 {name}</small>
+      <small className="ms-2">Balance: {calculateBalance(token)} {name}</small>
     </div>
   );
 }

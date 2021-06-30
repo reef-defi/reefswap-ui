@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom"
 import { utilsSetSelectedAccount } from "../../store/actions/utils";
 import { ReducerState } from "../../store/reducers";
-import { BIND_URL, POOL_URL, SWAP_URL } from "../../urls";
+import { BIND_URL, POOL_URL, SWAP_URL } from "../../utils/urls";
 import "./NavBar.css";
-import { trim } from "../../utils";
+import { trim } from "../../utils/utils";
 
 import logo from "./../../assets/logo.png";
+import { calculateBalance } from "../../utils/math";
 
 interface Button {
   to: string;
@@ -21,27 +22,15 @@ const Button = ({to, name, selected}: Button): JSX.Element => (
 
 const NavBar = (): JSX.Element => {
   const dispatch = useDispatch();
-  const {accounts, selectedAccount, provider} = useSelector((state: ReducerState) => state.utils);
   const {pathname} = useLocation();
-  const [balance, setBalance] = useState("0");
 
-  useEffect(() => {
-    const loadBalance = async () => {
-      if (selectedAccount === -1) { return; }
-      try {
-        const {address} = accounts[selectedAccount];
-        const accountBalance = await provider!.getBalance(address);
-        const value = accountBalance.toString();
-        setBalance(value.length > 18 ? value.slice(0, value.length - 18) : "0");
-      } catch (error) {
-        console.log("Get balance error: ", error.message);
-      }
-    };
-    loadBalance();
-  }, [selectedAccount, accounts])
+  const {tokens} = useSelector((state: ReducerState) => state.tokens);
+  const {accounts, selectedAccount} = useSelector((state: ReducerState) => state.utils);
   
   const selectAccount = (index: number) => dispatch(utilsSetSelectedAccount(index));
-
+  const balance = calculateBalance(tokens
+    .find((token) => token.name === "REEF")!)
+    
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : "";
   const accountsView = accounts
     .map((account, index) => (

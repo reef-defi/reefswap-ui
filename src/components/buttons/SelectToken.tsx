@@ -1,11 +1,12 @@
 import React, { ChangeEvent, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { checkIfERC20ContractExist, getContract } from "../../api/api";
-import { addToken, Token } from "../../store/actions/tokens";
+import { getContract, loadToken } from "../../api/api";
+import { Token } from "../../api/tokens";
+import { addToken } from "../../store/actions/tokens";
 import { ReducerState } from "../../store/reducers";
-import { ensure, trim } from "../../utils";
+import { ensure, trim } from "../../utils/utils";
 import { CardTitle } from "../card/Card";
-import { Loading, LoadingButtonIcon } from "../loading/Loading";
+import { LoadingButtonIcon } from "../loading/Loading";
 import "./Buttons.css";
 
 interface SelectTokenProps { 
@@ -35,11 +36,8 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
       ensure(isValid, UNKNOWN_ADDRESS);
       ensure(selectedAccount !== -1, SELECT_ACCOUNT);
       const {signer} = accounts[selectedAccount];
-      const signerAddress = await signer.getAddress();
-      const contract = await getContract(address, signer);
-      const balance = await contract.balanceOf(signerAddress);
-      const symbol = await contract.symbol();
-      dispatch(addToken(address, balance.toString(), symbol));
+      const token = await loadToken(address, signer);
+      dispatch(addToken(token));
     } catch (error) {
       setButtonText(error.message);
     } finally {
@@ -59,9 +57,9 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
         ensure(selectedAccount !== -1, SELECT_ACCOUNT);
         const {signer} = accounts[selectedAccount];
         const contract = await getContract(newAddress, signer);
-        const sym = await contract.symbol();
+        const symbol = await contract.symbol();
         setIsValid(true);
-        setButtonText(`Add ${sym}`);
+        setButtonText(`Add ${symbol}`);
       } catch (error) {
         setButtonText(error.message);
         setIsValid(false);
