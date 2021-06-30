@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { checkIfERC20ContractExist, getContract } from "../../api/api";
 import { addToken, Token } from "../../store/actions/tokens";
 import { ReducerState } from "../../store/reducers";
-import { trim } from "../../utils";
+import { ensure, trim } from "../../utils";
 import { CardTitle } from "../card/Card";
 import { Loading, LoadingButtonIcon } from "../loading/Loading";
 import "./Buttons.css";
@@ -14,41 +15,61 @@ interface SelectTokenProps {
   onTokenSelect: (token: Token) => void;
 }
 
-const getButtonText = (address: string, name: string): string => {
-  if (name.length <= 0) { 
-    return "Name is empyt";
-  } else if (address.length !== 42) {
-    return "Address is incorrect";
-  } else {
-    return "Add token";
-  }
-}
-
-const checkIfTokenIsValid = (address: string, name: string): boolean => 
-  name.length !== 0 && address.length === 42;
+const TO_SHORT_ADDRESS = "To short address";
+const UNKNOWN_ADDRESS = "Unknow address";
+const SELECT_ACCOUNT = "Select account"
 
 const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullWidth} : SelectTokenProps) => {
   const dispatch = useDispatch();
   const {tokens} = useSelector((state: ReducerState) => state.tokens);
+  const {accounts, selectedAccount} = useSelector((state: ReducerState) => state.utils);
 
-  const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [isValid, setIsValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const buttonText = getButtonText(address, name);
+  const [buttonText, setButtonText] = useState(TO_SHORT_ADDRESS);
 
   const onTokenAdd = async () => {
     try {
       setIsLoading(true);
-      setName("");
-      setAddress(""); 
-      const balance = "0";
-      dispatch(addToken(address, balance, name));
-      onTokenSelect({address, balance, name});
+      ensure(isValid, UNKNOWN_ADDRESS);
+      ensure(selectedAccount !== -1, SELECT_ACCOUNT);
+      const {signer} = accounts[selectedAccount];
+      const signerAddress = await signer.getAddress();
+      const contract = await getContract(address, signer);
+      const balance = await contract.balanceOf(signerAddress);
+      const symbol = await contract.symbol();
+      dispatch(addToken(address, balance.toString(), symbol));
     } catch (error) {
-      
+      setButtonText(error.message);
     } finally {
       setIsLoading(false);
     }
+  }
+
+  const onAddressChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const newAddress = event.target.value;
+    setAddress(newAddress);
+    setIsValid(false);
+    setButtonText(TO_SHORT_ADDRESS);
+
+    if (newAddress.length === 42) {
+      try {
+        setIsLoading(true);
+        ensure(selectedAccount !== -1, SELECT_ACCOUNT);
+        const {signer} = accounts[selectedAccount];
+        const contract = await getContract(newAddress, signer);
+        const sym = await contract.symbol();
+        setIsValid(true);
+        setButtonText(`Add ${sym}`);
+      } catch (error) {
+        setButtonText(error.message);
+        setIsValid(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
   }
 
   const selectToken = (index: number) => onTokenSelect(tokens[index])
@@ -90,7 +111,7 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
                     <h6 className="my-auto">Add token</h6>
                     <button
                       className="btn btn-sm btn-reef"
-                      disabled={!checkIfTokenIsValid(address, name) || isLoading}
+                      disabled={!isValid || isLoading}
                       onClick={onTokenAdd}
                       data-bs-dismiss="modal"
                     >
@@ -99,17 +120,11 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
                   </div>
                   <div className="d-flex flex-column">
                     <input
-                      placeholder="Token name"
-                      className="mt-1 form-control field-input"
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                    />
-                    <input
                       placeholder="Token address"
-                      className="mt-1 form-control field-input"
+                      className="form-control field-input"
                       value={address}
                       maxLength={42}
-                      onChange={(event) => setAddress(event.target.value)}
+                      onChange={onAddressChange}
                     />
                   </div>
                 </div>

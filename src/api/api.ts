@@ -12,7 +12,7 @@ export const checkIfERC20ContractExist = async (address: string, signer: Signer)
     await contract.name();
     await contract.symbol();
   } catch (error) {
-    throw new Error("Contract does not exist or it is not in ERC20 form!");
+    throw new Error("Unknown address");
   }
 };
 
