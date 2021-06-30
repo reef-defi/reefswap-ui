@@ -57,13 +57,13 @@ const AppInitialization = (): JSX.Element => {
           accounts,
           provider,
           inj[0].signer
-        );
-
+          );
+          
         setStatus("Loading tokens...");
         const newTokens = await loadTokens(defaultTokenAddresses, signers[0].signer);
         
-        dispatch(setAllTokens(newTokens));
         dispatch(utilsSetProvider(provider));
+        dispatch(setAllTokens(newTokens));
         dispatch(utilsSetAccounts(signers));
         dispatch(utilsSetSelectedAccount(0));
         dispatch(utilsSetIsLoaded(true));
@@ -78,6 +78,7 @@ const AppInitialization = (): JSX.Element => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (selectedAccount === -1) { return; }
     // Just to make a not from runtime
     // This function is called when the above useEffect is finished and reloads the tokens
     // Be careful when modifying the code

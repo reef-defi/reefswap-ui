@@ -28,8 +28,9 @@ const NavBar = (): JSX.Element => {
   const {accounts, selectedAccount} = useSelector((state: ReducerState) => state.utils);
   
   const selectAccount = (index: number) => dispatch(utilsSetSelectedAccount(index));
-  const balance = calculateBalance(tokens
-    .find((token) => token.name === "REEF")!)
+  const balance = tokens.length
+    ? calculateBalance(tokens.find((token) => token.name === "REEF")!)
+    : 0;
     
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : "";
   const accountsView = accounts
