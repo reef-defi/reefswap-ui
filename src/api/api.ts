@@ -1,8 +1,8 @@
-import { Signer, Provider } from "@reef-defi/evm-provider";
+import { Signer } from "@reef-defi/evm-provider";
 import { Contract } from "ethers";
-import { Token } from "../store/actions/tokens";
 import { ERC20 } from "./abi/ERC20";
 import ReefswapFactory from "./abi/ReefswapFactory";
+import { Token } from "./tokens";
 
 export const checkIfERC20ContractExist = async (address: string, signer: Signer) => {
   try {
@@ -11,7 +11,10 @@ export const checkIfERC20ContractExist = async (address: string, signer: Signer)
     // TODO add additional checkers to be surtent of Contract existance
     await contract.name();
     await contract.symbol();
+    await contract.decimals();
+
   } catch (error) {
+    console.error(error);
     throw new Error("Unknown address");
   }
 };
@@ -30,10 +33,12 @@ export const loadToken = async (address: string, signer: Signer): Promise<Token>
   const signerAddress = await signer.getAddress();
   const balance = await token.balanceOf(signerAddress);
   const symbol = await token.symbol();
+  const decimals = await token.decimals();
 
   return {
     address: token.address,
     balance: balance.toString(),
-    name: symbol
+    name: symbol,
+    decimals
   }
 }
