@@ -1,19 +1,23 @@
 import React, { useState } from "react"
+import { useSelector } from "react-redux";
+import { Token } from "../../api/tokens";
 import Card, { CardTitle } from "../../components/card/Card";
 import TokenAmountField from "../../components/card/TokenAmountField";
-import { Token, TokenWithAmount } from "../../store/actions/tokens";
-import { defaultReefToken, defaultRUSDToken } from "../../store/reducers/tokens";
+import { TokenWithAmount } from "../../store/actions/tokens";
+import { ReducerState } from "../../store/reducers";
 
 interface SwapControllerProps {
 
 }
 
-const SwapController = ({} : SwapControllerProps) => { 
-  const [token1, setToken1] = useState<TokenWithAmount>({...defaultReefToken, amount: ""});
-  const [token2, setToken2] = useState<TokenWithAmount>({...defaultRUSDToken, amount: ""});
+const SwapController = ({} : SwapControllerProps) => {
+  const {tokens} = useSelector((state: ReducerState) => state.tokens);
+
+  const [token1, setToken1] = useState<TokenWithAmount>({...tokens[0], amount: ""});
+  const [token2, setToken2] = useState<TokenWithAmount>({...tokens[1], amount: ""});
 
   const setAmount1 = (amount: string) => setToken1({...token1, amount});
-  const setAmount2 = (amount: string) => setToken2({...token1, amount});
+  const setAmount2 = (amount: string) => setToken2({...token2, amount});
 
   const changeToken1 = (token: Token) => setToken1({...token, amount: ""});
   const changeToken2 = (token: Token) => setToken2({...token, amount: ""});

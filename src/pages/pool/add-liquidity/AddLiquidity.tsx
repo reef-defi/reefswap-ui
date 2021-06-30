@@ -1,21 +1,24 @@
 import React, { useState } from "react"
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { Token } from "../../../api/tokens";
 import { CardWithBackTitle } from "../../../components/card/Card";
 import TokenAmountField from "../../../components/card/TokenAmountField";
-import { Token, TokenWithAmount } from "../../../store/actions/tokens";
-import { defaultReefToken, defaultRUSDToken } from "../../../store/reducers/tokens";
-import { POOL_URL } from "../../../urls";
+import { TokenWithAmount } from "../../../store/actions/tokens";
+import { ReducerState } from "../../../store/reducers";
+import { POOL_URL } from "../../../utils/urls";
 
 interface AddLiquidityProps {
 
 }
 
 const AddLiquidity = ({} : AddLiquidityProps) => {
+  const {tokens} = useSelector((state: ReducerState) => state.tokens);
   const history = useHistory();
   const back = () => history.push(POOL_URL);
 
-  const [token1, setToken1] = useState<TokenWithAmount>({...defaultReefToken, amount: ""});
-  const [token2, setToken2] = useState<TokenWithAmount>({...defaultRUSDToken, amount: ""});
+  const [token1, setToken1] = useState<TokenWithAmount>({...tokens[0], amount: ""});
+  const [token2, setToken2] = useState<TokenWithAmount>({...tokens[1], amount: ""});
 
   const changeToken1 = (token: Token) => setToken1({...token, amount: ""});
   const changeToken2 = (token: Token) => setToken2({...token, amount: ""});
