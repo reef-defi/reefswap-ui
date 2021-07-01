@@ -1,15 +1,18 @@
 import { combineReducers } from 'redux';
 import { TokensReducer, tokensReducer } from './tokens';
-import { utilsReducer, UtilsReducer } from './utils';
+import { utilsReducer, UtilsReducer } from './accounts';
+import { SettingsReducer, settingsReducer } from './settings';
 
 const rootReducer = combineReducers({
-  utils: utilsReducer,
+  accounts: utilsReducer,
   tokens: tokensReducer,
+  settings: settingsReducer,
 });
 
 export interface ReducerState {
-  utils: UtilsReducer;
+  accounts: UtilsReducer;
   tokens: TokensReducer;
+  settings: SettingsReducer;
 }
 
 export default rootReducer;

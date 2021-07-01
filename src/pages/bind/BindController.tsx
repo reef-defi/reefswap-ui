@@ -1,51 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import Card, { CardTitle } from '../../components/card/Card';
 import { ReducerState } from '../../store/reducers';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { bindSigner } from '../../api/accounts';
-import { utilsSetSelectedAccount } from '../../store/actions/utils';
+import { utilsSetSelectedAccount } from '../../store/actions/accounts';
+import { ensure } from '../../utils/utils';
 
 const BindController = (): JSX.Element => {
   const dispatch = useDispatch();
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.utils);
+  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
+  const { signer, isEvmClaimed } = accounts[selectedAccount];
 
-  const [isClaimed, setIsClaimed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const load = async (): Promise<void> => {
-      try {
-        setIsLoading(true);
-        const { signer } = accounts[selectedAccount];
-        setIsClaimed(await signer.isClaimed());
-      } catch (error) {
-        toast.error(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    load();
-  }, []);
 
   const onBind = async (): Promise<void> => {
     try {
+      ensure(!isEvmClaimed, 'Account is already binded!');
       setIsLoading(true);
-      const { signer } = accounts[selectedAccount];
       await bindSigner(signer);
       // Forcing token balance update
       dispatch(utilsSetSelectedAccount(0));
       dispatch(utilsSetSelectedAccount(selectedAccount));
       toast.success('Account binded successfully');
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message ? error.message : error);
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const buttonText = isClaimed
+  const buttonText = isEvmClaimed
     ? 'Selected account is binded'
     : 'Bind';
 
@@ -64,7 +50,7 @@ const BindController = (): JSX.Element => {
         type="button"
         className="btn btn-reef w-100 border-rad mt-2"
         onClick={onBind}
-        disabled={isClaimed || isLoading}
+        disabled={isEvmClaimed || isLoading}
       >
         { isLoading ? <LoadingButtonIcon /> : buttonText }
       </button>

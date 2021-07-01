@@ -4,6 +4,11 @@ import { ERC20 } from './abi/ERC20';
 import ReefswapRouter from './abi/ReefswapRouter';
 import { Token } from './tokens';
 
+export enum ReefChains {
+  Testnet='wss://rpc-testnet.reefscan.com/ws',
+  Mainnet='wss://rpc.reefscan.com/ws',
+}
+
 export const checkIfERC20ContractExist = async (address: string, signer: Signer): Promise<void> => {
   try {
     const contract = new Contract(address, ERC20, signer);

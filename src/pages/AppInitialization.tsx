@@ -9,14 +9,13 @@ import ContentController from './ContentController';
 import { ReducerState } from '../store/reducers';
 import {
   utilsSetAccounts,
-  utilsSetIsLoaded,
-  utilsSetProvider,
   utilsSetSelectedAccount,
-} from '../store/actions/utils';
+} from '../store/actions/accounts';
 import { accountsToSigners } from '../api/accounts';
 import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
 import { setAllTokens } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
+import { setChainIsLoaded, setReloadBalance } from '../store/actions/settings';
 
 enum State {
   LOADING,
@@ -27,13 +26,16 @@ enum State {
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { isLoaded, selectedAccount, accounts } = useSelector((state: ReducerState) => state.utils);
+  const { chainUrl, isChainLoaded, reloadBalance } = useSelector((state: ReducerState) => state.settings);
+  const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
-  const [state, setState] = useState<State>(State.SUCCESS);
+  const [state, setState] = useState<State>(isChainLoaded ? State.SUCCESS : State.LOADING);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
 
   useEffect(() => {
+    if (isChainLoaded) { return; }
+
     const load = async (): Promise<void> => {
       try {
         setState(State.LOADING);
@@ -47,7 +49,7 @@ const AppInitialization = (): JSX.Element => {
 
         setStatus('Connecting to chain...');
         const provider = new Provider({
-          provider: new WsProvider('wss://rpc-testnet.reefscan.com/ws'),
+          provider: new WsProvider(chainUrl),
         });
         await provider.api.isReadyOrError;
 
@@ -59,16 +61,15 @@ const AppInitialization = (): JSX.Element => {
         );
 
         setStatus('Loading tokens...');
-        const addresses = await loadVerifiedERC20TokenAddresses();
+        const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
         const newTokens = await loadTokens(addresses, signers[0].signer);
 
-        dispatch(utilsSetProvider(provider));
         dispatch(setAllTokens(newTokens));
         dispatch(utilsSetAccounts(signers));
         // Make sure selecting account is after setting signers
         // Else error will occure
         dispatch(utilsSetSelectedAccount(0));
-        dispatch(utilsSetIsLoaded(true));
+        dispatch(setChainIsLoaded());
         setState(State.SUCCESS);
       } catch (e) {
         setError(e.message);
@@ -77,10 +78,10 @@ const AppInitialization = (): JSX.Element => {
     };
 
     load();
-  }, [dispatch]);
+  }, [chainUrl]);
 
   useEffect(() => {
-    if (selectedAccount === -1) { return; }
+    if (selectedAccount === -1 || !reloadBalance) { return; }
 
     const load = async (): Promise<void> => {
       try {
@@ -90,6 +91,7 @@ const AppInitialization = (): JSX.Element => {
         const addresses = tokens.map((token) => token.address);
         const newTokens = await loadTokens(addresses, signer);
         dispatch(setAllTokens(newTokens));
+        dispatch(setReloadBalance(false));
         setState(State.SUCCESS);
       } catch (e) {
         setError(e.message);
@@ -97,21 +99,14 @@ const AppInitialization = (): JSX.Element => {
       }
     };
     load();
-  }, [selectedAccount, dispatch]);
+  }, [selectedAccount, reloadBalance]);
 
   return (
-    <div className="container-fluid mt-4 w-100">
-      <div className="row justify-content-center">
-        <div className="col-sm-10 col-md-6 col-lg-4 col-xl-3 field-size">
-          {state === State.LOADING && <LoadingWithText text={status} />}
-          {state === State.ERROR
-            && <ErrorCard title="Polkadot extension" message={error} />}
-          {state === State.SUCCESS && !isLoaded
-            && <ErrorCard title="Context error" message="Something went wrong..." />}
-          {state === State.SUCCESS && isLoaded && <ContentController /> }
-        </div>
-      </div>
-    </div>
+    <>
+      {state === State.LOADING && <LoadingWithText text={status} />}
+      {state === State.ERROR && <ErrorCard title="Polkadot extension" message={error} />}
+      {state === State.SUCCESS && <ContentController /> }
+    </>
   );
 };
 

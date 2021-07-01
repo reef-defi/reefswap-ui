@@ -1,6 +1,8 @@
 import { Signer } from '@reef-defi/evm-provider';
 import { calculateAmount } from '../utils/math';
-import { defaultGasLimit, getContract, getReefswapRouter } from './api';
+import {
+  defaultGasLimit, getContract, getReefswapRouter, ReefChains,
+} from './api';
 
 export interface Token {
   name: string;
@@ -13,14 +15,26 @@ export interface TokenWithAmount extends Token {
   amount: string;
 }
 
-const defaultTokenAddresses = [
+const defaultTestnetTokenAddresses = [
   '0x0000000000000000000000000000000001000000', // Reef
   '0x0000000000000000000000000000000001000001', // RUSD
   '0x3C4Bf01eb3bd2B88E1aCE7fd76Ccb4F12d2867a8', // Reef copy ?
 ];
 
+const defaultMainnetTokenAddresses = [
+  '0x0000000000000000000000000000000001000000', // Reef
+  '0x0000000000000000000000000000000001000001', // RUSD
+];
+
 // TODO add api call on reef explore
-export const loadVerifiedERC20TokenAddresses = async (): Promise<string[]> => Promise.resolve([...defaultTokenAddresses]);
+export const loadVerifiedERC20TokenAddresses = async (chainUrl: string): Promise<string[]> => {
+  if (chainUrl === ReefChains.Testnet) {
+    return Promise.resolve([...defaultTestnetTokenAddresses]);
+  } if (chainUrl === ReefChains.Mainnet) {
+    return Promise.resolve([...defaultMainnetTokenAddresses]);
+  }
+  throw new Error('Chain URL does not exist!');
+};
 
 const loadToken = async (address: string, signer: Signer): Promise<Token> => {
   const signerAddress = await signer.getAddress();
