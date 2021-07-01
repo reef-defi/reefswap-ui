@@ -2,6 +2,7 @@ import { Signer, Provider } from '@reef-defi/evm-provider';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import type { Signer as InjectedSigner } from '@polkadot/api/types';
 import { ReefswapSigner } from '../store/actions/utils';
+import { ensure } from '../utils/utils';
 
 export const accountsToSigners = async (accounts: InjectedAccountWithMeta[], provider: Provider, sign: InjectedSigner): Promise<ReefswapSigner[]> => Promise.all(
   accounts
@@ -14,3 +15,9 @@ export const accountsToSigners = async (accounts: InjectedAccountWithMeta[], pro
       address: await signer.signer.getAddress(),
     })),
 );
+
+export const bindSigner = async (signer: Signer): Promise<void> => {
+  const hasEvmAddress = await signer.isClaimed();
+  ensure(!hasEvmAddress, 'Account already has EVM address!');
+  await signer.claimDefaultAccount();
+};
