@@ -12,7 +12,7 @@ interface TokenAmountFieldProps {
 }
 
 const TokenAmountField = ({id, token, onTokenSelect, onAmountChange, placeholder="0,0"} : TokenAmountFieldProps) => {
-  const {name, amount, balance} = token;
+  const {name, amount} = token;
 
   return (
     <div className="field p-3 border-rad">

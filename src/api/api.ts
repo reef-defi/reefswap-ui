@@ -2,6 +2,7 @@ import { Signer } from "@reef-defi/evm-provider";
 import { Contract } from "ethers";
 import { ERC20 } from "./abi/ERC20";
 import ReefswapFactory from "./abi/ReefswapFactory";
+import ReefswapRouter from "./abi/ReefswapRouter";
 import { Token } from "./tokens";
 
 export const checkIfERC20ContractExist = async (address: string, signer: Signer) => {
@@ -24,8 +25,8 @@ export const getContract = async (address: string, signer: Signer): Promise<Cont
   return new Contract(address, ERC20, signer);
 }
 
-export const getReefswapFactory = (signer: Signer): Contract => 
-  new Contract("0x0A2906130B1EcBffbE1Edb63D5417002956dFd41", ReefswapFactory, signer);
+export const getReefswapRouter = (signer: Signer): Contract => 
+  new Contract("0x0A2906130B1EcBffbE1Edb63D5417002956dFd41", ReefswapRouter, signer);
 
 export const loadToken = async (address: string, signer: Signer): Promise<Token> => {
   const token = await getContract(address, signer);

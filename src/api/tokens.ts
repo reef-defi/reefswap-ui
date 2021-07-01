@@ -1,6 +1,6 @@
 import { Signer } from "@reef-defi/evm-provider";
 import { calculateAmount } from "../utils/math";
-import { defaultGasLimit, getContract, getReefswapFactory } from "./api";
+import { defaultGasLimit, getContract, getReefswapRouter } from "./api";
 
 export interface Token {
   name: string;
@@ -16,6 +16,7 @@ export interface TokenWithAmount extends Token {
 const defaultTokenAddresses = [
   "0x0000000000000000000000000000000001000000", // Reef
   "0x0000000000000000000000000000000001000001", // RUSD
+  "0x3C4Bf01eb3bd2B88E1aCE7fd76Ccb4F12d2867a8", // Reef copy ?
 ]
 
 // TODO add api call on reef explore
@@ -46,7 +47,7 @@ export const loadTokens = async (addresses: string[], signer: Signer): Promise<T
 
 export const approveTokenAmount = async (token: TokenWithAmount, signer: Signer) => {
   const {address} = token;
-  const reefswapContrctAddress = getReefswapFactory(signer).address;
+  const reefswapContrctAddress = getReefswapRouter(signer).address;
   const contract = await getContract(address, signer);
   const bnAmount = calculateAmount(token);
 
@@ -58,10 +59,10 @@ export const swapTokens = async (sellToken: TokenWithAmount, buyToken: TokenWith
 
   const buyAmount = calculateAmount(buyToken);
   const sellAmount = calculateAmount(sellToken);
-  const reefswapFactor = getReefswapFactory(signer);
+  const reefswapRouter = getReefswapRouter(signer);
 
   await approveTokenAmount(sellToken, signer);
-  await reefswapFactor.swapExactTokensForTokens(
+  await reefswapRouter.swapExactTokensForTokens(
     sellAmount,
     buyAmount,
     [sellToken.address, buyToken.address],

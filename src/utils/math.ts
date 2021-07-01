@@ -21,4 +21,6 @@ export const calculateAmount = (token: TokenWithAmount): string => {
 export const calculateBalance = ({decimals, balance}: Token): string => 
   balance.length < decimals
     ? "0"
-    : balance.slice(0, balance.length-decimals);
+    : balance.slice(0, balance.length-decimals) + 
+      "," + 
+      balance.slice(balance.length-decimals, balance.length-decimals+2);

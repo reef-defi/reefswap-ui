@@ -1,8 +1,10 @@
 import React, { useState } from "react"
 import { useSelector } from "react-redux";
+import { toast } from 'react-toastify';
 import { approveTokenAmount, swapTokens, Token, TokenWithAmount } from "../../api/tokens";
 import Card, { CardTitle } from "../../components/card/Card";
 import TokenAmountField from "../../components/card/TokenAmountField";
+import { LoadingButtonIcon } from "../../components/loading/Loading";
 import { ReducerState } from "../../store/reducers";
 
 interface SwapControllerProps {
@@ -14,27 +16,25 @@ interface SwapStatus {
   isValid: boolean;
 }
 
-const swapStatus = (sellAmount: string, buyAmount: string, error: string): SwapStatus => {
-  if (error) {
-    return { isValid: false, text: error };
-  } else if (sellAmount.length === 0) {
+const swapStatus = (sellAmount: string, buyAmount: string): SwapStatus => {
+  if (sellAmount.length === 0) {
     return { isValid: false, text: "Missing sell amount" };
   } else if (buyAmount.length === 0) {
     return { isValid: false, text: "Missing buy amount" };
+  } else {
+    return { isValid: true, text: "Swap" };
   }
-  return { isValid: true, text: "Swap" };
 }
 
 const SwapController = ({} : SwapControllerProps) => {
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
   const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.utils);
 
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [buyToken, setBuyToken] = useState<TokenWithAmount>({...tokens[1], amount: ""});
   const [sellToken, setSellToken] = useState<TokenWithAmount>({...tokens[0], amount: ""});
 
-  const { text, isValid } = swapStatus(sellToken.amount, buyToken.amount, error);
+  const { text, isValid } = swapStatus(sellToken.amount, buyToken.amount);
 
   const setBuyAmount = (amount: string) => setBuyToken({...buyToken, amount});
   const setSellAmount = (amount: string) => setSellToken({...sellToken, amount});
@@ -53,9 +53,9 @@ const SwapController = ({} : SwapControllerProps) => {
       setIsLoading(true);
       const {signer} = accounts[selectedAccount];
       await swapTokens(sellToken, buyToken, signer);
-      setError("")
+      toast.success("Swap complete!");
     } catch (error) {
-      setError(error.message)
+      toast.error(error.message)
     } finally {
       setIsLoading(false);
     }
@@ -89,9 +89,9 @@ const SwapController = ({} : SwapControllerProps) => {
         <button
           className="btn btn-reef border-rad w-100"
           onClick={onSwap}
-          disabled={!isValid}
+          disabled={!isValid || isLoading}
         >
-          {text}
+          {isLoading ? <LoadingButtonIcon /> : text}
         </button>
       </div>
     </Card>
