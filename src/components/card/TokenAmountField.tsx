@@ -1,7 +1,7 @@
-import React from "react"
-import { Token, TokenWithAmount } from "../../api/tokens";
-import SelectToken from "../../components/buttons/SelectToken";
-import { calculateBalance } from "../../utils/math";
+import React from 'react';
+import { Token, TokenWithAmount } from '../../api/tokens';
+import SelectToken from '../buttons/SelectToken';
+import { calculateBalance } from '../../utils/math';
 
 interface TokenAmountFieldProps {
   id?: string;
@@ -11,13 +11,15 @@ interface TokenAmountFieldProps {
   placeholder?: string;
 }
 
-const TokenAmountField = ({id, token, onTokenSelect, onAmountChange, placeholder="0,0"} : TokenAmountFieldProps) => {
-  const {name, amount} = token;
+const TokenAmountField = ({
+  id, token, onTokenSelect, onAmountChange, placeholder = '0,0',
+} : TokenAmountFieldProps): JSX.Element => {
+  const { name, amount } = token;
 
   return (
     <div className="field p-3 border-rad">
       <div className="d-flex mb-2">
-        <SelectToken 
+        <SelectToken
           id={id}
           onTokenSelect={onTokenSelect}
           selectedTokenName={name}
@@ -32,9 +34,19 @@ const TokenAmountField = ({id, token, onTokenSelect, onAmountChange, placeholder
           onChange={(event) => onAmountChange(event.target.value)}
         />
       </div>
-      <small className="ms-2">Balance: {calculateBalance(token)} {name}</small>
+      <small className="ms-2">
+        Balance:
+        {calculateBalance(token)}
+        {' '}
+        {name}
+      </small>
     </div>
   );
-}
+};
+
+TokenAmountField.defaultProps = {
+  id: 'exampleModal',
+  placeholder: '0,0',
+};
 
 export default TokenAmountField;

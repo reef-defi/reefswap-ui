@@ -44,7 +44,7 @@ export const loadTokens = async (addresses: string[], signer: Signer): Promise<T
   return tokens;
 };
 
-export const approveTokenAmount = async (token: TokenWithAmount, signer: Signer): Promise<void> => {
+const approveTokenAmount = async (token: TokenWithAmount, signer: Signer): Promise<void> => {
   const { address } = token;
   const reefswapContrctAddress = getReefswapRouter(signer).address;
   const contract = await getContract(address, signer);
@@ -65,6 +65,26 @@ export const swapTokens = async (sellToken: TokenWithAmount, buyToken: TokenWith
     sellAmount,
     buyAmount,
     [sellToken.address, buyToken.address],
+    signerAddress,
+    10000000000,
+    defaultGasLimit(),
+  );
+};
+
+export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmount, signer: Signer): Promise<void> => {
+  await approveTokenAmount(token1, signer);
+  await approveTokenAmount(token2, signer);
+
+  const signerAddress = await signer.getAddress();
+  const reefswapRouter = getReefswapRouter(signer);
+
+  await reefswapRouter.addLiquidity(
+    token1.address,
+    token2.address,
+    calculateAmount(token1),
+    calculateAmount(token2),
+    0,
+    0,
     signerAddress,
     10000000000,
     defaultGasLimit(),

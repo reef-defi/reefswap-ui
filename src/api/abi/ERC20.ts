@@ -1,152 +1,152 @@
-import { ContractInterface } from "ethers";
+import { ContractInterface } from 'ethers';
 
-export const ERC20: ContractInterface =  [
+export const ERC20: ContractInterface = [
   {
     inputs: [
-      { name: "name_", type: "string" },
-      { name: "symbol_", type: "string" }
+      { name: 'name_', type: 'string' },
+      { name: 'symbol_', type: 'string' },
     ],
-    stateMutability: "nonpayable",
-    type: "constructor",
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
     anonymous: false,
     inputs: [
-      { indexed: true, name: "owner", type: "address" },
-      { indexed: true, name: "spender", type: "address" },
-      { indexed: false, name: "value", type: "uint256" }
+      { indexed: true, name: 'owner', type: 'address' },
+      { indexed: true, name: 'spender', type: 'address' },
+      { indexed: false, name: 'value', type: 'uint256' },
     ],
-    name: "Approval",
-    type: "event"
+    name: 'Approval',
+    type: 'event',
   },
   {
     anonymous: false,
     inputs: [
-      { indexed: true, name: "from", type: "address" },
-      { indexed: true, name: "to", type: "address" },
-      { indexed: false, name: "value", type: "uint256" }
+      { indexed: true, name: 'from', type: 'address' },
+      { indexed: true, name: 'to', type: 'address' },
+      { indexed: false, name: 'value', type: 'uint256' },
     ],
-    name: "Transfer",
-    type: "event"
+    name: 'Transfer',
+    type: 'event',
   },
   {
     inputs: [
-      { name: "owner", type: "address" },
-      { name: "spender", type: "address" }
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
     ],
-    name: "allowance",
+    name: 'allowance',
     outputs: [
-      { name: "", type: "uint256" }
+      { name: '', type: 'uint256' },
     ],
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [
-      { name: "spender", type: "address" },
-      { name: "amount", type: "uint256" }
+      { name: 'spender', type: 'address' },
+      { name: 'amount', type: 'uint256' },
     ],
-    name: "approve",
+    name: 'approve',
     outputs: [
-      { name: "", type: "bool" }
+      { name: '', type: 'bool' },
     ],
-    stateMutability: "nonpayable",
-    type: "function"
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     inputs: [
-      { name: "account", type: "address" }
+      { name: 'account', type: 'address' },
     ],
-    name: "balanceOf",
+    name: 'balanceOf',
     outputs: [
-      { name: "", type: "uint256" }
+      { name: '', type: 'uint256' },
     ],
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [],
-    name: "decimals",
+    name: 'decimals',
     outputs: [
-      { name: "", type: "uint8" }
+      { name: '', type: 'uint8' },
     ],
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [
-      { name: "spender", type: "address" },
-      { name: "subtractedValue", type: "uint256" }
+      { name: 'spender', type: 'address' },
+      { name: 'subtractedValue', type: 'uint256' },
     ],
-    name: "decreaseAllowance",
+    name: 'decreaseAllowance',
     outputs: [
-      { name: "", type: "bool" }
+      { name: '', type: 'bool' },
     ],
-    stateMutability: "nonpayable",
-    type: "function"
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     inputs: [
-      { name: "spender", type: "address" },
-      { name: "addedValue", type: "uint256" }
+      { name: 'spender', type: 'address' },
+      { name: 'addedValue', type: 'uint256' },
     ],
-    name: "increaseAllowance",
+    name: 'increaseAllowance',
     outputs: [
-      { name: "", type: "bool" }
+      { name: '', type: 'bool' },
     ],
-    stateMutability: "nonpayable",
-    type: "function"
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     inputs: [],
-    name: "name",
+    name: 'name',
     outputs: [
-      { name: "", type: "string" }
+      { name: '', type: 'string' },
     ],
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [],
-    name: "symbol",
+    name: 'symbol',
     outputs: [
-      { name: "", type: "string" }
+      { name: '', type: 'string' },
     ],
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [],
-    name: "totalSupply",
+    name: 'totalSupply',
     outputs: [
-      { name: "", type: "uint256" }
+      { name: '', type: 'uint256' },
     ],
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [
-      { name: "recipient", type: "address" },
-      { name: "amount", type: "uint256" }
+      { name: 'recipient', type: 'address' },
+      { name: 'amount', type: 'uint256' },
     ],
-    name: "transfer",
+    name: 'transfer',
     outputs: [
-      { name: "", type: "bool" }
+      { name: '', type: 'bool' },
     ],
-    stateMutability: "nonpayable",
-    type: "function"
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     inputs: [
-      { name: "sender", type: "address" },
-      { name: "recipient", type: "address" },
-      { name: "amount", type: "uint256" }
+      { name: 'sender', type: 'address' },
+      { name: 'recipient', type: 'address' },
+      { name: 'amount', type: 'uint256' },
     ],
-    name: "transferFrom",
+    name: 'transferFrom',
     outputs: [
-      { name: "", type: "bool" }
+      { name: '', type: 'bool' },
     ],
-    stateMutability: "nonpayable",
-    type: "function"
-  }
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ];
