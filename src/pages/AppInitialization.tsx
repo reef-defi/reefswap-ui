@@ -34,7 +34,7 @@ const AppInitialization = (): JSX.Element => {
   const [status, setStatus] = useState('');
 
   useEffect(() => {
-    if ( isChainLoaded ) { return; }
+    if (isChainLoaded) { return; }
 
     const load = async (): Promise<void> => {
       try {
@@ -74,7 +74,7 @@ const AppInitialization = (): JSX.Element => {
       } catch (e) {
         setError(e.message);
         setState(State.ERROR);
-      } 
+      }
     };
 
     load();
@@ -96,7 +96,7 @@ const AppInitialization = (): JSX.Element => {
       } catch (e) {
         setError(e.message);
         setState(State.ERROR);
-      } 
+      }
     };
     load();
   }, [selectedAccount, reloadBalance]);

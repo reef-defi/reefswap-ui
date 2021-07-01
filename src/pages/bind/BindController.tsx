@@ -17,7 +17,7 @@ const BindController = (): JSX.Element => {
 
   const onBind = async (): Promise<void> => {
     try {
-      ensure(!isEvmClaimed, "Account is already binded!");
+      ensure(!isEvmClaimed, 'Account is already binded!');
       setIsLoading(true);
       await bindSigner(signer);
       // Forcing token balance update

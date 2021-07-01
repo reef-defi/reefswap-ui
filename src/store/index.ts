@@ -10,7 +10,7 @@ import { SettingsActions } from './actions/settings';
 
 const middleware = [thunk];
 
-type StoreType = Store<CombinedState<ReducerState>, TokensAction | UtilsActions | SettingsActions>
+type StoreType = Store<CombinedState<ReducerState>, TokensAction | UtilsActions | SettingsActions>
 
 export const configureStore = (): StoreType => {
   const store = createStore(

@@ -6,4 +6,4 @@ export const ADD_LIQUIDITY_URL = `${POOL_URL}/add-liquidity`;
 
 export const INITIALIZED_URLS = [BIND_URL, POOL_URL, SWAP_URL, IMPORT_POOL_URL, ADD_LIQUIDITY_URL];
 
-export const SETTINGS_URL = "/settings";
+export const SETTINGS_URL = '/settings';

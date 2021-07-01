@@ -24,7 +24,6 @@ export type UtilsActions =
   | SetAccountsAction
   | SetSelectedAccount;
 
-
 export const utilsSetAccounts = (accounts: ReefswapSigner[]): SetAccountsAction => ({
   type: SET_ACCOUNTS,
   accounts,

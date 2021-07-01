@@ -1,11 +1,11 @@
-import React, { useState } from "react"
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { ReefChains } from "../../api/api";
-import Card, { CardTitle } from "../../components/card/Card";
-import { settingsSetChainUrl } from "../../store/actions/settings";
-import { ReducerState } from "../../store/reducers";
-import { SWAP_URL } from "../../utils/urls";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { ReefChains } from '../../api/api';
+import Card, { CardTitle } from '../../components/card/Card';
+import { settingsSetChainUrl } from '../../store/actions/settings';
+import { ReducerState } from '../../store/reducers';
+import { SWAP_URL } from '../../utils/urls';
 
 const Settings = (): JSX.Element => {
   const history = useHistory();
@@ -16,21 +16,24 @@ const Settings = (): JSX.Element => {
   const applyChanges = (): void => {
     dispatch(settingsSetChainUrl(url));
     history.push(SWAP_URL);
-  }
+  };
 
   return (
     <Card>
       <CardTitle title="Settings" />
 
-      <label className="ms-2 mb-2">Select network: </label>
-      <select 
-        className="form-select field-input"
-        onChange={(event) => setUrl(event.target.value as ReefChains)}
-        value={url}
-      >
-        <option value={ReefChains.Mainnet}>Reef Mainnet</option>
-        <option value={ReefChains.Testnet}>Reef Testnet</option>
-      </select>
+      <label className="p-2 w-100" htmlFor="chain-selector">
+        Select network:
+        <select
+          id="chain-selector"
+          className="form-select field-input"
+          onChange={(event) => setUrl(event.target.value as ReefChains)}
+          value={url}
+        >
+          <option value={ReefChains.Mainnet}>Reef Mainnet</option>
+          <option value={ReefChains.Testnet}>Reef Testnet</option>
+        </select>
+      </label>
 
       <button
         type="button"
@@ -41,6 +44,6 @@ const Settings = (): JSX.Element => {
       </button>
     </Card>
   );
-}
+};
 
 export default Settings;
