@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-import { utilsSetSelectedAccount } from '../../store/actions/utils';
+import { utilsSetSelectedAccount } from '../../store/actions/accounts';
 import { ReducerState } from '../../store/reducers';
 import { BIND_URL, POOL_URL, SETTINGS_URL, SWAP_URL } from '../../utils/urls';
 import './NavBar.css';
@@ -25,7 +25,7 @@ const NavBar = (): JSX.Element => {
   const { pathname } = useLocation();
 
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.utils);
+  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
 
   const selectAccount = (index: number): void => {
     dispatch(utilsSetSelectedAccount(index));
@@ -83,9 +83,8 @@ const NavBar = (): JSX.Element => {
                 ...
               </button>
               <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                <li><Link className="dropdown-item" to={SWAP_URL}>Action</Link></li>
-                <li><Link className="dropdown-item" to={SWAP_URL}>Action</Link></li>
-                <li><Link className="dropdown-item" to={SWAP_URL}>Action</Link></li>
+                <li><a className="dropdown-item" href="https://docs.reef.finance/docs/prologue/introduction/" target="_blank">Docs</a></li>
+                <li><a className="dropdown-item" href="https://app.element.io/#/room/#reef:matrix.org" target="_blank">Matrix chat</a></li>
                 <li><hr className="dropdown-divider" /></li>
                 <li><Link className="dropdown-item" to={SETTINGS_URL}>Settings</Link></li>
               </ul>

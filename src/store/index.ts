@@ -5,7 +5,7 @@ import {
 } from 'redux';
 import rootReducer, { ReducerState } from './reducers';
 import { TokensAction } from './actions/tokens';
-import { UtilsActions } from './actions/utils';
+import { UtilsActions } from './actions/accounts';
 
 const middleware = [thunk];
 

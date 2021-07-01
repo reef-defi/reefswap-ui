@@ -5,12 +5,12 @@ import Card, { CardTitle } from '../../components/card/Card';
 import { ReducerState } from '../../store/reducers';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { bindSigner } from '../../api/accounts';
-import { utilsSetSelectedAccount } from '../../store/actions/utils';
+import { utilsSetSelectedAccount } from '../../store/actions/accounts';
 import { ensure } from '../../utils/utils';
 
 const BindController = (): JSX.Element => {
   const dispatch = useDispatch();
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.utils);
+  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
   const [isLoading, setIsLoading] = useState(false);

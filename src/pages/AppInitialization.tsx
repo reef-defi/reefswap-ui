@@ -9,9 +9,8 @@ import ContentController from './ContentController';
 import { ReducerState } from '../store/reducers';
 import {
   utilsSetAccounts,
-  utilsSetIsLoaded,
   utilsSetSelectedAccount,
-} from '../store/actions/utils';
+} from '../store/actions/accounts';
 import { accountsToSigners } from '../api/accounts';
 import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
 import { setAllTokens } from '../store/actions/tokens';
@@ -26,11 +25,12 @@ enum State {
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { isLoaded, selectedAccount, accounts } = useSelector((state: ReducerState) => state.utils);
+  const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
   const [state, setState] = useState<State>(State.SUCCESS);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const load = async (): Promise<void> => {
@@ -66,8 +66,8 @@ const AppInitialization = (): JSX.Element => {
         // Make sure selecting account is after setting signers
         // Else error will occure
         dispatch(utilsSetSelectedAccount(0));
-        dispatch(utilsSetIsLoaded(true));
         setState(State.SUCCESS);
+        setIsLoaded(true);
       } catch (e) {
         setError(e.message);
         setState(State.ERROR);

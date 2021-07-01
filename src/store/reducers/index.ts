@@ -1,14 +1,14 @@
 import { combineReducers } from 'redux';
 import { TokensReducer, tokensReducer } from './tokens';
-import { utilsReducer, UtilsReducer } from './utils';
+import { utilsReducer, UtilsReducer } from './accounts';
 
 const rootReducer = combineReducers({
-  utils: utilsReducer,
+  accounts: utilsReducer,
   tokens: tokensReducer,
 });
 
 export interface ReducerState {
-  utils: UtilsReducer;
+  accounts: UtilsReducer;
   tokens: TokensReducer;
 }
 

@@ -25,7 +25,7 @@ const SelectToken = ({
 } : SelectTokenProps): JSX.Element => {
   const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.utils);
+  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
 
   const [address, setAddress] = useState('');
   const [isValid, setIsValid] = useState(false);
