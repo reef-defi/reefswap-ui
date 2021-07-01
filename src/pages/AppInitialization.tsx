@@ -39,29 +39,29 @@ const AppInitialization = (): JSX.Element => {
         setState(State.LOADING);
         setStatus('Connecting to Polkadot extension...');
         const inj = await web3Enable('Reefswap');
-        ensure(inj.length > 0, "Polkadot extension is disabled! You need to approve the app in Polkadot-extension!");
+        ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
 
         setStatus('Retrieving accounts...');
-        const accounts = await web3Accounts();
-        ensure(accounts.length > 0, "To use Reefswap you need to create Polkadot account in Polkadot-extension!");
+        const web3accounts = await web3Accounts();
+        ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
 
         setStatus('Connecting to chain...');
         const provider = new Provider({
           provider: new WsProvider('wss://rpc-testnet.reefscan.com/ws'),
         });
         await provider.api.isReadyOrError;
-        
+
         setStatus('Creating signers...');
         const signers = await accountsToSigners(
-          accounts,
+          web3accounts,
           provider,
-          inj[0].signer
+          inj[0].signer,
         );
-          
-        setStatus("Loading tokens...");
+
+        setStatus('Loading tokens...');
         const addresses = await loadVerifiedERC20TokenAddresses();
         const newTokens = await loadTokens(addresses, signers[0].signer);
-        
+
         dispatch(utilsSetProvider(provider));
         dispatch(setAllTokens(newTokens));
         dispatch(utilsSetAccounts(signers));
@@ -85,19 +85,19 @@ const AppInitialization = (): JSX.Element => {
     const load = async (): Promise<void> => {
       try {
         setState(State.LOADING);
-        setStatus("Loading token balances...");
-        const {signer} = accounts[selectedAccount];
+        setStatus('Loading token balances...');
+        const { signer } = accounts[selectedAccount];
         const addresses = tokens.map((token) => token.address);
         const newTokens = await loadTokens(addresses, signer);
         dispatch(setAllTokens(newTokens));
-        setState(State.SUCCESS)
-      } catch (error) {
-        setError(error.message);
+        setState(State.SUCCESS);
+      } catch (e) {
+        setError(e.message);
         setState(State.ERROR);
       }
     };
     load();
-  }, [selectedAccount, dispatch])
+  }, [selectedAccount, dispatch]);
 
   return (
     <div className="container-fluid mt-4 w-100">
