@@ -1,22 +1,24 @@
 import React from "react"
-import { Token } from "../../api/tokens";
+import { Token, TokenWithAmount } from "../../api/tokens";
 import SelectToken from "../../components/buttons/SelectToken";
-import { TokenWithAmount } from "../../store/actions/tokens";
 import { calculateBalance } from "../../utils/math";
 
 interface TokenAmountFieldProps {
+  id?: string;
   token: TokenWithAmount;
   onTokenSelect: (token: Token) => void;
   onAmountChange: (amount: string) => void;
+  placeholder?: string;
 }
 
-const TokenAmountField = ({token, onTokenSelect, onAmountChange} : TokenAmountFieldProps) => {
+const TokenAmountField = ({id, token, onTokenSelect, onAmountChange, placeholder="0,0"} : TokenAmountFieldProps) => {
   const {name, amount, balance} = token;
 
   return (
     <div className="field p-3 border-rad">
       <div className="d-flex mb-2">
         <SelectToken 
+          id={id}
           onTokenSelect={onTokenSelect}
           selectedTokenName={name}
         />
@@ -25,7 +27,7 @@ const TokenAmountField = ({token, onTokenSelect, onAmountChange} : TokenAmountFi
           value={amount}
           min={0}
           max={1000}
-          placeholder="0.0"
+          placeholder={placeholder}
           className="field-input ms-2 flex-grow-1 text-end"
           onChange={(event) => onAmountChange(event.target.value)}
         />
