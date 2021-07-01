@@ -20,6 +20,7 @@ const swapStatus = (sellAmount: string, buyAmount: string): ButtonStatus => {
 const SwapController = (): JSX.Element => {
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
   const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.utils);
+  const { signer } = accounts[selectedAccount];
 
   const [isLoading, setIsLoading] = useState(false);
   const [buyToken, setBuyToken] = useState<TokenWithAmount>({ ...tokens[1], amount: '' });
@@ -40,16 +41,12 @@ const SwapController = (): JSX.Element => {
   };
 
   const onSwap = async (): Promise<void> => {
-    try {
-      setIsLoading(true);
-      const { signer } = accounts[selectedAccount];
-      await swapTokens(sellToken, buyToken, signer);
-      toast.success('Swap complete!');
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    await Promise.resolve()
+      .then(() => setIsLoading(true))
+      .then(() => swapTokens(sellToken, buyToken, signer))
+      .then(() => toast.success('Swap complete!'))
+      .catch((error) => toast.error(error.message ? error.message : error))
+      .finally(() => setIsLoading(false));
   };
 
   return (
