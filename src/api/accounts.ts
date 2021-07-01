@@ -13,6 +13,7 @@ export const accountsToSigners = async (accounts: InjectedAccountWithMeta[], pro
     .map(async (signer): Promise<ReefswapSigner> => ({
       ...signer,
       address: await signer.signer.getAddress(),
+      isEvmClaimed: await signer.signer.isClaimed()
     })),
 );
 

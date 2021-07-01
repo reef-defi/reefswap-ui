@@ -10,7 +10,6 @@ import { ReducerState } from '../store/reducers';
 import {
   utilsSetAccounts,
   utilsSetIsLoaded,
-  utilsSetProvider,
   utilsSetSelectedAccount,
 } from '../store/actions/utils';
 import { accountsToSigners } from '../api/accounts';
@@ -62,7 +61,6 @@ const AppInitialization = (): JSX.Element => {
         const addresses = await loadVerifiedERC20TokenAddresses();
         const newTokens = await loadTokens(addresses, signers[0].signer);
 
-        dispatch(utilsSetProvider(provider));
         dispatch(setAllTokens(newTokens));
         dispatch(utilsSetAccounts(signers));
         // Make sure selecting account is after setting signers

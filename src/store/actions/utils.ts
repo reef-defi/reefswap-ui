@@ -1,17 +1,13 @@
-import { Provider, Signer } from '@reef-defi/evm-provider';
+import { Signer } from '@reef-defi/evm-provider';
 import {
-  UTILS_SET_ACCOUNTS, UTILS_SET_IS_LOADED, UTILS_SET_POLKADT_EXTENSION, UTILS_SET_PROVIDER, UTILS_SET_SELECTED_ACCOUNT,
+  UTILS_SET_ACCOUNTS, UTILS_SET_IS_LOADED, UTILS_SET_SELECTED_ACCOUNT,
 } from '../actionCreator';
 
 export interface ReefswapSigner {
   signer: Signer;
   name: string;
   address: string;
-}
-
-interface SetProviderAction {
-  type: typeof UTILS_SET_PROVIDER;
-  provider: Provider;
+  isEvmClaimed: boolean;
 }
 
 interface SetAccountsAction {
@@ -31,14 +27,9 @@ interface SetSelectedAccount {
 
 export type UtilsActions =
   | SetAccountsAction
-  | SetProviderAction
   | SetIsLoadingAction
   | SetSelectedAccount;
 
-export const utilsSetProvider = (provider: Provider): SetProviderAction => ({
-  type: UTILS_SET_PROVIDER,
-  provider,
-});
 
 export const utilsSetAccounts = (accounts: ReefswapSigner[]): SetAccountsAction => ({
   type: UTILS_SET_ACCOUNTS,
