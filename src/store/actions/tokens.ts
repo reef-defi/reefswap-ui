@@ -1,10 +1,6 @@
 import { Token } from "../../api/tokens";
 import { TOKENS_ADD_TOKEN, TOKENS_SET_ALL, TOKENS_UPDATE_TOKEN_BALANCE } from "../actionCreator";
 
-export interface TokenWithAmount extends Token {
-  amount: string;
-}
-
 interface AddToken {
   type: typeof TOKENS_ADD_TOKEN;
   token : Token;

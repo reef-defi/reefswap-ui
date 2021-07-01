@@ -24,7 +24,7 @@ export const getContract = async (address: string, signer: Signer): Promise<Cont
   return new Contract(address, ERC20, signer);
 }
 
-export const getReefswapFactory = (signer: Signer) => 
+export const getReefswapFactory = (signer: Signer): Contract => 
   new Contract("0x0A2906130B1EcBffbE1Edb63D5417002956dFd41", ReefswapFactory, signer);
 
 export const loadToken = async (address: string, signer: Signer): Promise<Token> => {
@@ -42,3 +42,7 @@ export const loadToken = async (address: string, signer: Signer): Promise<Token>
     decimals
   }
 }
+
+export const defaultGasLimit = () => ({
+  gasLimit: "300000000"
+})

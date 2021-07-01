@@ -1,10 +1,9 @@
 import React, { useState } from "react"
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Token } from "../../../api/tokens";
+import { Token, TokenWithAmount } from "../../../api/tokens";
 import { CardWithBackTitle } from "../../../components/card/Card";
 import TokenAmountField from "../../../components/card/TokenAmountField";
-import { TokenWithAmount } from "../../../store/actions/tokens";
 import { ReducerState } from "../../../store/reducers";
 import { POOL_URL } from "../../../utils/urls";
 

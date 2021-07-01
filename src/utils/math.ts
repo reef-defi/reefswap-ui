@@ -1,6 +1,5 @@
 import BN from "bn.js";
-import { Token } from "../api/tokens";
-import { TokenWithAmount } from "../store/actions/tokens";
+import { Token, TokenWithAmount } from "../api/tokens";
 
 const findDecimalPoint = (amount: string): number => {
   const {length} = amount;
@@ -11,12 +10,12 @@ const findDecimalPoint = (amount: string): number => {
   return 0;
 };
 
-export const calculateAmount = (token: TokenWithAmount): BN => {
+export const calculateAmount = (token: TokenWithAmount): string => {
   const {decimals, amount} = token;
   const addZeros = findDecimalPoint(amount);
   const cleanedAmount = amount.replaceAll(",", "").replaceAll(".", "");
-  const result = cleanedAmount + "0".repeat(decimals-addZeros);
-  return new BN(result);
+  const result = new BN(cleanedAmount + "0".repeat(decimals-addZeros));
+  return result.toString();
 }
 
 export const calculateBalance = ({decimals, balance}: Token): string => 
