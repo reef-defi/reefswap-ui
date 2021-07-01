@@ -25,6 +25,7 @@ enum State {
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
+  const { chainUrl } = useSelector((state: ReducerState) => state.settings);
   const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
   const [state, setState] = useState<State>(State.SUCCESS);
@@ -46,7 +47,7 @@ const AppInitialization = (): JSX.Element => {
 
         setStatus('Connecting to chain...');
         const provider = new Provider({
-          provider: new WsProvider('wss://rpc-testnet.reefscan.com/ws'),
+          provider: new WsProvider(chainUrl),
         });
         await provider.api.isReadyOrError;
 
@@ -75,7 +76,7 @@ const AppInitialization = (): JSX.Element => {
     };
 
     load();
-  }, [dispatch]);
+  }, [dispatch, chainUrl]);
 
   useEffect(() => {
     if (selectedAccount === -1) { return; }

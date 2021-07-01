@@ -1,3 +1,4 @@
+import { ReefChains } from "../../api/api";
 import { SET_CHAIN_URL } from "../actionCreator";
 import { SettingsActions } from "../actions/settings";
 
@@ -6,7 +7,7 @@ export interface SettingsReducer {
 }
 
 const defaultSettings: SettingsReducer = {
-  chainUrl: "" // TODO change into mainnet url
+  chainUrl: ReefChains.Testnet // TODO change into mainnet url
 };
 
 export const settingsReducer = (state=defaultSettings, action: SettingsActions): SettingsReducer => {

@@ -8,7 +8,7 @@ interface SetChainUrlAction {
 export type SettingsActions = 
   | SetChainUrlAction;
 
-export const setChainUrl = (url: string): SetChainUrlAction => ({
+export const settingsSetChainUrl = (url: string): SetChainUrlAction => ({
   type: SET_CHAIN_URL,
   url
 });
