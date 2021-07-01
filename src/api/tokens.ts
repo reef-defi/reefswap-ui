@@ -14,7 +14,7 @@ export const defaultTokenAddresses = [
 ]
 
 // TODO add api call on reef explore
-const loadVerifiedERC20TokenAddresses = async (): Promise<string[]> => 
+export const loadVerifiedERC20TokenAddresses = async (): Promise<string[]> => 
   Promise.resolve([...defaultTokenAddresses]);
 
 const loadToken = async (address: string, signer: Signer): Promise<Token> => {

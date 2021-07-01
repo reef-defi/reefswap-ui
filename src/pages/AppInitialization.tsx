@@ -14,7 +14,7 @@ import {
   utilsSetSelectedAccount,
 } from '../store/actions/utils';
 import { accountsToSigners } from '../api/accounts';
-import { defaultTokenAddresses, loadTokens } from '../api/tokens';
+import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
 import { setAllTokens } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
 
@@ -23,7 +23,6 @@ enum State {
   ERROR,
   SUCCESS
 }
-
 
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
@@ -57,14 +56,17 @@ const AppInitialization = (): JSX.Element => {
           accounts,
           provider,
           inj[0].signer
-          );
+        );
           
         setStatus("Loading tokens...");
-        const newTokens = await loadTokens(defaultTokenAddresses, signers[0].signer);
+        const addresses = await loadVerifiedERC20TokenAddresses();
+        const newTokens = await loadTokens(addresses, signers[0].signer);
         
         dispatch(utilsSetProvider(provider));
         dispatch(setAllTokens(newTokens));
         dispatch(utilsSetAccounts(signers));
+        // Make sure selecting account is after setting signers
+        // Else error will occure
         dispatch(utilsSetSelectedAccount(0));
         dispatch(utilsSetIsLoaded(true));
         setState(State.SUCCESS);
@@ -79,16 +81,13 @@ const AppInitialization = (): JSX.Element => {
 
   useEffect(() => {
     if (selectedAccount === -1) { return; }
-    // Just to make a not from runtime
-    // This function is called when the above useEffect is finished and reloads the tokens
-    // Be careful when modifying the code
+
     const load = async (): Promise<void> => {
       try {
         setState(State.LOADING);
         setStatus("Loading token balances...");
         const {signer} = accounts[selectedAccount];
-        const addresses = tokens
-          .map((token) => token.address);
+        const addresses = tokens.map((token) => token.address);
         const newTokens = await loadTokens(addresses, signer);
         dispatch(setAllTokens(newTokens));
         setState(State.SUCCESS)
