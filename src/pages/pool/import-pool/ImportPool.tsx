@@ -2,7 +2,7 @@ import React from "react"
 import { useHistory } from "react-router-dom";
 import SelectToken from "../../../components/buttons/SelectToken";
 import { CardWithBackTitle } from "../../../components/card/Card";
-import { POOL_URL } from "../../../urls";
+import { POOL_URL } from "../../../utils/urls";
 
 interface ImportPoolProps {
 

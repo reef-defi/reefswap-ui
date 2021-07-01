@@ -1,14 +1,5 @@
-import { TOKENS_ADD_TOKEN, TOKENS_UPDATE_TOKEN_BALANCE } from "../actionCreator";
-
-export interface Token {
-  address: string;
-  balance: string;
-  name: string;
-}
-
-export interface TokenWithAmount extends Token {
-  amount: string;
-}
+import { Token } from "../../api/tokens";
+import { TOKENS_ADD_TOKEN, TOKENS_SET_ALL, TOKENS_UPDATE_TOKEN_BALANCE } from "../actionCreator";
 
 interface AddToken {
   type: typeof TOKENS_ADD_TOKEN;
@@ -21,18 +12,25 @@ interface UpdateTokenBalance {
   balance: string;
 }
 
+interface SetAllTokens {
+  type: typeof TOKENS_SET_ALL,
+  tokens: Token[]
+}
+
 export type TokensAction = 
   | AddToken
+  | SetAllTokens
   | UpdateTokenBalance;
 
-export const addToken = (address: string, balance: string, name: string): AddToken => ({
+export const addToken = (token: Token): AddToken => ({
   type: TOKENS_ADD_TOKEN,
-  token: {
-    address,
-    balance,
-    name,
-  }
+  token
 });
+
+export const setAllTokens = (tokens: Token[]): SetAllTokens => ({
+  type: TOKENS_SET_ALL,
+  tokens,
+})
 
 export const updateTokenBalance = (index: number, balance: string): UpdateTokenBalance => ({
   type: TOKENS_UPDATE_TOKEN_BALANCE,

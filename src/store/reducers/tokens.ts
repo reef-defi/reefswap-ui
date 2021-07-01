@@ -1,29 +1,19 @@
-import { TOKENS_ADD_TOKEN, TOKENS_UPDATE_TOKEN_BALANCE } from "../actionCreator";
-import { Token, TokensAction } from "../actions/tokens";
+import { Token } from "../../api/tokens";
+import { TOKENS_ADD_TOKEN, TOKENS_SET_ALL, TOKENS_UPDATE_TOKEN_BALANCE } from "../actionCreator";
+import { TokensAction } from "../actions/tokens";
 
 export interface TokensReducer {
   tokens: Token[];
 }
 
-export const defaultReefToken: Token = {
-  name: "REEF", 
-  address: "0x0000000000000000000000000000000001000000",
-  balance: "",
-};
-
-export const defaultRUSDToken: Token = {
-  name: "RUSD",
-  address: "0x0000000000000000000000000000000001000001",
-  balance: "",
-}
-
 const defaultTokensReducer: TokensReducer = {
-  tokens: [{...defaultReefToken}, {...defaultRUSDToken}]
+  tokens: []
 };
 
 export const tokensReducer = (state=defaultTokensReducer, action: TokensAction): TokensReducer => {
   switch (action.type) {
     case TOKENS_ADD_TOKEN: return {...state, tokens: [...state.tokens, {...action.token}]};
+    case TOKENS_SET_ALL: return {...state, tokens: [...action.tokens]};
     case TOKENS_UPDATE_TOKEN_BALANCE:
       return {...state,
         tokens: [
