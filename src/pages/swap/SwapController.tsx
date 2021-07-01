@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useSelector } from "react-redux";
 import { toast } from 'react-toastify';
-import { approveTokenAmount, swapTokens, Token, TokenWithAmount } from "../../api/tokens";
+import { swapTokens, Token, TokenWithAmount } from "../../api/tokens";
 import Card, { CardTitle } from "../../components/card/Card";
 import TokenAmountField from "../../components/card/TokenAmountField";
 import { LoadingButtonIcon } from "../../components/loading/Loading";
