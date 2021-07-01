@@ -1,15 +1,21 @@
 import React, { useState } from "react"
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { ReefChains } from "../../api/api";
 import Card, { CardTitle } from "../../components/card/Card";
 import { settingsSetChainUrl } from "../../store/actions/settings";
+import { ReducerState } from "../../store/reducers";
+import { SWAP_URL } from "../../utils/urls";
 
 const Settings = (): JSX.Element => {
+  const history = useHistory();
   const dispatch = useDispatch();
-  const [chainUrl, setChainUrl] = useState(ReefChains.Testnet);
+  const { chainUrl } = useSelector((state: ReducerState) => state.settings);
+  const [url, setUrl] = useState<ReefChains>(chainUrl as ReefChains);
 
   const applyChanges = (): void => {
-    dispatch(settingsSetChainUrl(chainUrl));
+    dispatch(settingsSetChainUrl(url));
+    history.push(SWAP_URL);
   }
 
   return (
@@ -19,8 +25,8 @@ const Settings = (): JSX.Element => {
       <label className="ms-2 mb-2">Select network: </label>
       <select 
         className="form-select field-input"
-        onChange={(event) => setChainUrl(event.target.value as ReefChains)}
-        value={chainUrl}
+        onChange={(event) => setUrl(event.target.value as ReefChains)}
+        value={url}
       >
         <option value={ReefChains.Mainnet}>Reef Mainnet</option>
         <option value={ReefChains.Testnet}>Reef Testnet</option>

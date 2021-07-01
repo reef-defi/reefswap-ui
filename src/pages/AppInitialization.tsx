@@ -36,6 +36,7 @@ const AppInitialization = (): JSX.Element => {
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
+        setError("")
         setState(State.LOADING);
         setStatus('Connecting to Polkadot extension...');
         const inj = await web3Enable('Reefswap');
@@ -59,7 +60,8 @@ const AppInitialization = (): JSX.Element => {
         );
 
         setStatus('Loading tokens...');
-        const addresses = await loadVerifiedERC20TokenAddresses();
+        const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
+        console.log(addresses);
         const newTokens = await loadTokens(addresses, signers[0].signer);
 
         dispatch(setAllTokens(newTokens));
@@ -68,21 +70,23 @@ const AppInitialization = (): JSX.Element => {
         // Else error will occure
         dispatch(utilsSetSelectedAccount(0));
         setState(State.SUCCESS);
-        setIsLoaded(true);
       } catch (e) {
         setError(e.message);
         setState(State.ERROR);
+      } finally {
+        setIsLoaded(true);
       }
     };
 
     load();
-  }, [dispatch, chainUrl]);
+  }, [chainUrl]);
 
   useEffect(() => {
-    if (selectedAccount === -1) { return; }
+    if (selectedAccount === -1 || !isLoaded) { return; }
 
     const load = async (): Promise<void> => {
       try {
+        setIsLoaded(false);
         setState(State.LOADING);
         setStatus('Loading token balances...');
         const { signer } = accounts[selectedAccount];
@@ -93,24 +97,22 @@ const AppInitialization = (): JSX.Element => {
       } catch (e) {
         setError(e.message);
         setState(State.ERROR);
+      } finally {
+        setIsLoaded(true);
       }
     };
     load();
-  }, [selectedAccount, dispatch]);
+  }, [selectedAccount]);
 
   return (
-    <div className="container-fluid mt-4 w-100">
-      <div className="row justify-content-center">
-        <div className="col-sm-10 col-md-6 col-lg-4 col-xl-3 field-size">
-          {state === State.LOADING && <LoadingWithText text={status} />}
-          {state === State.ERROR
-            && <ErrorCard title="Polkadot extension" message={error} />}
-          {state === State.SUCCESS && !isLoaded
-            && <ErrorCard title="Context error" message="Something went wrong..." />}
-          {state === State.SUCCESS && isLoaded && <ContentController /> }
-        </div>
-      </div>
-    </div>
+    <>
+      {state === State.LOADING && <LoadingWithText text={status} />}
+      {state === State.ERROR
+        && <ErrorCard title="Polkadot extension" message={error} />}
+      {state === State.SUCCESS && !isLoaded
+        && <ErrorCard title="Context error" message="Something went wrong..." />}
+      {state === State.SUCCESS && isLoaded && <ContentController /> }
+    </>
   );
 };
 
