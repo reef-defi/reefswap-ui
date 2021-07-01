@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { utilsSetSelectedAccount } from '../../store/actions/utils';
 import { ReducerState } from '../../store/reducers';
-import { BIND_URL, POOL_URL, SWAP_URL } from '../../utils/urls';
+import { BIND_URL, POOL_URL, SETTINGS_URL, SWAP_URL } from '../../utils/urls';
 import './NavBar.css';
 
 import logo from '../../assets/logo.png';
@@ -86,7 +86,8 @@ const NavBar = (): JSX.Element => {
                 <li><Link className="dropdown-item" to={SWAP_URL}>Action</Link></li>
                 <li><Link className="dropdown-item" to={SWAP_URL}>Action</Link></li>
                 <li><Link className="dropdown-item" to={SWAP_URL}>Action</Link></li>
-                <li><Link className="dropdown-item" to={SWAP_URL}>Action</Link></li>
+                <li><hr className="dropdown-divider" /></li>
+                <li><Link className="dropdown-item" to={SETTINGS_URL}>Settings</Link></li>
               </ul>
             </div>
           </div>
