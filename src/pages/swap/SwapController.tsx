@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import { swapTokens, Token, TokenWithAmount } from "../../api/tokens";
+import { ButtonStatus } from "../../components/buttons/Button";
 import Card, { CardTitle } from "../../components/card/Card";
 import TokenAmountField from "../../components/card/TokenAmountField";
 import { LoadingButtonIcon } from "../../components/loading/Loading";
@@ -11,12 +12,8 @@ interface SwapControllerProps {
 
 }
 
-interface SwapStatus {
-  text: string;
-  isValid: boolean;
-}
 
-const swapStatus = (sellAmount: string, buyAmount: string): SwapStatus => {
+const swapStatus = (sellAmount: string, buyAmount: string): ButtonStatus => {
   if (sellAmount.length === 0) {
     return { isValid: false, text: "Missing sell amount" };
   } else if (buyAmount.length === 0) {
