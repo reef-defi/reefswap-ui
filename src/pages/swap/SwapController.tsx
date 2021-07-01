@@ -1,40 +1,74 @@
 import React, { useState } from "react"
 import { useSelector } from "react-redux";
-import { Token } from "../../api/tokens";
+import { approveTokenAmount, swapTokens, Token, TokenWithAmount } from "../../api/tokens";
 import Card, { CardTitle } from "../../components/card/Card";
 import TokenAmountField from "../../components/card/TokenAmountField";
-import { TokenWithAmount } from "../../store/actions/tokens";
 import { ReducerState } from "../../store/reducers";
 
 interface SwapControllerProps {
 
 }
 
+interface SwapStatus {
+  text: string;
+  isValid: boolean;
+}
+
+const swapStatus = (sellAmount: string, buyAmount: string, error: string): SwapStatus => {
+  if (error) {
+    return { isValid: false, text: error };
+  } else if (sellAmount.length === 0) {
+    return { isValid: false, text: "Missing sell amount" };
+  } else if (buyAmount.length === 0) {
+    return { isValid: false, text: "Missing buy amount" };
+  }
+  return { isValid: true, text: "Swap" };
+}
+
 const SwapController = ({} : SwapControllerProps) => {
-  const {tokens} = useSelector((state: ReducerState) => state.tokens);
+  const { tokens } = useSelector((state: ReducerState) => state.tokens);
+  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.utils);
 
-  const [token1, setToken1] = useState<TokenWithAmount>({...tokens[0], amount: ""});
-  const [token2, setToken2] = useState<TokenWithAmount>({...tokens[1], amount: ""});
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [buyToken, setBuyToken] = useState<TokenWithAmount>({...tokens[1], amount: ""});
+  const [sellToken, setSellToken] = useState<TokenWithAmount>({...tokens[0], amount: ""});
 
-  const setAmount1 = (amount: string) => setToken1({...token1, amount});
-  const setAmount2 = (amount: string) => setToken2({...token2, amount});
+  const { text, isValid } = swapStatus(sellToken.amount, buyToken.amount, error);
 
-  const changeToken1 = (token: Token) => setToken1({...token, amount: ""});
-  const changeToken2 = (token: Token) => setToken2({...token, amount: ""});
+  const setBuyAmount = (amount: string) => setBuyToken({...buyToken, amount});
+  const setSellAmount = (amount: string) => setSellToken({...sellToken, amount});
+
+  const changeBuyToken = (token: Token) => setBuyToken({...token, amount: ""});
+  const changeSellToken = (token: Token) => setSellToken({...token, amount: ""});
 
   const onSwitch = () => {
-    const subToken = {...token1};
-    setToken1({...token2});
-    setToken2({...subToken});
+    const subToken = {...sellToken};
+    setSellToken({...buyToken});
+    setBuyToken({...subToken});
+  }
+
+  const onSwap = async () => {
+    try {
+      setIsLoading(true);
+      const {signer} = accounts[selectedAccount];
+      await swapTokens(sellToken, buyToken, signer);
+      setError("")
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <Card>
       <CardTitle title="Swap" />
       <TokenAmountField
-        token={token1}
-        onAmountChange={setAmount1}
-        onTokenSelect={changeToken1}
+        id="sell-token-field"
+        token={sellToken}
+        onAmountChange={setSellAmount}
+        onTokenSelect={changeSellToken}
       />
       <div className="d-flex justify-content-center">
         <div className="btn-content-field border-rad">
@@ -46,12 +80,19 @@ const SwapController = ({} : SwapControllerProps) => {
         </div>
       </div>
       <TokenAmountField
-        token={token2}
-        onAmountChange={setAmount2}
-        onTokenSelect={changeToken2}
+        id="buy-token-field"
+        token={buyToken}
+        onAmountChange={setBuyAmount}
+        onTokenSelect={changeBuyToken}
       />
       <div className="d-flex justify-content-center mt-2">
-        <button className="btn btn-reef border-rad w-100">Swap</button>
+        <button
+          className="btn btn-reef border-rad w-100"
+          onClick={onSwap}
+          disabled={!isValid}
+        >
+          {text}
+        </button>
       </div>
     </Card>
   );
