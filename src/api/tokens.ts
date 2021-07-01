@@ -27,10 +27,8 @@ const defaultMainnetTokenAddresses = [
 // TODO add api call on reef explore
 export const loadVerifiedERC20TokenAddresses = async (chainUrl: string): Promise<string[]> => {
   if (chainUrl === ReefChains.Testnet) {
-    console.log("Testnet")
     return Promise.resolve([...defaultTestnetTokenAddresses]);
   } else if (chainUrl === ReefChains.Mainnet) {
-    console.log("Mainnet")
     return Promise.resolve([...defaultMainnetTokenAddresses])
   } else {
     throw new Error("Chain URL does not exist!");
