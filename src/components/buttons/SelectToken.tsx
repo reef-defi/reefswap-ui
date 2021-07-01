@@ -1,41 +1,43 @@
-import React, { ChangeEvent, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { getContract, loadToken } from "../../api/api";
-import { Token } from "../../api/tokens";
-import { addToken } from "../../store/actions/tokens";
-import { ReducerState } from "../../store/reducers";
-import { ensure, trim } from "../../utils/utils";
-import { CardTitle } from "../card/Card";
-import { LoadingButtonIcon } from "../loading/Loading";
-import "./Buttons.css";
+import React, { ChangeEvent, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { loadToken, getContract } from '../../api/api';
+import { Token } from '../../api/tokens';
+import { addToken } from '../../store/actions/tokens';
+import { ReducerState } from '../../store/reducers';
+import { ensure, trim } from '../../utils/utils';
+import { CardTitle } from '../card/Card';
+import { LoadingButtonIcon } from '../loading/Loading';
+import './Buttons.css';
 
-interface SelectTokenProps { 
+interface SelectTokenProps {
   id?: string;
   fullWidth?: boolean;
   selectedTokenName: string;
   onTokenSelect: (token: Token) => void;
 }
 
-const TO_SHORT_ADDRESS = "To short address";
-const UNKNOWN_ADDRESS = "Unknow address";
-const SELECT_ACCOUNT = "Select account"
+const TO_SHORT_ADDRESS = 'To short address';
+const UNKNOWN_ADDRESS = 'Unknow address';
+const SELECT_ACCOUNT = 'Select account';
 
-const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullWidth} : SelectTokenProps) => {
+const SelectToken = ({
+  id = 'exampleModal', selectedTokenName, onTokenSelect, fullWidth,
+} : SelectTokenProps): JSX.Element => {
   const dispatch = useDispatch();
-  const {tokens} = useSelector((state: ReducerState) => state.tokens);
-  const {accounts, selectedAccount} = useSelector((state: ReducerState) => state.utils);
+  const { tokens } = useSelector((state: ReducerState) => state.tokens);
+  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.utils);
 
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [buttonText, setButtonText] = useState(TO_SHORT_ADDRESS);
 
-  const onTokenAdd = async () => {
+  const onTokenAdd = async (): Promise<void> => {
     try {
       setIsLoading(true);
       ensure(isValid, UNKNOWN_ADDRESS);
       ensure(selectedAccount !== -1, SELECT_ACCOUNT);
-      const {signer} = accounts[selectedAccount];
+      const { signer } = accounts[selectedAccount];
       const token = await loadToken(address, signer);
       dispatch(addToken(token));
     } catch (error) {
@@ -43,9 +45,9 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  const onAddressChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  const onAddressChange = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const newAddress = event.target.value;
     setAddress(newAddress);
     setIsValid(false);
@@ -55,7 +57,7 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
       try {
         setIsLoading(true);
         ensure(selectedAccount !== -1, SELECT_ACCOUNT);
-        const {signer} = accounts[selectedAccount];
+        const { signer } = accounts[selectedAccount];
         const contract = await getContract(newAddress, signer);
         const symbol = await contract.symbol();
         setIsValid(true);
@@ -67,34 +69,36 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
         setIsLoading(false);
       }
     }
+  };
 
-  }
+  const selectToken = (index: number): void => onTokenSelect(tokens[index]);
 
-  const selectToken = (index: number) => onTokenSelect(tokens[index])
-  
   const tokensView = tokens
     .map((token, index) => (
-      <li 
-        key={index}
+      <li
+        key={token.address}
         data-bs-dismiss="modal"
         onClick={() => selectToken(index)}
         className="list-group-item list-group-item-action row d-flex"
+        role="presentation"
       >
         <div className="col-3">
           {token.name}
         </div>
         <div className="col-9">
-          ({trim(token.address, 20)})
+          (
+          {trim(token.address, 20)}
+          )
         </div>
       </li>
     ));
 
   return (
     <>
-      <button type="button" className={`btn btn-token-select border-1 border-rad hover-border ${fullWidth ? "w-100" : ""}`} data-bs-toggle="modal" data-bs-target={`#${id}`}>
-        {selectedTokenName} 
+      <button type="button" className={`btn btn-token-select border-1 border-rad hover-border ${fullWidth ? 'w-100' : ''}`} data-bs-toggle="modal" data-bs-target={`#${id}`}>
+        {selectedTokenName}
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down ms-1" viewBox="0 0 16 16">
-          <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+          <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
         </svg>
       </button>
       <div className="modal fade" id={id} tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -108,8 +112,9 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
                   <div className="d-flex justify-content-between mx-2">
                     <h6 className="my-auto">Add token</h6>
                     <button
+                      type="button"
                       className="btn btn-sm btn-reef"
-                      disabled={!isValid || isLoading}
+                      disabled={!isValid || isLoading}
                       onClick={onTokenAdd}
                       data-bs-dismiss="modal"
                     >
@@ -140,6 +145,11 @@ const SelectToken = ({id="exampleModal", selectedTokenName, onTokenSelect, fullW
       </div>
     </>
   );
-}
+};
+
+SelectToken.defaultProps = {
+  id: 'exampleModal',
+  fullWidth: false,
+};
 
 export default SelectToken;

@@ -1,4 +1,3 @@
-
 export interface ButtonStatus {
   text: string;
   isValid: boolean;

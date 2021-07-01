@@ -1,5 +1,5 @@
-import { Token } from "../../api/tokens";
-import { TOKENS_ADD_TOKEN, TOKENS_SET_ALL, TOKENS_UPDATE_TOKEN_BALANCE } from "../actionCreator";
+import { Token } from '../../api/tokens';
+import { TOKENS_ADD_TOKEN, TOKENS_SET_ALL, TOKENS_UPDATE_TOKEN_BALANCE } from '../actionCreator';
 
 interface AddToken {
   type: typeof TOKENS_ADD_TOKEN;
@@ -17,20 +17,20 @@ interface SetAllTokens {
   tokens: Token[]
 }
 
-export type TokensAction = 
+export type TokensAction =
   | AddToken
   | SetAllTokens
   | UpdateTokenBalance;
 
 export const addToken = (token: Token): AddToken => ({
   type: TOKENS_ADD_TOKEN,
-  token
+  token,
 });
 
 export const setAllTokens = (tokens: Token[]): SetAllTokens => ({
   type: TOKENS_SET_ALL,
   tokens,
-})
+});
 
 export const updateTokenBalance = (index: number, balance: string): UpdateTokenBalance => ({
   type: TOKENS_UPDATE_TOKEN_BALANCE,
