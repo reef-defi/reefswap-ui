@@ -15,6 +15,7 @@ import { accountsToSigners } from '../api/accounts';
 import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
 import { setAllTokens } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
+import { setChainIsLoaded, setReloadBalance } from '../store/actions/settings';
 
 enum State {
   LOADING,
@@ -25,18 +26,18 @@ enum State {
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { chainUrl } = useSelector((state: ReducerState) => state.settings);
+  const { chainUrl, isChainLoaded, reloadBalance } = useSelector((state: ReducerState) => state.settings);
   const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
-  const [state, setState] = useState<State>(State.SUCCESS);
+  const [state, setState] = useState<State>(isChainLoaded ? State.SUCCESS : State.LOADING);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
-  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    if ( isChainLoaded ) { return; }
+
     const load = async (): Promise<void> => {
       try {
-        setError("")
         setState(State.LOADING);
         setStatus('Connecting to Polkadot extension...');
         const inj = await web3Enable('Reefswap');
@@ -61,7 +62,6 @@ const AppInitialization = (): JSX.Element => {
 
         setStatus('Loading tokens...');
         const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
-        console.log(addresses);
         const newTokens = await loadTokens(addresses, signers[0].signer);
 
         dispatch(setAllTokens(newTokens));
@@ -69,49 +69,43 @@ const AppInitialization = (): JSX.Element => {
         // Make sure selecting account is after setting signers
         // Else error will occure
         dispatch(utilsSetSelectedAccount(0));
+        dispatch(setChainIsLoaded());
         setState(State.SUCCESS);
       } catch (e) {
         setError(e.message);
         setState(State.ERROR);
-      } finally {
-        setIsLoaded(true);
-      }
+      } 
     };
 
     load();
   }, [chainUrl]);
 
   useEffect(() => {
-    if (selectedAccount === -1 || !isLoaded) { return; }
+    if (selectedAccount === -1 || !reloadBalance) { return; }
 
     const load = async (): Promise<void> => {
       try {
-        setIsLoaded(false);
         setState(State.LOADING);
         setStatus('Loading token balances...');
         const { signer } = accounts[selectedAccount];
         const addresses = tokens.map((token) => token.address);
         const newTokens = await loadTokens(addresses, signer);
         dispatch(setAllTokens(newTokens));
+        dispatch(setReloadBalance(false));
         setState(State.SUCCESS);
       } catch (e) {
         setError(e.message);
         setState(State.ERROR);
-      } finally {
-        setIsLoaded(true);
-      }
+      } 
     };
     load();
-  }, [selectedAccount]);
+  }, [selectedAccount, reloadBalance]);
 
   return (
     <>
       {state === State.LOADING && <LoadingWithText text={status} />}
-      {state === State.ERROR
-        && <ErrorCard title="Polkadot extension" message={error} />}
-      {state === State.SUCCESS && !isLoaded
-        && <ErrorCard title="Context error" message="Something went wrong..." />}
-      {state === State.SUCCESS && isLoaded && <ContentController /> }
+      {state === State.ERROR && <ErrorCard title="Polkadot extension" message={error} />}
+      {state === State.SUCCESS && <ContentController /> }
     </>
   );
 };
