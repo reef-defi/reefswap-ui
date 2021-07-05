@@ -15,7 +15,7 @@ import { accountsToSigners } from '../api/accounts';
 import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
 import { setAllTokens } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
-import { setChainIsLoaded, setReloadBalance } from '../store/actions/settings';
+import { setReloadBalance } from '../store/actions/settings';
 import { loadPools } from '../api/pools';
 import { setPools } from '../store/actions/pools';
 
@@ -28,16 +28,26 @@ enum State {
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { chainUrl, isChainLoaded, reloadBalance } = useSelector((state: ReducerState) => state.settings);
+  const { reloadPool } = useSelector((state: ReducerState) => state.pools);
+  const { chainUrl, reloadBalance } = useSelector((state: ReducerState) => state.settings);
   const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
-  const [state, setState] = useState<State>(isChainLoaded ? State.SUCCESS : State.LOADING);
+  const [state, setState] = useState<State>(State.SUCCESS);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
 
-  useEffect(() => {
-    if (isChainLoaded) { return; }
+  const defaultLoad = async (callback: () => Promise<void>) => {
+    try {
+      setState(State.LOADING);
+      await callback();
+      setState(State.SUCCESS);
+    } catch (e) {
+      setError(e.message);
+      setState(State.ERROR);
+    } 
+  }
 
+  useEffect(() => {
     const load = async (): Promise<void> => {
       try {
         setState(State.LOADING);
@@ -75,7 +85,6 @@ const AppInitialization = (): JSX.Element => {
         // Make sure selecting account is after setting signers
         // Else error will occure
         dispatch(utilsSetSelectedAccount(0));
-        dispatch(setChainIsLoaded());
         setState(State.SUCCESS);
       } catch (e) {
         setError(e.message);
@@ -112,6 +121,10 @@ const AppInitialization = (): JSX.Element => {
     };
     load();
   }, [selectedAccount, reloadBalance]);
+
+  useEffect(() => {
+
+  })
 
   return (
     <>
