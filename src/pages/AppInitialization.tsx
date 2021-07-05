@@ -16,6 +16,8 @@ import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
 import { setAllTokens } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
 import { setChainIsLoaded, setReloadBalance } from '../store/actions/settings';
+import { loadPools } from '../api/pools';
+import { setPools } from '../store/actions/pools';
 
 enum State {
   LOADING,
@@ -64,6 +66,10 @@ const AppInitialization = (): JSX.Element => {
         const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
         const newTokens = await loadTokens(addresses, signers[0].signer);
 
+        setStatus('Loading pools...');
+        const pools = await loadPools(newTokens, signers[0].signer);
+
+        dispatch(setPools(pools));
         dispatch(setAllTokens(newTokens));
         dispatch(utilsSetAccounts(signers));
         // Make sure selecting account is after setting signers
@@ -86,10 +92,16 @@ const AppInitialization = (): JSX.Element => {
     const load = async (): Promise<void> => {
       try {
         setState(State.LOADING);
-        setStatus('Loading token balances...');
         const { signer } = accounts[selectedAccount];
+        
+        setStatus('Loading token balances...');
         const addresses = tokens.map((token) => token.address);
         const newTokens = await loadTokens(addresses, signer);
+
+        setStatus('Loading pools...');
+        const pools = await loadPools(newTokens, signer);
+
+        dispatch(setPools(pools));
         dispatch(setAllTokens(newTokens));
         dispatch(setReloadBalance(false));
         setState(State.SUCCESS);
