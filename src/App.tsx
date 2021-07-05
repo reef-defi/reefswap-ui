@@ -8,7 +8,7 @@ import {
 import NavBar from './components/navigation/NavBar';
 import AppInitialization from './pages/AppInitialization';
 import { configureStore } from './store';
-import { INITIALIZED_URLS, POOL_URL, SETTINGS_URL } from './utils/urls';
+import { INITIALIZED_URLS, POOL_URL, SETTINGS_URL, SWAP_URL } from './utils/urls';
 import Settings from './pages/settings/Settings';
 
 const store = configureStore();
@@ -26,7 +26,7 @@ const App = (): JSX.Element => (
               <Switch>
                 <Route path={INITIALIZED_URLS} component={AppInitialization} />
                 <Route exact path={SETTINGS_URL} component={Settings} />
-                <Route path="/" render={() => <Redirect to={POOL_URL} />} />
+                <Route path="/" render={() => <Redirect to={SWAP_URL} />} />
               </Switch>
             </div>
           </div>

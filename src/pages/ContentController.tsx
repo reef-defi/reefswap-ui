@@ -16,7 +16,7 @@ const ContentController = (): JSX.Element => (
     <Route exact path={SWAP_URL} component={SwapController} />
     <Route exact path={IMPORT_POOL_URL} component={ImportPool} />
     <Route exact path={ADD_LIQUIDITY_URL} component={AddLiquidity} />
-    <Route path="/" render={() => <Redirect to={POOL_URL} />} />
+    <Route path="/" render={() => <Redirect to={SWAP_URL} />} />
   </Switch>
 );
 

@@ -1,6 +1,11 @@
 # Reefswap UI
 
+An open source interface for Reefswap -- a protocol for decentralized exchange of Reef tokens.
 
+- Website: https://reefswap.com/pool
+- Reef Documentation: https://docs.reef.finance/docs/prologue/introduction/
+
+The Reefswap interface supports, swapping tokens, adding liquidity and binding Polkadot address with Ethereum EVM.
 
 ## Developer guide
 
