@@ -72,3 +72,6 @@ input {
 .hover-border:hover {
   border: 1px solid #46288b;
 }
+.list-item {
+  list-style: none;
+}
