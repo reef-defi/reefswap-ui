@@ -1,5 +1,5 @@
 import { ReefChains } from '../../api/api';
-import { SET_CHAIN_URL, SET_RELOAD_BALANCE } from '../actionCreator';
+import { SET_CHAIN_URL } from '../actionCreator';
 import { SettingsActions } from '../actions/settings';
 
 export interface SettingsReducer {
@@ -15,7 +15,6 @@ const defaultSettings: SettingsReducer = {
 export const settingsReducer = (state = defaultSettings, action: SettingsActions): SettingsReducer => {
   switch (action.type) {
     case SET_CHAIN_URL: return { ...state, chainUrl: action.url};
-    case SET_RELOAD_BALANCE: return { ...state, reloadBalance: action.reloadBalance };
     default: return state;
   }
 };
