@@ -1,6 +1,6 @@
 import { ReefswapPool } from "../../api/pools";
 import { ADD_POOL, SET_POOLS } from "../actionCreator";
-import { PoolsActions } from "../actions/ pools";
+import { PoolsActions } from "../actions/pools";
 
 export interface PoolsReducer {
   pools: ReefswapPool[];
