@@ -15,3 +15,4 @@ export const SET_RELOAD_BALANCE = 'SET_RELOAD_BALANCE';
 // Pools
 export const ADD_POOL = "ADD_POOL";
 export const SET_POOLS = "SET_POOLS";
+export const RELOAD_POOL = "RELOAD_POOL";
