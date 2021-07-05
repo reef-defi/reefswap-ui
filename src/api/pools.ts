@@ -4,7 +4,7 @@ import { Token, TokenWithAmount } from "./tokens";
 import { Contract } from "ethers";
 import { ReefswapERC20 } from "../assets/abi/ReefswapERC20";
 import BN from "bn.js";
-import { ensure } from "../utils/utils";
+import { ensure, uniqueCombinations } from "../utils/utils";
 
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -14,22 +14,10 @@ interface ReefswapPoolBase {
   token2: TokenWithAmount;
 }
 
-
 export interface ReefswapPool extends ReefswapPoolBase {
   signerBalance: BN;
   contract: Contract;
 }
-
-const uniqueCombinations = <T,>(array: T[]): [T, T][] => {
-  let result: [T, T][] = [];
-  for (let i = 0; i < array.length; i ++) {
-    for (let j = i + 1; j < array.length; j ++) {
-      result.push([array[i], array[j]])
-    }
-  }
-  return result;
-}
-
 
 const tokensToPairAddresses = async (tokenCombinations: [Token, Token][], signer: Signer): Promise<ReefswapPoolBase[]> => {
   const reefswapFactory = getReefswapFactory(signer);
