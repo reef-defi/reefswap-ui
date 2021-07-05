@@ -32,7 +32,7 @@ const AppInitialization = (): JSX.Element => {
   const { chainUrl, reloadBalance } = useSelector((state: ReducerState) => state.settings);
   const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
-  const [state, setState] = useState<State>(State.SUCCESS);
+  const [state, setState] = useState<State>(State.LOADING);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
 
@@ -49,82 +49,73 @@ const AppInitialization = (): JSX.Element => {
 
   useEffect(() => {
     const load = async (): Promise<void> => {
-      try {
-        setState(State.LOADING);
-        setStatus('Connecting to Polkadot extension...');
-        const inj = await web3Enable('Reefswap');
-        ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
+      setStatus('Connecting to Polkadot extension...');
+      const inj = await web3Enable('Reefswap');
+      ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
 
-        setStatus('Retrieving accounts...');
-        const web3accounts = await web3Accounts();
-        ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
+      setStatus('Retrieving accounts...');
+      const web3accounts = await web3Accounts();
+      ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
 
-        setStatus('Connecting to chain...');
-        const provider = new Provider({
-          provider: new WsProvider(chainUrl),
-        });
-        await provider.api.isReadyOrError;
+      setStatus('Connecting to chain...');
+      const provider = new Provider({
+        provider: new WsProvider(chainUrl),
+      });
+      await provider.api.isReadyOrError;
 
-        setStatus('Creating signers...');
-        const signers = await accountsToSigners(
-          web3accounts,
-          provider,
-          inj[0].signer,
-        );
+      setStatus('Creating signers...');
+      const signers = await accountsToSigners(
+        web3accounts,
+        provider,
+        inj[0].signer,
+      );
 
-        setStatus('Loading tokens...');
-        const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
-        const newTokens = await loadTokens(addresses, signers[0].signer);
+      setStatus('Loading tokens...');
+      const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
+      const newTokens = await loadTokens(addresses, signers[0].signer);
 
-        setStatus('Loading pools...');
-        const pools = await loadPools(newTokens, signers[0].signer);
+      setStatus('Loading pools...');
+      const pools = await loadPools(newTokens, signers[0].signer);
 
-        dispatch(setPools(pools));
-        dispatch(setAllTokens(newTokens));
-        dispatch(utilsSetAccounts(signers));
-        // Make sure selecting account is after setting signers
-        // Else error will occure
-        dispatch(utilsSetSelectedAccount(0));
-        setState(State.SUCCESS);
-      } catch (e) {
-        setError(e.message);
-        setState(State.ERROR);
-      }
+      dispatch(setPools(pools));
+      dispatch(setAllTokens(newTokens));
+      dispatch(utilsSetAccounts(signers));
+      // Make sure selecting account is after setting signers
+      // Else error will occure
+      dispatch(utilsSetSelectedAccount(0));
     };
 
-    load();
+    defaultLoad(load);
   }, [chainUrl]);
 
   useEffect(() => {
     if (selectedAccount === -1 || !reloadBalance) { return; }
 
     const load = async (): Promise<void> => {
-      try {
-        setState(State.LOADING);
-        const { signer } = accounts[selectedAccount];
-        
-        setStatus('Loading token balances...');
-        const addresses = tokens.map((token) => token.address);
-        const newTokens = await loadTokens(addresses, signer);
+      const { signer } = accounts[selectedAccount];
+      
+      setStatus('Loading token balances...');
+      const addresses = tokens.map((token) => token.address);
+      const newTokens = await loadTokens(addresses, signer);
 
-        setStatus('Loading pools...');
-        const pools = await loadPools(newTokens, signer);
-
-        dispatch(setPools(pools));
-        dispatch(setAllTokens(newTokens));
-        dispatch(setReloadBalance(false));
-        setState(State.SUCCESS);
-      } catch (e) {
-        setError(e.message);
-        setState(State.ERROR);
-      }
+      dispatch(setAllTokens(newTokens));
+      dispatch(setReloadBalance(false));
     };
-    load();
+    defaultLoad(load);
   }, [selectedAccount, reloadBalance]);
 
   useEffect(() => {
+    if (selectedAccount === -1 || !reloadPool) { return; }
 
-  })
+    const load = async (): Promise<void> => {
+      setStatus('Loading user pools...');
+      const {signer} = accounts[selectedAccount];
+      const pools = await loadPools(tokens, signer);
+
+      dispatch(setPools(pools));
+    };
+    defaultLoad(load);
+  }, [selectedAccount, reloadPool])
 
   return (
     <>

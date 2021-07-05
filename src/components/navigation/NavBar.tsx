@@ -12,6 +12,7 @@ import logo from '../../assets/logo.png';
 import { calculateBalance } from '../../utils/math';
 import { trim } from '../../utils/utils';
 import { setReloadBalance } from '../../store/actions/settings';
+import { reloadPool } from '../../store/actions/pools';
 
 interface ButtonProps {
   to: string;
@@ -33,6 +34,7 @@ const NavBar = (): JSX.Element => {
   const selectAccount = (index: number): void => {
     dispatch(utilsSetSelectedAccount(index));
     dispatch(setReloadBalance(true));
+    dispatch(reloadPool());
   };
   const balance = tokens.length
     ? calculateBalance(tokens.find((token) => token.name === 'REEF')!)
