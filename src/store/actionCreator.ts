@@ -11,3 +11,7 @@ export const TOKENS_UPDATE_TOKEN_BALANCE = 'TOKENS_UPDATE_TOKEN_BALANCE';
 export const SET_CHAIN_URL = 'SET_CHAIN_URL';
 export const SET_CHAIN_IS_LOADED = 'SET_CHAIN_IS_LOADED';
 export const SET_RELOAD_BALANCE = 'SET_RELOAD_BALANCE';
+
+// Pools
+export const ADD_POOL = "ADD_POOL";
+export const SET_POOLS = "SET_POOLS";
