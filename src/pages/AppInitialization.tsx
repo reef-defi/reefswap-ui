@@ -18,12 +18,12 @@ import { ensure } from '../utils/utils';
 import { setReloadBalance } from '../store/actions/settings';
 import { loadPools } from '../api/pools';
 import { setPools } from '../store/actions/pools';
+import { ErrorState, ERROR_STATE, LoadingContentState, LOADING_MESSAGE_STATE, SuccessState, SUCCESS_STATE, toError, toLoading, toLoadingMessage, toSuccess } from '../store/internalStore';
 
-enum State {
-  LOADING,
-  ERROR,
-  SUCCESS
-}
+type State =
+  | ErrorState
+  | SuccessState
+  | LoadingContentState;
 
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
@@ -32,49 +32,46 @@ const AppInitialization = (): JSX.Element => {
   const { chainUrl, reloadBalance } = useSelector((state: ReducerState) => state.settings);
   const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
-  const [state, setState] = useState<State>(State.LOADING);
-  const [error, setError] = useState('');
-  const [status, setStatus] = useState('');
+  const [state, setState] = useState<State>(toLoadingMessage(""));
 
-  const defaultLoad = async (callback: () => Promise<void>) => {
+  const loader = async (callback: () => Promise<void>) => {
     try {
-      setState(State.LOADING);
+      setState(toLoadingMessage(""));
       await callback();
-      setState(State.SUCCESS);
+      setState(toSuccess());
     } catch (e) {
-      setError(e.message);
-      setState(State.ERROR);
+      setState(toError(e.message));
     } 
   }
 
   useEffect(() => {
     const load = async (): Promise<void> => {
-      setStatus('Connecting to Polkadot extension...');
+      setState(toLoadingMessage('Connecting to Polkadot extension...'));
       const inj = await web3Enable('Reefswap');
       ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
 
-      setStatus('Retrieving accounts...');
+      setState(toLoadingMessage('Retrieving accounts...'));
       const web3accounts = await web3Accounts();
       ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
 
-      setStatus('Connecting to chain...');
+      setState(toLoadingMessage('Connecting to chain...'));
       const provider = new Provider({
         provider: new WsProvider(chainUrl),
       });
       await provider.api.isReadyOrError;
 
-      setStatus('Creating signers...');
+      setState(toLoadingMessage('Creating signers...'));
       const signers = await accountsToSigners(
         web3accounts,
         provider,
         inj[0].signer,
       );
 
-      setStatus('Loading tokens...');
+      setState(toLoadingMessage('Loading tokens...'));
       const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
       const newTokens = await loadTokens(addresses, signers[0].signer);
 
-      setStatus('Loading pools...');
+      setState(toLoadingMessage('Loading pools...'));
       const pools = await loadPools(newTokens, signers[0].signer);
 
       dispatch(setPools(pools));
@@ -85,7 +82,7 @@ const AppInitialization = (): JSX.Element => {
       dispatch(utilsSetSelectedAccount(0));
     };
 
-    defaultLoad(load);
+    loader(load);
   }, [chainUrl]);
 
   useEffect(() => {
@@ -94,34 +91,34 @@ const AppInitialization = (): JSX.Element => {
     const load = async (): Promise<void> => {
       const { signer } = accounts[selectedAccount];
       
-      setStatus('Loading token balances...');
+      setState(toLoadingMessage('Loading token balances...'));
       const addresses = tokens.map((token) => token.address);
       const newTokens = await loadTokens(addresses, signer);
 
       dispatch(setAllTokens(newTokens));
       dispatch(setReloadBalance(false));
     };
-    defaultLoad(load);
+    loader(load);
   }, [selectedAccount, reloadBalance]);
 
   useEffect(() => {
     if (selectedAccount === -1 || !reloadPool) { return; }
 
     const load = async (): Promise<void> => {
-      setStatus('Loading user pools...');
+      setState(toLoadingMessage('Loading user pools...'));
       const {signer} = accounts[selectedAccount];
       const pools = await loadPools(tokens, signer);
 
       dispatch(setPools(pools));
     };
-    defaultLoad(load);
+    loader(load);
   }, [selectedAccount, reloadPool])
 
   return (
     <>
-      {state === State.LOADING && <LoadingWithText text={status} />}
-      {state === State.ERROR && <ErrorCard title="Polkadot extension" message={error} />}
-      {state === State.SUCCESS && <ContentController /> }
+      {state.type === LOADING_MESSAGE_STATE && <LoadingWithText text={state.message} />}
+      {state.type === ERROR_STATE && <ErrorCard title="Polkadot extension" message={state.message} />}
+      {state.type === SUCCESS_STATE && <ContentController /> }
     </>
   );
 };
