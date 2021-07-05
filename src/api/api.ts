@@ -1,7 +1,7 @@
 import { Signer } from '@reef-defi/evm-provider';
 import { Contract } from 'ethers';
-import { ERC20 } from './abi/ERC20';
-import ReefswapRouter from './abi/ReefswapRouter';
+import { ERC20 } from '../assets/abi/ERC20';
+import ReefswapRouter from '../assets/abi/ReefswapRouter';
 import { Token } from './tokens';
 
 export enum ReefChains {
