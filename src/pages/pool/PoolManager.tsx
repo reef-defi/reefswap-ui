@@ -16,22 +16,30 @@ const PoolManager = ({liquidity, token1, token2} : PoolManager): JSX.Element => 
   return (
     <Card>
       <div className="d-flex justify-content-between">
-        <div>{token1.name}/{token2.name}</div>
+        <span className="fw-bold">{token1.name}/{token2.name}</span>
 
-        <a type="button" onClick={() => setIsOpen(!isOpen)}>Manage</a>
+        <a type="button" onClick={() => setIsOpen(!isOpen)} className="nav-button">
+          Manage
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down ms-1" viewBox="0 0 16 16">
+            { isOpen 
+              ? <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+              : <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+            }
+          </svg>
+        </a>
       </div> 
       <div hidden={!isOpen}>
         <div className="d-flex justify-content-between mt-3">
           <label>Your pool tokens:</label>
-          <label>{showBalance({...token1, balance: liquidity, decimals: 18}, 7)}</label>
+          <span className="balance-span">{showBalance({...token1, balance: liquidity, decimals: 18})}</span>
         </div>
-        <div className="d-flex justify-content-between mt-1">
+        <div className="d-flex justify-content-between">
           <label>Pooled {token1.name}:</label>
-          <label>{showBalance(token1, 7)}</label>
+          <span className="balance-span">{showBalance(token1)}</span>
         </div>
-        <div className="d-flex justify-content-between mt-1">
+        <div className="d-flex justify-content-between">
           <label>Pooled {token2.name}:</label>
-          <label>{showBalance(token2, 7)}</label>
+          <span className="balance-span">{showBalance(token2)}</span>
         </div>
         <div className="d-flex mt-3">
           <div className="w-50 px-1">

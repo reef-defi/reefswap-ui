@@ -16,11 +16,11 @@ export const calculateAmount = (token: TokenWithAmount): string => {
   return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
 };
 
-export const showBalance = ({ decimals, balance }: Token, decimalPoints=2): string => {
-  if (balance === "0") { return balance;}
+export const showBalance = ({ decimals, balance, name }: Token, decimalPoints=4): string => {
+  if (balance === "0") { return `${balance} ${name}`;}
   const headLength = Math.max(balance.length - decimals, 0)
   const tailLength = Math.max(headLength + decimalPoints, 0);
   const head = balance.length < decimals ? '0' : balance.slice(0, headLength);
   const tail = balance.slice(headLength, tailLength); 
-  return tail.length ? `${head},${tail}` : head;
+  return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
 }

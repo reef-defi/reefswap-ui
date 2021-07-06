@@ -38,7 +38,7 @@ const NavBar = (): JSX.Element => {
   };
   const balance = tokens.length
     ? showBalance(tokens.find((token) => token.name === 'REEF')!)
-    : 0;
+    : "";
 
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
   const accountsView = accounts
@@ -71,8 +71,6 @@ const NavBar = (): JSX.Element => {
           <div className="d-flex nav-acc border-rad">
             <div className="my-auto mx-2 fs-6 fw-bold">
               {balance}
-              {' '}
-              REEF
             </div>
             <div className="dropdown">
               <button className="btn btn-secondary dropdown-toggle no-shadow nav-acc-button border-rad hover-border" type="button" id="dropdownMenuReference" data-bs-toggle="dropdown" aria-expanded="false">
