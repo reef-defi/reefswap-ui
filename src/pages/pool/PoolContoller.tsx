@@ -1,22 +1,22 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import Card from '../../components/card/Card';
+import { ReefswapPool } from '../../api/pools';
 import { ReducerState } from '../../store/reducers';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
-import PoolItem from './PoolItem';
+import PoolManager from './PoolManager';
 
 const PoolContoller = (): JSX.Element => {
   const history = useHistory();
   const {pools} = useSelector((state: ReducerState) => state.pools);
-
+  console.log(pools);
   const onImportPoolClick = (): void => history.push(IMPORT_POOL_URL);
   const onAddLiquidityClick = (): void => history.push(ADD_LIQUIDITY_URL);
 
   const poolsView = pools
     .map((pool) => 
-      <li key={pool.address} className="list-item">
-        <PoolItem {...pool} />
+      <li key={pool.address} className="list-item mt-2">
+        <PoolManager {...pool} />
       </li>
     );
 
@@ -32,9 +32,11 @@ const PoolContoller = (): JSX.Element => {
       </div>
 
       { pools.length 
-        ? <ul className="list-group">
-            {poolsView}
-          </ul>
+        ? <div className="row overflow-auto" style={{ maxHeight: "500px" }}>
+            <ul className="list-group list-group-full col-12">
+              {poolsView}
+            </ul>
+        </div> 
         : <div>No pool was found, you can import desired pool or add liquidity!</div>
       }
     </div>
