@@ -75,3 +75,8 @@ input {
 .list-item {
   list-style: none;
 }
+.list-group-full {
+  padding-left: calc(var(--bs-gutter-x)/ 2);
+  padding-right: calc(var(--bs-gutter-x)/ 2);
+  padding-bottom: 20px;
+}
