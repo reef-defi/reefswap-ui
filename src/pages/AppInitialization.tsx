@@ -90,33 +90,29 @@ const AppInitialization = (): JSX.Element => {
 
   // Reload tokens
   useEffect(() => {
-    if (selectedAccount === -1 || !reloadTokens) { return; }
+    if (selectedAccount === -1) { return; }
+    const { signer } = accounts[selectedAccount];
 
-    const load = async (): Promise<void> => {
-      const { signer } = accounts[selectedAccount];
-      
+    const tokenLoader = async (): Promise<void> => {
       message('Loading token balances...');
       const addresses = tokens.map((token) => token.address);
       const newTokens = await loadTokens(addresses, signer);
 
       dispatch(setAllTokens(newTokens));
     };
-    loader(load);
-  }, [selectedAccount, reloadTokens]);
 
-  // Reload pools
-  useEffect(() => {
-    if (selectedAccount === -1 || !reloadPool) { return; }
-
-    const load = async (): Promise<void> => {
-      message('Loading user pools...');
-      const {signer} = accounts[selectedAccount];
+    const poolLoader = async (): Promise<void> => {
+      message('Loading pools...');
       const pools = await loadPools(tokens, signer);
 
       dispatch(setPools(pools));
     };
-    loader(load);
-  }, [selectedAccount, reloadPool])
+
+    loader(async () => {
+      if (reloadTokens) { await tokenLoader(); }
+      if (reloadPool) { await poolLoader(); }
+    });
+  }, [selectedAccount, reloadTokens, reloadPool]);
 
   return (
     <>
