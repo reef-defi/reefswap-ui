@@ -1,5 +1,5 @@
 import { Signer } from "@reef-defi/evm-provider";
-import { getReefswapFactory } from "./api";
+import { balanceOf, getContract, getReefswapFactory } from "./api";
 import { Token } from "./tokens";
 import { Contract } from "ethers";
 import BN from "bn.js";
@@ -19,23 +19,21 @@ export interface ReefswapPool extends ReefswapPoolBase {
   contract: Contract;
 }
 
-const tokensToPairAddresses = async (tokenCombinations: [Token, Token][], signer: Signer): Promise<string[]> => {
+const tokenPairAddress = async (token1: Token, token2: Token, signer: Signer): Promise<string> => {
   const reefswapFactory = getReefswapFactory(signer);
-  return Promise.all(
-    tokenCombinations
-      .map(async ([token1, token2]): Promise<string> => 
-        await reefswapFactory.getPair(token1.address, token2.address),
-    )
-  );
+  const address = await reefswapFactory.getPair(token1.address, token2.address);
+  return address;
 }
 
 const poolContract = async (token1: Token, token2: Token, signer: Signer): Promise<ReefswapPool> => {
-  const [address] = await tokensToPairAddresses([[token1, token2]], signer);
+  const address = await tokenPairAddress(token1, token2, signer);
   ensure(address !== EMPTY_ADDRESS, "Pool does not exist!");
   const contract = new Contract(address, ReefswapPair, signer);
   const liquidity = await contract.balanceOf(await signer.getAddress());
-  const tokenBalance1 = await contract.price0CumulativeLast();
-  const tokenBalance2 = await contract.price1CumulativeLast();
+
+  const tokenBalance1 = await balanceOf(token1.address, address, signer);
+  const tokenBalance2 = await balanceOf(token2.address, address, signer);
+
   return {
     address,
     contract, 
