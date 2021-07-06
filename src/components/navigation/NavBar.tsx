@@ -9,7 +9,7 @@ import {
 import './NavBar.css';
 
 import logo from '../../assets/logo.png';
-import { calculateBalance } from '../../utils/math';
+import { showBalance } from '../../utils/math';
 import { trim } from '../../utils/utils';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokens } from '../../store/actions/tokens';
@@ -37,7 +37,7 @@ const NavBar = (): JSX.Element => {
     dispatch(reloadPool());
   };
   const balance = tokens.length
-    ? calculateBalance(tokens.find((token) => token.name === 'REEF')!)
+    ? showBalance(tokens.find((token) => token.name === 'REEF')!)
     : 0;
 
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';

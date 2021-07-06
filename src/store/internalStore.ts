@@ -1,63 +1,31 @@
-// Known actions
-export const ERROR_STATE = "ERROR_STATE";
-export const INITIAL_STATE = "INITIAL_STATE";
-export const LOADING_STATE = "LOADING_STATE";
-export const SUCCESS_STATE = "SUCCESS_STATE";
-export const LOADING_MESSAGE_STATE = "LOADING_MESSAGE_STATE";
-export const SUCCESS_CONTENT_STATE = "SUCCESS_WITH_CONTENT";
 
-// Internal action interfaces
-export interface InitialState {
-  type: typeof INITIAL_STATE;
-};
-
-export interface LoadingState {
-  type: typeof LOADING_STATE;
-};
-
-export interface LoadingContentState {
-  type: typeof LOADING_MESSAGE_STATE;
+interface Message {
   message: string;
 }
 
-export interface SuccessState {
-  type: typeof SUCCESS_STATE;
-};
+interface Content <Type> {
+  content: Type;
+}
 
-export interface SuccessContentState <T, > {
-  type: typeof SUCCESS_CONTENT_STATE,
-  content: T
-};
+// It is kind of lame we need to pass the type inside...
+// TODO when new versions of typescript will come remove {_type}
+// and ensure state type by ckechking it. 
+// IE. (state is InitialState) or something like it
+export type PhantomState <Type, Data> = {_type: Type} & Data;
 
-export interface ErrorState {
-  type: typeof ERROR_STATE;
-  message: string;
-};
+export type InitialState = PhantomState<"InitialState", {}>
+export type LoadingState = PhantomState<"LoadingState", {}>
+export type SuccessState = PhantomState<"SuccessState", {}>
+export type ErrorState = PhantomState<"ErrorState", Message>;
+export type LoadingMessageState = PhantomState<"LoadingMessageState", Message>;
+export type SuccessContentState <Type> = PhantomState<"SuccessContentState", Content<Type>>;
 
 // Default state transformation actions
-export const toInit = (): InitialState => ({
-  type: INITIAL_STATE,
-})
-
-export const toLoading = (): LoadingState => ({
-  type: LOADING_STATE,
-})
-
-export const toLoadingMessage = (message: string): LoadingContentState => ({
-  type: LOADING_MESSAGE_STATE,
-  message
-});
-
-export const toSuccess = (): SuccessState => ({
-  type: SUCCESS_STATE,
-});
-
-export const toSuccessContent = <T, > (content: T): SuccessContentState<T> => ({
-  type: SUCCESS_CONTENT_STATE,
-  content
-});
-
-export const toError = (message: string): ErrorState => ({
-  type: ERROR_STATE,
-  message
-});
+export const toInit = (): InitialState => ({_type: "InitialState"});
+export const toLoading = (): LoadingState => ({_type: "LoadingState"})
+export const toSuccess = (): SuccessState => ({_type: "SuccessState"});
+export const toError = (message: string): ErrorState => ({message, _type: "ErrorState"});
+export const toLoadingMessage = (message: string): LoadingMessageState => 
+  ({message, _type: "LoadingMessageState"});
+export const toSuccessContent = <T, > (content: T): SuccessContentState<T> =>
+  ({content, _type: "SuccessContentState"});

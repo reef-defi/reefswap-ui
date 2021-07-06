@@ -1,7 +1,7 @@
 import React from 'react';
 import { Token, TokenWithAmount } from '../../api/tokens';
 import SelectToken from '../buttons/SelectToken';
-import { calculateBalance } from '../../utils/math';
+import { showBalance } from '../../utils/math';
 
 interface TokenAmountFieldProps {
   id?: string;
@@ -36,7 +36,7 @@ const TokenAmountField = ({
       </div>
       <small className="ms-2">
         Balance:
-        {calculateBalance(token)}
+        {showBalance(token)}
         {' '}
         {name}
       </small>

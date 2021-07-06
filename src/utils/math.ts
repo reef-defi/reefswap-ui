@@ -14,12 +14,15 @@ export const calculateAmount = (token: TokenWithAmount): string => {
   const { decimals, amount } = token;
   const addZeros = findDecimalPoint(amount);
   const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
-  const result = new BN(cleanedAmount + '0'.repeat(decimals - addZeros));
+  const result = new BN(cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0)));
   return result.toString();
 };
 
-export const calculateBalance = ({ decimals, balance }: Token): string => (balance.length < decimals
-  ? '0'
-  : `${balance.slice(0, balance.length - decimals)
-  },${
-    balance.slice(balance.length - decimals, balance.length - decimals + 2)}`);
+export const showBalance = ({ decimals, balance }: Token, decimalPoints=2): string => {
+  if (balance === "0") { return balance;}
+  const headLength = Math.max(balance.length - decimals, 0)
+  const tailLength = Math.max(headLength + decimalPoints, 0);
+  const head = balance.length < decimals ? '0' : balance.slice(0, headLength);
+  const tail = balance.slice(headLength, tailLength); 
+  return tail.length ? `${head},${tail}` : head;
+}

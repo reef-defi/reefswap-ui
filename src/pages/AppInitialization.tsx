@@ -17,21 +17,22 @@ import { setAllTokens } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
 import { loadPools } from '../api/pools';
 import { setPools } from '../store/actions/pools';
-import { ErrorState, ERROR_STATE, LoadingContentState, LOADING_MESSAGE_STATE, SuccessState, SUCCESS_STATE, toError, toLoading, toLoadingMessage, toSuccess } from '../store/internalStore';
+import { ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess } from '../store/internalStore';
 
 type State =
   | ErrorState
   | SuccessState
-  | LoadingContentState;
+  | LoadingMessageState;
 
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
-  const { tokens, reloadTokens } = useSelector((state: ReducerState) => state.tokens);
   const { reloadPool } = useSelector((state: ReducerState) => state.pools);
   const { chainUrl } = useSelector((state: ReducerState) => state.settings);
+  const { tokens, reloadTokens } = useSelector((state: ReducerState) => state.tokens);
   const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
   const [state, setState] = useState<State>(toLoadingMessage(""));
+  
 
   const loader = async (callback: () => Promise<void>) => {
     try {
@@ -45,6 +46,7 @@ const AppInitialization = (): JSX.Element => {
 
   const message = (message: string): void => setState(toLoadingMessage(message));
 
+  // Initial setup
   useEffect(() => {
     const load = async (): Promise<void> => {
       message('Connecting to Polkadot extension...');
@@ -86,6 +88,7 @@ const AppInitialization = (): JSX.Element => {
     loader(load);
   }, [chainUrl]);
 
+  // Reload tokens
   useEffect(() => {
     if (selectedAccount === -1 || !reloadTokens) { return; }
 
@@ -101,6 +104,7 @@ const AppInitialization = (): JSX.Element => {
     loader(load);
   }, [selectedAccount, reloadTokens]);
 
+  // Reload pools
   useEffect(() => {
     if (selectedAccount === -1 || !reloadPool) { return; }
 
@@ -116,9 +120,9 @@ const AppInitialization = (): JSX.Element => {
 
   return (
     <>
-      {state.type === LOADING_MESSAGE_STATE && <LoadingWithText text={state.message} />}
-      {state.type === ERROR_STATE && <ErrorCard title="Polkadot extension" message={state.message} />}
-      {state.type === SUCCESS_STATE && <ContentController /> }
+      {state._type === "SuccessState" && <ContentController /> }
+      {state._type === "LoadingMessageState" && <LoadingWithText text={state.message} />}
+      {state._type === "ErrorState" && <ErrorCard title="Polkadot extension" message={state.message} />}
     </>
   );
 };
