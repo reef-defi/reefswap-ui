@@ -20,8 +20,6 @@ const swapStatus = (sellAmount: string, buyAmount: string): ButtonStatus => {
 const SwapController = (): JSX.Element => {
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
   const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
-  console.log(accounts)
-  console.log(selectedAccount)
   const { signer } = accounts[selectedAccount];
 
   const [isLoading, setIsLoading] = useState(false);

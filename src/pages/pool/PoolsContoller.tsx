@@ -1,15 +1,14 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { ReefswapPool } from '../../api/pools';
 import { ReducerState } from '../../store/reducers';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
 import PoolManager from './PoolManager';
 
-const PoolContoller = (): JSX.Element => {
+const PoolsContoller = (): JSX.Element => {
   const history = useHistory();
   const {pools} = useSelector((state: ReducerState) => state.pools);
-  console.log(pools);
+
   const onImportPoolClick = (): void => history.push(IMPORT_POOL_URL);
   const onAddLiquidityClick = (): void => history.push(ADD_LIQUIDITY_URL);
 
@@ -43,4 +42,4 @@ const PoolContoller = (): JSX.Element => {
   );
 };
 
-export default PoolContoller;
+export default PoolsContoller;
