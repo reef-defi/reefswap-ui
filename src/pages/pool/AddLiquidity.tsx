@@ -48,15 +48,15 @@ const AddLiquidity = (): JSX.Element => {
     try {
       setIsLoading(true);
       await addLiquidity(token1, token2, signer);
-      const newTokens = await reloadTokens(tokens, signer);
-      const pools = await loadPools(newTokens, signer);
-      dispatch(setAllTokensAction(newTokens));
+      const pools = await loadPools(tokens, signer);
       dispatch(setPools(pools));
       history.push(POOL_URL);
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
     } catch (error) {
       toast.error(error.message ? error.message : error);
     } finally {
+      const newTokens = await reloadTokens(tokens, signer);
+      dispatch(setAllTokensAction(newTokens));
       setIsLoading(false);
     }
   };
