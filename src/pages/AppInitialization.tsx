@@ -13,7 +13,7 @@ import {
 } from '../store/actions/accounts';
 import { accountsToSigners } from '../api/accounts';
 import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
-import { setAllTokens } from '../store/actions/tokens';
+import { setAllTokensAction } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
 import { loadPools } from '../api/pools';
 import { setPools } from '../store/actions/pools';
@@ -78,7 +78,7 @@ const AppInitialization = (): JSX.Element => {
       const pools = await loadPools(newTokens, signers[0].signer);
 
       dispatch(setPools(pools));
-      dispatch(setAllTokens(newTokens));
+      dispatch(setAllTokensAction(newTokens));
       dispatch(utilsSetAccounts(signers));
       // Make sure selecting account is after setting signers
       // Else error will occure
@@ -98,7 +98,7 @@ const AppInitialization = (): JSX.Element => {
       const addresses = tokens.map((token) => token.address);
       const newTokens = await loadTokens(addresses, signer);
 
-      dispatch(setAllTokens(newTokens));
+      dispatch(setAllTokensAction(newTokens));
     };
 
     const poolLoader = async (): Promise<void> => {

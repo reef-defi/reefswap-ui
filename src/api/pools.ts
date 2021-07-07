@@ -1,10 +1,11 @@
 import { Signer } from "@reef-defi/evm-provider";
-import { balanceOf, getContract, getReefswapFactory } from "./api";
+import { balanceOf, defaultGasLimit, getContract, getReefswapFactory, getReefswapRouter } from "./api";
 import { Token } from "./tokens";
 import { Contract } from "ethers";
 import BN from "bn.js";
 import { ensure, uniqueCombinations } from "../utils/utils";
 import { ReefswapPair } from "../assets/abi/ReefswapPair";
+import { calculateAmount, calculateBalance } from "../utils/math";
 
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -77,3 +78,25 @@ export const loadPools = async (tokens: Token[], signer: Signer): Promise<Reefsw
   return pools;  
 }
 
+
+export const removeLiquidity = async (token1: Token, token2: Token, liquidity: string, signer: Signer): Promise<void> => {
+  const reefswapRouter = getReefswapRouter(signer);
+  const signerAddress = await signer.getAddress();
+
+  const amount1 = calculateBalance(token1);
+  const amount2 = calculateBalance(token2);
+
+  console.log(amount1)
+  console.log(amount2)
+  
+  await reefswapRouter.removeLiquidity(
+    token1.address,
+    token2.address,
+    liquidity,
+    amount1,
+    amount2,
+    signerAddress,
+    10000000000,
+    defaultGasLimit()
+  )
+};

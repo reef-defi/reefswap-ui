@@ -51,12 +51,20 @@ const loadToken = async (address: string, signer: Signer): Promise<Token> => {
   };
 };
 
+export const retrieveTokenAddresses = (tokens: Token[]): string[] =>
+  tokens.map((token) => token.address);
+
 export const loadTokens = async (addresses: string[], signer: Signer): Promise<Token[]> => {
   const tokens = Promise.all(
     addresses.map((address) => loadToken(address, signer)),
   );
   return tokens;
 };
+
+export const reloadTokens = async (tokens: Token[], signer: Signer): Promise<Token[]> => {
+  const addresses = retrieveTokenAddresses(tokens);
+  return await loadTokens(addresses, signer)
+}
 
 const approveTokenAmount = async (token: TokenWithAmount, signer: Signer): Promise<void> => {
   const { address } = token;
