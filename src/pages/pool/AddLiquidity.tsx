@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { addLiquidity, Token, TokenWithAmount } from '../../api/tokens';
+import { addLiquidity, reloadTokens, Token, TokenWithAmount } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import { CardWithBackTitle } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { ReducerState } from '../../store/reducers';
 import { POOL_URL } from '../../utils/urls';
+import { setAllTokensAction } from '../../store/actions/tokens';
+import { loadPools } from '../../api/pools';
+import { setPools } from '../../store/actions/pools';
 
 const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount): ButtonStatus => {
   if (token1.amount.length === 0) {
@@ -18,20 +21,23 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount): ButtonS
   }
   return { isValid: true, text: 'Add liquidity' };
 };
-
+function delay(ms: number) {
+  return new Promise( resolve => setTimeout(resolve, ms) );
+}
 const AddLiquidity = (): JSX.Element => {
+  const history = useHistory();
+  const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
   const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
-  const history = useHistory();
-  const back = (): void => history.push(POOL_URL);
-
+  
   const [isLoading, setIsLoading] = useState(false);
   const [token1, setToken1] = useState<TokenWithAmount>({ ...tokens[0], amount: '' });
   const [token2, setToken2] = useState<TokenWithAmount>({ ...tokens[1], amount: '' });
-
+  
   const { signer } = accounts[selectedAccount];
   const { text, isValid } = buttonStatus(token1, token2);
-
+  
+  const back = (): void => history.push(POOL_URL);
   const changeToken1 = (token: Token): void => setToken1({ ...token, amount: '' });
   const changeToken2 = (token: Token): void => setToken2({ ...token, amount: '' });
 
@@ -39,12 +45,20 @@ const AddLiquidity = (): JSX.Element => {
   const setAmount2 = (amount: string): void => setToken2({ ...token2, amount });
 
   const addLiquidityClick = async (): Promise<void> => {
-    await Promise.resolve()
-      .then(() => setIsLoading(true))
-      .then(() => addLiquidity(token1, token2, signer))
-      .then(() => toast.success('Liquidity added successfully!'))
-      .catch((error) => toast.error(error.message ? error.message : error))
-      .finally(() => setIsLoading(false));
+    try {
+      setIsLoading(true);
+      await addLiquidity(token1, token2, signer);
+      const newTokens = await reloadTokens(tokens, signer);
+      const pools = await loadPools(newTokens, signer);
+      dispatch(setAllTokensAction(newTokens));
+      dispatch(setPools(pools));
+      history.push(POOL_URL);
+      toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
+    } catch (error) {
+      toast.error(error.message ? error.message : error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
