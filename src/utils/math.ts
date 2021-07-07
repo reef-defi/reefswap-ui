@@ -9,12 +9,17 @@ const findDecimalPoint = (amount: string): number => {
   return 0;
 };
 
-export const calculateAmount = (token: TokenWithAmount): string => {
-  const { decimals, amount } = token;
+const transformAmount = (decimals: number, amount: string): string => {
   const addZeros = findDecimalPoint(amount);
   const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
   return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
-};
+}
+
+export const calculateAmount = ({decimals, amount}: TokenWithAmount): string =>
+  transformAmount(decimals, amount);
+
+export const calculateBalance = ({balance, decimals}: Token): string => 
+  transformAmount(decimals, balance);
 
 export const showBalance = ({ decimals, balance, name }: Token, decimalPoints=4): string => {
   if (balance === "0") { return `${balance} ${name}`;}

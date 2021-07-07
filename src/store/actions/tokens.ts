@@ -20,16 +20,16 @@ export type TokensAction =
   | ReloadTokens
   | SetAllTokens;
 
-export const addToken = (token: Token): AddToken => ({
+export const addTokenAction = (token: Token): AddToken => ({
   type: ADD_TOKEN,
   token,
 });
 
-export const setAllTokens = (tokens: Token[]): SetAllTokens => ({
+export const setAllTokensAction = (tokens: Token[]): SetAllTokens => ({
   type: SET_ALL_TOKENS,
   tokens,
 });
 
-export const reloadTokens = (): ReloadTokens => ({
+export const reloadTokensAction = (): ReloadTokens => ({
   type: RELOAD_TOKENS
 });

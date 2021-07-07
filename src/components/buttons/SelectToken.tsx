@@ -2,7 +2,7 @@ import React, { ChangeEvent, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadToken, getContract } from '../../api/api';
 import { Token } from '../../api/tokens';
-import { addToken } from '../../store/actions/tokens';
+import { addTokenAction } from '../../store/actions/tokens';
 import { ReducerState } from '../../store/reducers';
 import { ensure, trim } from '../../utils/utils';
 import { CardTitle } from '../card/Card';
@@ -39,7 +39,7 @@ const SelectToken = ({
       ensure(selectedAccount !== -1, SELECT_ACCOUNT);
       const { signer } = accounts[selectedAccount];
       const token = await loadToken(address, signer);
-      dispatch(addToken(token));
+      dispatch(addTokenAction(token));
     } catch (error) {
       setButtonText(error.message);
     } finally {
