@@ -1,28 +1,22 @@
 import { Token } from '../../api/tokens';
-import { TOKENS_ADD_TOKEN, TOKENS_SET_ALL, TOKENS_UPDATE_TOKEN_BALANCE } from '../actionCreator';
+import { ADD_TOKEN, RELOAD_TOKENS, SET_ALL_TOKENS } from '../actionCreator';
 import { TokensAction } from '../actions/tokens';
 
 export interface TokensReducer {
   tokens: Token[];
+  reloadTokens: boolean;
 }
 
 const defaultTokensReducer: TokensReducer = {
   tokens: [],
+  reloadTokens: true,
 };
 
 export const tokensReducer = (state = defaultTokensReducer, action: TokensAction): TokensReducer => {
   switch (action.type) {
-    case TOKENS_ADD_TOKEN: return { ...state, tokens: [...state.tokens, { ...action.token }] };
-    case TOKENS_SET_ALL: return { ...state, tokens: [...action.tokens] };
-    case TOKENS_UPDATE_TOKEN_BALANCE:
-      return {
-        ...state,
-        tokens: [
-          ...state.tokens.slice(0, action.index),
-          { ...state.tokens[action.index], balance: action.balance },
-          ...state.tokens.slice(action.index + 1),
-        ],
-      };
+    case ADD_TOKEN: return { ...state, tokens: [...state.tokens, { ...action.token }] };
+    case SET_ALL_TOKENS: return { ...state, tokens: [...action.tokens], reloadTokens: false };
+    case RELOAD_TOKENS: return { ...state, reloadTokens: true };
     default: return state;
   }
 };

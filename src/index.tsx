@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import './index.css';
+import './assets/index.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 ReactDOM.render(

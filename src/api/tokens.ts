@@ -1,5 +1,5 @@
 import { Signer } from '@reef-defi/evm-provider';
-import { calculateAmount } from '../utils/math';
+import { calculateAmount, calculateBalance } from '../utils/math';
 import {
   defaultGasLimit, getContract, getReefswapRouter, ReefChains,
 } from './api';
@@ -51,6 +51,8 @@ const loadToken = async (address: string, signer: Signer): Promise<Token> => {
   };
 };
 
+export const retrieveTokenAddresses = (tokens: Token[]): string[] => tokens.map((token) => token.address);
+
 export const loadTokens = async (addresses: string[], signer: Signer): Promise<Token[]> => {
   const tokens = Promise.all(
     addresses.map((address) => loadToken(address, signer)),
@@ -58,7 +60,12 @@ export const loadTokens = async (addresses: string[], signer: Signer): Promise<T
   return tokens;
 };
 
-const approveTokenAmount = async (token: TokenWithAmount, signer: Signer): Promise<void> => {
+export const reloadTokens = async (tokens: Token[], signer: Signer): Promise<Token[]> => {
+  const addresses = retrieveTokenAddresses(tokens);
+  return loadTokens(addresses, signer);
+};
+
+export const approveTokenAmount = async (token: TokenWithAmount, signer: Signer): Promise<void> => {
   const { address } = token;
   const reefswapContrctAddress = getReefswapRouter(signer).address;
   const contract = await getContract(address, signer);
@@ -97,6 +104,7 @@ export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmo
     token2.address,
     calculateAmount(token1),
     calculateAmount(token2),
+    // TODO repare min and max amount values!
     0,
     0,
     signerAddress,

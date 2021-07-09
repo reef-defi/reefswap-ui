@@ -13,99 +13,112 @@ import {
 } from '../store/actions/accounts';
 import { accountsToSigners } from '../api/accounts';
 import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
-import { setAllTokens } from '../store/actions/tokens';
+import { setAllTokensAction } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
-import { setChainIsLoaded, setReloadBalance } from '../store/actions/settings';
+import { loadPools } from '../api/pools';
+import { setPools } from '../store/actions/pools';
+import {
+  ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess,
+} from '../store/internalStore';
 
-enum State {
-  LOADING,
-  ERROR,
-  SUCCESS
-}
+type State =
+  | ErrorState
+  | SuccessState
+  | LoadingMessageState;
 
 const AppInitialization = (): JSX.Element => {
   const dispatch = useDispatch();
-  const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { chainUrl, isChainLoaded, reloadBalance } = useSelector((state: ReducerState) => state.settings);
+  const { reloadPool } = useSelector((state: ReducerState) => state.pools);
+  const { chainUrl } = useSelector((state: ReducerState) => state.settings);
+  const { tokens, reloadTokens } = useSelector((state: ReducerState) => state.tokens);
   const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
-  const [state, setState] = useState<State>(isChainLoaded ? State.SUCCESS : State.LOADING);
-  const [error, setError] = useState('');
-  const [status, setStatus] = useState('');
+  const [state, setState] = useState<State>(toLoadingMessage(''));
 
+  const message = (msg: string): void => setState(toLoadingMessage(msg));
+  const loader = async (callback: () => Promise<void>): Promise<void> => {
+    try {
+      message('');
+      await callback();
+      setState(toSuccess());
+    } catch (e) {
+      setState(toError(e.message));
+    }
+  };
+
+  // Initial setup
   useEffect(() => {
-    if (isChainLoaded) { return; }
-
     const load = async (): Promise<void> => {
-      try {
-        setState(State.LOADING);
-        setStatus('Connecting to Polkadot extension...');
-        const inj = await web3Enable('Reefswap');
-        ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
+      message('Connecting to Polkadot extension...');
+      const inj = await web3Enable('Reefswap');
+      ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
 
-        setStatus('Retrieving accounts...');
-        const web3accounts = await web3Accounts();
-        ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
+      message('Retrieving accounts...');
+      const web3accounts = await web3Accounts();
+      ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
 
-        setStatus('Connecting to chain...');
-        const provider = new Provider({
-          provider: new WsProvider(chainUrl),
-        });
-        await provider.api.isReadyOrError;
+      message('Connecting to chain...');
+      const provider = new Provider({
+        provider: new WsProvider(chainUrl),
+      });
+      await provider.api.isReadyOrError;
 
-        setStatus('Creating signers...');
-        const signers = await accountsToSigners(
-          web3accounts,
-          provider,
-          inj[0].signer,
-        );
+      message('Creating signers...');
+      const signers = await accountsToSigners(
+        web3accounts,
+        provider,
+        inj[0].signer,
+      );
 
-        setStatus('Loading tokens...');
-        const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
-        const newTokens = await loadTokens(addresses, signers[0].signer);
+      message('Loading tokens...');
+      const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
+      const newTokens = await loadTokens(addresses, signers[0].signer);
 
-        dispatch(setAllTokens(newTokens));
-        dispatch(utilsSetAccounts(signers));
-        // Make sure selecting account is after setting signers
-        // Else error will occure
-        dispatch(utilsSetSelectedAccount(0));
-        dispatch(setChainIsLoaded());
-        setState(State.SUCCESS);
-      } catch (e) {
-        setError(e.message);
-        setState(State.ERROR);
-      }
+      message('Loading pools...');
+      const pools = await loadPools(newTokens, signers[0].signer);
+
+      dispatch(setPools(pools));
+      dispatch(setAllTokensAction(newTokens));
+      dispatch(utilsSetAccounts(signers));
+      // Make sure selecting account is after setting signers
+      // Else error will occure
+      dispatch(utilsSetSelectedAccount(0));
     };
 
-    load();
+    loader(load);
   }, [chainUrl]);
 
+  // Reload tokens
   useEffect(() => {
-    if (selectedAccount === -1 || !reloadBalance) { return; }
+    if (selectedAccount === -1) { return; }
+    const { signer } = accounts[selectedAccount];
 
-    const load = async (): Promise<void> => {
-      try {
-        setState(State.LOADING);
-        setStatus('Loading token balances...');
-        const { signer } = accounts[selectedAccount];
-        const addresses = tokens.map((token) => token.address);
-        const newTokens = await loadTokens(addresses, signer);
-        dispatch(setAllTokens(newTokens));
-        dispatch(setReloadBalance(false));
-        setState(State.SUCCESS);
-      } catch (e) {
-        setError(e.message);
-        setState(State.ERROR);
-      }
+    const tokenLoader = async (): Promise<void> => {
+      message('Loading token balances...');
+      const addresses = tokens.map((token) => token.address);
+      const newTokens = await loadTokens(addresses, signer);
+
+      dispatch(setAllTokensAction(newTokens));
     };
-    load();
-  }, [selectedAccount, reloadBalance]);
+
+    const poolLoader = async (): Promise<void> => {
+      message('Loading pools...');
+      const pools = await loadPools(tokens, signer);
+
+      dispatch(setPools(pools));
+    };
+
+    loader(async () => {
+      if (reloadTokens) { await tokenLoader(); }
+      if (reloadPool) { await poolLoader(); }
+    });
+  }, [selectedAccount, reloadTokens, reloadPool]);
 
   return (
     <>
-      {state === State.LOADING && <LoadingWithText text={status} />}
-      {state === State.ERROR && <ErrorCard title="Polkadot extension" message={error} />}
-      {state === State.SUCCESS && <ContentController /> }
+      {state._type === 'SuccessState' && <ContentController /> }
+      {state._type === 'LoadingMessageState' && <LoadingWithText text={state.message} />}
+      {state._type === 'ErrorState' && <ErrorCard title="Polkadot extension" message={state.message} />}
     </>
   );
 };

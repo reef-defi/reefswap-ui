@@ -1,4 +1,3 @@
-import BN from 'bn.js';
 import { Token, TokenWithAmount } from '../api/tokens';
 
 const findDecimalPoint = (amount: string): number => {
@@ -10,16 +9,21 @@ const findDecimalPoint = (amount: string): number => {
   return 0;
 };
 
-export const calculateAmount = (token: TokenWithAmount): string => {
-  const { decimals, amount } = token;
+const transformAmount = (decimals: number, amount: string): string => {
   const addZeros = findDecimalPoint(amount);
   const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
-  const result = new BN(cleanedAmount + '0'.repeat(decimals - addZeros));
-  return result.toString();
+  return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
 };
 
-export const calculateBalance = ({ decimals, balance }: Token): string => (balance.length < decimals
-  ? '0'
-  : `${balance.slice(0, balance.length - decimals)
-  },${
-    balance.slice(balance.length - decimals, balance.length - decimals + 2)}`);
+export const calculateAmount = ({ decimals, amount }: TokenWithAmount): string => transformAmount(decimals, amount);
+
+export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance);
+
+export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 4): string => {
+  if (balance === '0') { return `${balance} ${name}`; }
+  const headLength = Math.max(balance.length - decimals, 0);
+  const tailLength = Math.max(headLength + decimalPoints, 0);
+  const head = balance.length < decimals ? '0' : balance.slice(0, headLength);
+  const tail = balance.slice(headLength, tailLength);
+  return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
+};

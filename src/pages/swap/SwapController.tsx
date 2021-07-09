@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { swapTokens, Token, TokenWithAmount } from '../../api/tokens';
+import {
+  reloadTokens, swapTokens, Token, TokenWithAmount,
+} from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, { CardTitle } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
+import { setAllTokensAction } from '../../store/actions/tokens';
 import { ReducerState } from '../../store/reducers';
 
 const swapStatus = (sellAmount: string, buyAmount: string): ButtonStatus => {
@@ -18,6 +21,7 @@ const swapStatus = (sellAmount: string, buyAmount: string): ButtonStatus => {
 };
 
 const SwapController = (): JSX.Element => {
+  const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
   const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
   const { signer } = accounts[selectedAccount];
@@ -41,12 +45,17 @@ const SwapController = (): JSX.Element => {
   };
 
   const onSwap = async (): Promise<void> => {
-    await Promise.resolve()
-      .then(() => setIsLoading(true))
-      .then(() => swapTokens(sellToken, buyToken, signer))
-      .then(() => toast.success('Swap complete!'))
-      .catch((error) => toast.error(error.message ? error.message : error))
-      .finally(() => setIsLoading(false));
+    try {
+      setIsLoading(true);
+      await swapTokens(sellToken, buyToken, signer);
+      toast.success('Swap complete!');
+    } catch (error) {
+      toast.error(error.message ? error.message : error);
+    } finally {
+      const newTokens = await reloadTokens(tokens, signer);
+      dispatch(setAllTokensAction(newTokens));
+      setIsLoading(false);
+    }
   };
 
   return (

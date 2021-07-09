@@ -33,6 +33,11 @@ input {
   font-family: 'Inter var', sans-serif;
 }
 
+.btn-empty {
+  border: none;
+  background-color: inherit;
+}
+
 .btn-reef {
   background-color: #5531a9;
   border-color: #5531a9;
@@ -71,4 +76,25 @@ input {
 }
 .hover-border:hover {
   border: 1px solid #46288b;
+}
+.list-item {
+  list-style: none;
+}
+.list-group-full {
+  padding-left: calc(var(--bs-gutter-x)/ 2);
+  padding-right: calc(var(--bs-gutter-x)/ 2);
+  padding-bottom: 20px;
+}
+.balance-span {
+  font-size: 14px;
+  color: #4e4e4e;
+}
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }

@@ -9,9 +9,10 @@ import {
 import './NavBar.css';
 
 import logo from '../../assets/logo.png';
-import { calculateBalance } from '../../utils/math';
+import { showBalance } from '../../utils/math';
 import { trim } from '../../utils/utils';
-import { setReloadBalance } from '../../store/actions/settings';
+import { reloadPool } from '../../store/actions/pools';
+import { reloadTokensAction } from '../../store/actions/tokens';
 
 interface ButtonProps {
   to: string;
@@ -32,11 +33,12 @@ const NavBar = (): JSX.Element => {
 
   const selectAccount = (index: number): void => {
     dispatch(utilsSetSelectedAccount(index));
-    dispatch(setReloadBalance(true));
+    dispatch(reloadTokensAction());
+    dispatch(reloadPool());
   };
   const balance = tokens.length
-    ? calculateBalance(tokens.find((token) => token.name === 'REEF')!)
-    : 0;
+    ? showBalance(tokens.find((token) => token.name === 'REEF')!, 0)
+    : '';
 
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
   const accountsView = accounts
@@ -69,8 +71,6 @@ const NavBar = (): JSX.Element => {
           <div className="d-flex nav-acc border-rad">
             <div className="my-auto mx-2 fs-6 fw-bold">
               {balance}
-              {' '}
-              REEF
             </div>
             <div className="dropdown">
               <button className="btn btn-secondary dropdown-toggle no-shadow nav-acc-button border-rad hover-border" type="button" id="dropdownMenuReference" data-bs-toggle="dropdown" aria-expanded="false">
