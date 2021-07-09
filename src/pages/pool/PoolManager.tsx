@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { toast } from "react-toastify"
 import { useHistory } from "react-router-dom";
 import { ReefswapPool, removeLiquidity } from "../../api/pools";
@@ -9,9 +9,8 @@ import { showBalance } from "../../utils/math";
 import { ADD_LIQUIDITY_URL } from "../../utils/urls";
 import { useDispatch, useSelector } from "react-redux";
 import { ReducerState } from "../../store/reducers";
-import { ensure } from "../../utils/utils";
 import { reloadPool } from "../../store/actions/pools";
-
+import { reloadTokensAction } from "../../store/actions/tokens";
 
 type PoolManagerState =
   | LoadingState
@@ -19,7 +18,7 @@ type PoolManagerState =
 
 interface PoolManager extends ReefswapPool {}
 
-const PoolManager = ({liquidity, token1, token2} : PoolManager): JSX.Element => {
+const PoolManager = (pool : PoolManager): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -28,20 +27,20 @@ const PoolManager = ({liquidity, token1, token2} : PoolManager): JSX.Element => 
   const [state, setState] = useState<PoolManagerState>(toInit());
   const [isOpen, setIsOpen] = useState(false);
 
+  const {token1, token2, liquidity} = pool;
+
   const addLiquidity = () => history.push(ADD_LIQUIDITY_URL);
 
   const onLiquidityRemove = async () => {
     try {
       setState(toLoading());
-      ensure(selectedAccount !== -1, "No account selected!");
-      const {signer} = accounts[selectedAccount];
-      await removeLiquidity(token1, token2, liquidity, signer);
-
+      const {signer} = accounts[selectedAccount];      
+      await removeLiquidity(pool, signer);
       toast.success("Liquidity removed successfully!");
       dispatch(reloadPool());
+      dispatch(reloadTokensAction());
     } catch (error) {
       toast.error(error.message ? error.message : error);
-    } finally {
       setState(toInit());
     }
   }

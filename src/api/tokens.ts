@@ -1,5 +1,5 @@
 import { Signer } from '@reef-defi/evm-provider';
-import { calculateAmount } from '../utils/math';
+import { calculateAmount, calculateBalance } from '../utils/math';
 import {
   defaultGasLimit, getContract, getReefswapRouter, ReefChains,
 } from './api';
@@ -66,7 +66,7 @@ export const reloadTokens = async (tokens: Token[], signer: Signer): Promise<Tok
   return await loadTokens(addresses, signer)
 }
 
-const approveTokenAmount = async (token: TokenWithAmount, signer: Signer): Promise<void> => {
+export const approveTokenAmount = async (token: TokenWithAmount, signer: Signer): Promise<void> => {
   const { address } = token;
   const reefswapContrctAddress = getReefswapRouter(signer).address;
   const contract = await getContract(address, signer);
@@ -105,6 +105,7 @@ export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmo
     token2.address,
     calculateAmount(token1),
     calculateAmount(token2),
+    // TODO repare min and max amount values!
     0,
     0,
     signerAddress,

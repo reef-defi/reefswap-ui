@@ -1,33 +1,29 @@
 import { Signer } from "@reef-defi/evm-provider";
-import { balanceOf, defaultGasLimit, getContract, getReefswapFactory, getReefswapRouter } from "./api";
-import { Token } from "./tokens";
+import { balanceOf, defaultGasLimit, getReefswapFactory, getReefswapRouter } from "./api";
+import { approveTokenAmount, Token, TokenWithAmount } from "./tokens";
 import { Contract } from "ethers";
 import BN from "bn.js";
 import { ensure, uniqueCombinations } from "../utils/utils";
 import { ReefswapPair } from "../assets/abi/ReefswapPair";
-import { calculateAmount, calculateBalance } from "../utils/math";
 
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-interface ReefswapPoolBase {
-  address: string;
+export interface ReefswapPool {
   token1: Token;
   token2: Token;
-}
-
-export interface ReefswapPool extends ReefswapPoolBase {
   liquidity: string;
   contract: Contract;
+  poolAddress: string;
 }
 
-const tokenPairAddress = async (token1: Token, token2: Token, signer: Signer): Promise<string> => {
+const findPoolTokenAddress = async (token1: Token, token2: Token, signer: Signer): Promise<string> => {
   const reefswapFactory = getReefswapFactory(signer);
   const address = await reefswapFactory.getPair(token1.address, token2.address);
   return address;
 }
 
 const poolContract = async (token1: Token, token2: Token, signer: Signer): Promise<ReefswapPool> => {
-  const address = await tokenPairAddress(token1, token2, signer);
+  const address = await findPoolTokenAddress(token1, token2, signer);
   ensure(address !== EMPTY_ADDRESS, "Pool does not exist!");
   const contract = new Contract(address, ReefswapPair, signer);
   const liquidity = await contract.balanceOf(await signer.getAddress());
@@ -36,7 +32,7 @@ const poolContract = async (token1: Token, token2: Token, signer: Signer): Promi
   const tokenBalance2 = await balanceOf(token2.address, address, signer);
 
   return {
-    address,
+    poolAddress: address,
     contract, 
     token1: {...token1, balance: tokenBalance1.toString()},
     token2: {...token2, balance: tokenBalance2.toString()},
@@ -78,23 +74,28 @@ export const loadPools = async (tokens: Token[], signer: Signer): Promise<Reefsw
   return pools;  
 }
 
+const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
+  address,
+  amount,
+  decimals: 18,
+  balance: "0",
+  name: "ReefswapERC20"
+});
 
-export const removeLiquidity = async (token1: Token, token2: Token, liquidity: string, signer: Signer): Promise<void> => {
+export const removeLiquidity = async ({token1, token2, liquidity, poolAddress}: ReefswapPool, signer: Signer): Promise<void> => {
   const reefswapRouter = getReefswapRouter(signer);
   const signerAddress = await signer.getAddress();
 
-  const amount1 = calculateBalance(token1);
-  const amount2 = calculateBalance(token2);
+  const pairToken = createPoolToken(poolAddress, liquidity);
 
-  console.log(amount1)
-  console.log(amount2)
-  
+  await approveTokenAmount(pairToken, signer);
+
   await reefswapRouter.removeLiquidity(
     token1.address,
     token2.address,
     liquidity,
-    amount1,
-    amount2,
+    0, // TODO set the amount wiht fee calculateBalance(calculateFee(token1, 0.999999999)),
+    0, // TODO same as above
     signerAddress,
     10000000000,
     defaultGasLimit()
