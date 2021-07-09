@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
-  addLiquidity, reloadTokens, Token, TokenWithAmount,
+  addLiquidity, reloadTokens, Token, TokenWithAmount, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import { CardWithBackTitle } from '../../components/card/Card';
@@ -14,14 +14,18 @@ import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { loadPools } from '../../api/pools';
 import { setPools } from '../../store/actions/pools';
+import { defaultTokenState } from '../../store/internalStore';
 
-const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount): ButtonStatus => {
-  if (token1.amount.length === 0) {
+const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
+  if (!isEvmClaimed) {
+    return { isValid: false, text: "Bind account"};
+  } else if (token1.amount.length === 0) {
     return { isValid: false, text: 'Missing first token amount' };
-  } if (token2.amount.length === 0) {
+  } else if (token2.amount.length === 0) {
     return { isValid: false, text: 'Missing second token amount' };
+  } else {
+    return { isValid: true, text: 'Add liquidity' };
   }
-  return { isValid: true, text: 'Add liquidity' };
 };
 
 const AddLiquidity = (): JSX.Element => {
@@ -31,18 +35,20 @@ const AddLiquidity = (): JSX.Element => {
   const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [token1, setToken1] = useState<TokenWithAmount>({ ...tokens[0], amount: '' });
-  const [token2, setToken2] = useState<TokenWithAmount>({ ...tokens[1], amount: '' });
+  const [pointer1, setPointer1] = useState(defaultTokenState());
+  const [pointer2, setPointer2] = useState(defaultTokenState(1));
 
-  const { signer } = accounts[selectedAccount];
-  const { text, isValid } = buttonStatus(token1, token2);
+  const token1 = toTokenAmount(tokens[pointer1.index], pointer1.amount);
+  const token2 = toTokenAmount(tokens[pointer2.index], pointer2.amount);
+  const { signer, isEvmClaimed } = accounts[selectedAccount];
+  const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
 
   const back = (): void => history.push(POOL_URL);
-  const changeToken1 = (token: Token): void => setToken1({ ...token, amount: '' });
-  const changeToken2 = (token: Token): void => setToken2({ ...token, amount: '' });
+  const changeToken1 = (index: number): void => setPointer1({ ...pointer1, index });
+  const changeToken2 = (index: number): void => setPointer2({ ...pointer2, index });
 
-  const setAmount1 = (amount: string): void => setToken1({ ...token1, amount });
-  const setAmount2 = (amount: string): void => setToken2({ ...token2, amount });
+  const setAmount1 = (amount: string): void => setPointer1({ ...pointer1, amount });
+  const setAmount2 = (amount: string): void => setPointer2({ ...pointer2, amount });
 
   const addLiquidityClick = async (): Promise<void> => {
     try {

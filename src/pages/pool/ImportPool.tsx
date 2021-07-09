@@ -12,8 +12,11 @@ const ImportPool = (): JSX.Element => {
 
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
 
-  const [token1, setToken1] = useState({ ...tokens[0] });
-  const [token2, setToken2] = useState({ ...tokens[1] });
+  const [token1, setToken1] = useState(0);
+  const [token2, setToken2] = useState(1);
+
+  const name1 = tokens[token1].name;
+  const name2 = tokens[token2].name;
 
   return (
     <CardWithBackTitle title="Import pool" onClick={back}>
@@ -27,7 +30,7 @@ const ImportPool = (): JSX.Element => {
           <SelectToken
             fullWidth
             onTokenSelect={setToken1}
-            selectedTokenName={token1.name}
+            selectedTokenName={name1}
           />
         </div>
 
@@ -35,7 +38,7 @@ const ImportPool = (): JSX.Element => {
           <SelectToken
             fullWidth
             onTokenSelect={setToken2}
-            selectedTokenName={token2.name}
+            selectedTokenName={name2}
           />
         </div>
       </div>

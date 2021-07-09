@@ -13,7 +13,7 @@ interface SelectTokenProps {
   id?: string;
   fullWidth?: boolean;
   selectedTokenName: string;
-  onTokenSelect: (token: Token) => void;
+  onTokenSelect: (index: number) => void;
 }
 
 const TO_SHORT_ADDRESS = 'To short address';
@@ -71,7 +71,7 @@ const SelectToken = ({
     }
   };
 
-  const selectToken = (index: number): void => onTokenSelect(tokens[index]);
+  const selectToken = (index: number): void => onTokenSelect(index);
 
   const tokensView = tokens
     .map((token, index) => (

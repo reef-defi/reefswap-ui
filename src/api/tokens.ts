@@ -15,6 +15,11 @@ export interface TokenWithAmount extends Token {
   amount: string;
 }
 
+export const toTokenAmount = (token: Token, amount: string): TokenWithAmount => ({
+  ...token,
+  amount
+});
+
 const defaultTestnetTokenAddresses = [
   '0x0000000000000000000000000000000001000000', // Reef
   '0x0000000000000000000000000000000001000001', // RUSD

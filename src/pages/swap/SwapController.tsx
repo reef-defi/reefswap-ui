@@ -2,46 +2,53 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
-  reloadTokens, swapTokens, Token, TokenWithAmount,
+  reloadTokens, swapTokens, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, { CardTitle } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { setAllTokensAction } from '../../store/actions/tokens';
+import { defaultTokenState } from '../../store/internalStore';
 import { ReducerState } from '../../store/reducers';
 
-const swapStatus = (sellAmount: string, buyAmount: string): ButtonStatus => {
-  if (sellAmount.length === 0) {
+const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean): ButtonStatus => {
+  if (!isEvmClaimed) {
+    return { isValid: false, text: "Bind account"};
+  } else if (sellAmount.length === 0) {
     return { isValid: false, text: 'Missing sell amount' };
-  } if (buyAmount.length === 0) {
+  } else if (buyAmount.length === 0) {
     return { isValid: false, text: 'Missing buy amount' };
+  } else {
+    return { isValid: true, text: 'Swap' };
   }
-  return { isValid: true, text: 'Swap' };
 };
+
 
 const SwapController = (): JSX.Element => {
   const dispatch = useDispatch();
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
   const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
-  const { signer } = accounts[selectedAccount];
+  const { signer, isEvmClaimed } = accounts[selectedAccount];
 
+  const [buy, setBuy] = useState(defaultTokenState(1));
+  const [sell, setSell] = useState(defaultTokenState());
   const [isLoading, setIsLoading] = useState(false);
-  const [buyToken, setBuyToken] = useState<TokenWithAmount>({ ...tokens[1], amount: '' });
-  const [sellToken, setSellToken] = useState<TokenWithAmount>({ ...tokens[0], amount: '' });
 
-  const { text, isValid } = swapStatus(sellToken.amount, buyToken.amount);
+  const buyToken = toTokenAmount(tokens[buy.index], buy.amount);
+  const sellToken = toTokenAmount(tokens[sell.index], sell.amount);
+  const { text, isValid } = swapStatus(sell.amount, buy.amount, isEvmClaimed);
 
-  const setBuyAmount = (amount: string): void => setBuyToken({ ...buyToken, amount });
-  const setSellAmount = (amount: string): void => setSellToken({ ...sellToken, amount });
+  const setBuyAmount = (amount: string): void => setBuy({ ...buy, amount });
+  const setSellAmount = (amount: string): void => setSell({ ...sell, amount })
 
-  const changeBuyToken = (token: Token): void => setBuyToken({ ...token, amount: '' });
-  const changeSellToken = (token: Token): void => setSellToken({ ...token, amount: '' });
+  const changeBuyToken = (index: number): void => setBuy({...buy, index});
+  const changeSellToken = (index: number): void => setSell({...sell, index});
 
   const onSwitch = (): void => {
-    const subToken = { ...sellToken };
-    setSellToken({ ...buyToken });
-    setBuyToken({ ...subToken });
+    const subState = {...buy};
+    setBuy({...sell});
+    setSell({...subState});
   };
 
   const onSwap = async (): Promise<void> => {
