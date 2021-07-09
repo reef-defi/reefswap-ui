@@ -1,5 +1,5 @@
-import { ReefswapPool } from "../../api/pools";
-import { ADD_POOL, RELOAD_POOL, SET_POOLS } from "../actionCreator";
+import { ReefswapPool } from '../../api/pools';
+import { ADD_POOL, RELOAD_POOL, SET_POOLS } from '../actionCreator';
 
 interface SetPoolsAction {
   type: typeof SET_POOLS;
@@ -22,14 +22,14 @@ export type PoolsActions =
 
 export const setPools = (pools: ReefswapPool[]): SetPoolsAction => ({
   type: SET_POOLS,
-  pools
+  pools,
 });
 
 export const addPool = (pool: ReefswapPool): AddPoolAction => ({
   type: ADD_POOL,
-  pool
+  pool,
 });
 
 export const reloadPool = (): ReloadPoolAction => ({
-  type: RELOAD_POOL
+  type: RELOAD_POOL,
 });

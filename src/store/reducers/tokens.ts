@@ -16,7 +16,7 @@ export const tokensReducer = (state = defaultTokensReducer, action: TokensAction
   switch (action.type) {
     case ADD_TOKEN: return { ...state, tokens: [...state.tokens, { ...action.token }] };
     case SET_ALL_TOKENS: return { ...state, tokens: [...action.tokens], reloadTokens: false };
-    case RELOAD_TOKENS: return {...state, reloadTokens: true};
+    case RELOAD_TOKENS: return { ...state, reloadTokens: true };
     default: return state;
   }
 };

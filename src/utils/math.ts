@@ -13,19 +13,17 @@ const transformAmount = (decimals: number, amount: string): string => {
   const addZeros = findDecimalPoint(amount);
   const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
   return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
-}
+};
 
-export const calculateAmount = ({decimals, amount}: TokenWithAmount): string =>
-  transformAmount(decimals, amount);
+export const calculateAmount = ({ decimals, amount }: TokenWithAmount): string => transformAmount(decimals, amount);
 
-export const calculateBalance = ({balance, decimals}: Token): string => 
-  transformAmount(decimals, balance);
+export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance);
 
-export const showBalance = ({ decimals, balance, name }: Token, decimalPoints=4): string => {
-  if (balance === "0") { return `${balance} ${name}`;}
-  const headLength = Math.max(balance.length - decimals, 0)
+export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 4): string => {
+  if (balance === '0') { return `${balance} ${name}`; }
+  const headLength = Math.max(balance.length - decimals, 0);
   const tailLength = Math.max(headLength + decimalPoints, 0);
   const head = balance.length < decimals ? '0' : balance.slice(0, headLength);
-  const tail = balance.slice(headLength, tailLength); 
+  const tail = balance.slice(headLength, tailLength);
   return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
-}
+};

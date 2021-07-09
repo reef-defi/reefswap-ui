@@ -38,7 +38,7 @@ const NavBar = (): JSX.Element => {
   };
   const balance = tokens.length
     ? showBalance(tokens.find((token) => token.name === 'REEF')!, 0)
-    : "";
+    : '';
 
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
   const accountsView = accounts

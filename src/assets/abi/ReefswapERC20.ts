@@ -4,307 +4,307 @@ export const ReefswapERC20: ContractInterface = [
   {
     inputs: [],
     payable: false,
-    stateMutability: "nonpayable",
-    type: "constructor"
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
     anonymous: false,
     inputs: [
       {
         indexed: true,
-        name: "owner",
-        type: "address"
+        name: 'owner',
+        type: 'address',
       },
       {
         indexed: true,
-        name: "spender",
-        type: "address"
+        name: 'spender',
+        type: 'address',
       },
       {
         indexed: false,
-        name: "value",
-        type: "uint256"
-      }
+        name: 'value',
+        type: 'uint256',
+      },
     ],
-    name: "Approval",
-    type: "event"
+    name: 'Approval',
+    type: 'event',
   },
   {
     anonymous: false,
     inputs: [
       {
         indexed: true,
-        name: "from",
-        type: "address"
+        name: 'from',
+        type: 'address',
       },
       {
         indexed: true,
-        name: "to",
-        type: "address"
+        name: 'to',
+        type: 'address',
       },
       {
         indexed: false,
-        name: "value",
-        type: "uint256"
-      }
+        name: 'value',
+        type: 'uint256',
+      },
     ],
-    name: "Transfer",
-    type: "event"
+    name: 'Transfer',
+    type: 'event',
   },
   {
     constant: true,
     inputs: [],
-    name: "DOMAIN_SEPARATOR",
+    name: 'DOMAIN_SEPARATOR',
     outputs: [
       {
-        name: "",
-        type: "bytes32"
-      }
+        name: '',
+        type: 'bytes32',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: true,
     inputs: [],
-    name: "PERMIT_TYPEHASH",
+    name: 'PERMIT_TYPEHASH',
     outputs: [
       {
-        name: "",
-        type: "bytes32"
-      }
+        name: '',
+        type: 'bytes32',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: true,
     inputs: [
       {
-        name: "",
-        type: "address"
+        name: '',
+        type: 'address',
       },
       {
-        name: "",
-        type: "address"
-      }
+        name: '',
+        type: 'address',
+      },
     ],
-    name: "allowance",
+    name: 'allowance',
     outputs: [
       {
-        name: "",
-        type: "uint256"
-      }
+        name: '',
+        type: 'uint256',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: false,
     inputs: [
       {
-        name: "spender",
-        type: "address"
+        name: 'spender',
+        type: 'address',
       },
       {
-        name: "value",
-        type: "uint256"
-      }
+        name: 'value',
+        type: 'uint256',
+      },
     ],
-    name: "approve",
+    name: 'approve',
     outputs: [
       {
-        name: "",
-        type: "bool"
-      }
+        name: '',
+        type: 'bool',
+      },
     ],
     payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     constant: true,
     inputs: [
       {
-        name: "",
-        type: "address"
-      }
+        name: '',
+        type: 'address',
+      },
     ],
-    name: "balanceOf",
+    name: 'balanceOf',
     outputs: [
       {
-        name: "",
-        type: "uint256"
-      }
+        name: '',
+        type: 'uint256',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: true,
     inputs: [],
-    name: "decimals",
+    name: 'decimals',
     outputs: [
       {
-        name: "",
-        type: "uint8"
-      }
+        name: '',
+        type: 'uint8',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: true,
     inputs: [],
-    name: "name",
+    name: 'name',
     outputs: [
       {
-        name: "",
-        type: "string"
-      }
+        name: '',
+        type: 'string',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: true,
     inputs: [
       {
-        name: "",
-        type: "address"
-      }
+        name: '',
+        type: 'address',
+      },
     ],
-    name: "nonces",
+    name: 'nonces',
     outputs: [
       {
-        name: "",
-        type: "uint256"
-      }
+        name: '',
+        type: 'uint256',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: false,
     inputs: [
       {
-        name: "owner",
-        type: "address"
+        name: 'owner',
+        type: 'address',
       },
       {
-        name: "spender",
-        type: "address"
+        name: 'spender',
+        type: 'address',
       },
       {
-        name: "value",
-        type: "uint256"
+        name: 'value',
+        type: 'uint256',
       },
       {
-        name: "deadline",
-        type: "uint256"
+        name: 'deadline',
+        type: 'uint256',
       },
       {
-        name: "v",
-        type: "uint8"
+        name: 'v',
+        type: 'uint8',
       },
       {
-        name: "r",
-        type: "bytes32"
+        name: 'r',
+        type: 'bytes32',
       },
       {
-        name: "s",
-        type: "bytes32"
-      }
+        name: 's',
+        type: 'bytes32',
+      },
     ],
-    name: "permit",
+    name: 'permit',
     outputs: [],
     payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     constant: true,
     inputs: [],
-    name: "symbol",
+    name: 'symbol',
     outputs: [
       {
-        name: "",
-        type: "string"
-      }
+        name: '',
+        type: 'string',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: true,
     inputs: [],
-    name: "totalSupply",
+    name: 'totalSupply',
     outputs: [
       {
-        name: "",
-        type: "uint256"
-      }
+        name: '',
+        type: 'uint256',
+      },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     constant: false,
     inputs: [
       {
-        name: "to",
-        type: "address"
+        name: 'to',
+        type: 'address',
       },
       {
-        name: "value",
-        type: "uint256"
-      }
+        name: 'value',
+        type: 'uint256',
+      },
     ],
-    name: "transfer",
+    name: 'transfer',
     outputs: [
       {
-        name: "",
-        type: "bool"
-      }
+        name: '',
+        type: 'bool',
+      },
     ],
     payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     constant: false,
     inputs: [
       {
-        name: "from",
-        type: "address"
+        name: 'from',
+        type: 'address',
       },
       {
-        name: "to",
-        type: "address"
+        name: 'to',
+        type: 'address',
       },
       {
-        name: "value",
-        type: "uint256"
-      }
+        name: 'value',
+        type: 'uint256',
+      },
     ],
-    name: "transferFrom",
+    name: 'transferFrom',
     outputs: [
       {
-        name: "",
-        type: "bool"
-      }
+        name: '',
+        type: 'bool',
+      },
     ],
     payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
-  }
-]
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];

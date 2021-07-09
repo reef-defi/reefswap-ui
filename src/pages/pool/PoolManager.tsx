@@ -1,111 +1,125 @@
-import React, { useState } from "react"
-import { toast } from "react-toastify"
-import { useHistory } from "react-router-dom";
-import { ReefswapPool, removeLiquidity } from "../../api/pools";
-import Card from "../../components/card/Card";
-import { LoadingButtonIcon } from "../../components/loading/Loading";
-import { InitialState, LoadingState, toInit, toLoading } from "../../store/internalStore";
-import { showBalance } from "../../utils/math";
-import { ADD_LIQUIDITY_URL } from "../../utils/urls";
-import { useDispatch, useSelector } from "react-redux";
-import { ReducerState } from "../../store/reducers";
-import { reloadPool } from "../../store/actions/pools";
-import { reloadTokensAction } from "../../store/actions/tokens";
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { ReefswapPool, removeLiquidity } from '../../api/pools';
+import Card from '../../components/card/Card';
+import { LoadingButtonIcon } from '../../components/loading/Loading';
+import {
+  InitialState, LoadingState, toInit, toLoading,
+} from '../../store/internalStore';
+import { showBalance } from '../../utils/math';
+import { ADD_LIQUIDITY_URL } from '../../utils/urls';
+import { ReducerState } from '../../store/reducers';
+import { reloadPool } from '../../store/actions/pools';
+import { reloadTokensAction } from '../../store/actions/tokens';
 
 type PoolManagerState =
   | LoadingState
   | InitialState;
 
-interface PoolManager extends ReefswapPool {}
+type PoolManager = ReefswapPool
 
 const PoolManager = (pool : PoolManager): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const {accounts, selectedAccount} = useSelector((state: ReducerState) => state.accounts);
+  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
 
   const [state, setState] = useState<PoolManagerState>(toInit());
   const [isOpen, setIsOpen] = useState(false);
 
-  const {token1, token2, liquidity} = pool;
+  const { token1, token2, liquidity } = pool;
 
-  const addLiquidity = () => history.push(ADD_LIQUIDITY_URL);
+  const addLiquidity = (): void => history.push(ADD_LIQUIDITY_URL);
 
-  const onLiquidityRemove = async () => {
+  const onLiquidityRemove = async (): Promise<void> => {
     try {
       setState(toLoading());
-      const {signer} = accounts[selectedAccount];      
+      const { signer } = accounts[selectedAccount];
       await removeLiquidity(pool, signer);
-      toast.success("Liquidity removed successfully!");
+      toast.success('Liquidity removed successfully!');
       dispatch(reloadPool());
       dispatch(reloadTokensAction());
     } catch (error) {
       toast.error(error.message ? error.message : error);
       setState(toInit());
     }
-  }
+  };
 
   return (
     <Card>
       <div className="d-flex justify-content-between">
-        <span className="fw-bold">{token1.name}/{token2.name}</span>
+        <span className="fw-bold my-auto">
+          {token1.name}
+          /
+          {token2.name}
+        </span>
 
-        <a type="button" onClick={() => setIsOpen(!isOpen)} className="nav-button noselect">
+        <button type="button" onClick={() => setIsOpen(!isOpen)} className="btn-empty nav-button">
           Manage
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down ms-1" viewBox="0 0 16 16">
-            { isOpen 
-              ? <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
-              : <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-            }
+            { isOpen
+              ? <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z" />
+              : <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />}
           </svg>
-        </a>
-      </div> 
-      {isOpen &&
+        </button>
+      </div>
+      {isOpen
+        && (
         <div>
           <div className="d-flex justify-content-between mt-3">
-            <label>Your pool tokens:</label>
-            <span className="balance-span">{showBalance({...token1, balance: liquidity, decimals: 18})}</span>
+            <label htmlFor="token-liquidity-amo">Your pool tokens:</label>
+            <span className="balance-span" id="token-liquidity-amo">
+              {showBalance({ ...token1, balance: liquidity, decimals: 18 })}
+            </span>
           </div>
           <div className="d-flex justify-content-between">
-            <label>Pooled {token1.name}:</label>
-            <span className="balance-span">{showBalance(token1)}</span>
+            <label htmlFor="token-balance-1">
+              Pooled
+              {token1.name}
+              :
+            </label>
+            <span className="balance-span" id="token-balance-1">{showBalance(token1)}</span>
           </div>
           <div className="d-flex justify-content-between">
-            <label>Pooled {token2.name}:</label>
-            <span className="balance-span">{showBalance(token2)}</span>
+            <label htmlFor="token-balance-2">
+              Pooled
+              {token2.name}
+              :
+            </label>
+            <span className="balance-span" id="token-balance-2">{showBalance(token2)}</span>
           </div>
           <div className="d-flex mt-3">
             <div className="w-50 px-1">
               <button
                 type="button"
                 className="btn btn-reef w-100"
-                disabled={state._type === "LoadingState"}
+                disabled={state._type === 'LoadingState'}
                 onClick={addLiquidity}
-                >
-                {state._type === "LoadingState" 
-                  ? <LoadingButtonIcon /> 
-                  : "Add liquidity"
-                }
+              >
+                {state._type === 'LoadingState'
+                  ? <LoadingButtonIcon />
+                  : 'Add liquidity'}
               </button>
             </div>
             <div className="w-50 px-1">
               <button
                 type="button"
                 className="btn btn-reef w-100"
-                disabled={state._type === "LoadingState"}
+                disabled={state._type === 'LoadingState'}
                 onClick={onLiquidityRemove}
               >
-                {state._type === "LoadingState"
+                {state._type === 'LoadingState'
                   ? <LoadingButtonIcon />
-                  : "Remove liquidity"
-                }
+                  : 'Remove liquidity'}
               </button>
             </div>
           </div>
         </div>
-      }
+        )}
     </Card>
   );
-}
+};
 
 export default PoolManager;

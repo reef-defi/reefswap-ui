@@ -17,7 +17,9 @@ import { setAllTokensAction } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
 import { loadPools } from '../api/pools';
 import { setPools } from '../store/actions/pools';
-import { ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess } from '../store/internalStore';
+import {
+  ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess,
+} from '../store/internalStore';
 
 type State =
   | ErrorState
@@ -31,20 +33,18 @@ const AppInitialization = (): JSX.Element => {
   const { tokens, reloadTokens } = useSelector((state: ReducerState) => state.tokens);
   const { selectedAccount, accounts } = useSelector((state: ReducerState) => state.accounts);
 
-  const [state, setState] = useState<State>(toLoadingMessage(""));
-  
+  const [state, setState] = useState<State>(toLoadingMessage(''));
 
-  const loader = async (callback: () => Promise<void>) => {
+  const message = (msg: string): void => setState(toLoadingMessage(msg));
+  const loader = async (callback: () => Promise<void>): Promise<void> => {
     try {
-      message("");
+      message('');
       await callback();
       setState(toSuccess());
     } catch (e) {
       setState(toError(e.message));
-    } 
+    }
   };
-
-  const message = (message: string): void => setState(toLoadingMessage(message));
 
   // Initial setup
   useEffect(() => {
@@ -116,9 +116,9 @@ const AppInitialization = (): JSX.Element => {
 
   return (
     <>
-      {state._type === "SuccessState" && <ContentController /> }
-      {state._type === "LoadingMessageState" && <LoadingWithText text={state.message} />}
-      {state._type === "ErrorState" && <ErrorCard title="Polkadot extension" message={state.message} />}
+      {state._type === 'SuccessState' && <ContentController /> }
+      {state._type === 'LoadingMessageState' && <LoadingWithText text={state.message} />}
+      {state._type === 'ErrorState' && <ErrorCard title="Polkadot extension" message={state.message} />}
     </>
   );
 };

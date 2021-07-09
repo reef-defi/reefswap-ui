@@ -33,6 +33,11 @@ input {
   font-family: 'Inter var', sans-serif;
 }
 
+.btn-empty {
+  border: none;
+  background-color: inherit;
+}
+
 .btn-reef {
   background-color: #5531a9;
   border-color: #5531a9;

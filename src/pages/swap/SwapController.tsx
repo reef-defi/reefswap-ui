@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { reloadTokens, swapTokens, Token, TokenWithAmount } from '../../api/tokens';
+import {
+  reloadTokens, swapTokens, Token, TokenWithAmount,
+} from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, { CardTitle } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
@@ -46,9 +48,9 @@ const SwapController = (): JSX.Element => {
     try {
       setIsLoading(true);
       await swapTokens(sellToken, buyToken, signer);
-      toast.success('Swap complete!')
+      toast.success('Swap complete!');
     } catch (error) {
-      toast.error(error.message ? error.message : error)
+      toast.error(error.message ? error.message : error);
     } finally {
       const newTokens = await reloadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));

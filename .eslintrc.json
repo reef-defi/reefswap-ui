@@ -39,7 +39,10 @@
         "error",
         { "allowExpressions": true }
       ],
-      "max-len": ["warn", { "code": 80 }],
+      "max-len": "off",
+      "no-underscore-dangle": "off",
+      "jsx-a11y/label-has-associated-control": "warn",
+      "no-empty": ["error", { "allowEmptyCatch": true }],
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       "import/prefer-default-export": "off",

@@ -14,7 +14,7 @@ const defaultSettings: SettingsReducer = {
 
 export const settingsReducer = (state = defaultSettings, action: SettingsActions): SettingsReducer => {
   switch (action.type) {
-    case SET_CHAIN_URL: return { ...state, chainUrl: action.url};
+    case SET_CHAIN_URL: return { ...state, chainUrl: action.url };
     default: return state;
   }
 };

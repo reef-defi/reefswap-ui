@@ -7,17 +7,25 @@ import PoolManager from './PoolManager';
 
 const PoolsContoller = (): JSX.Element => {
   const history = useHistory();
-  const {pools} = useSelector((state: ReducerState) => state.pools);
+  const { pools } = useSelector((state: ReducerState) => state.pools);
 
   const onImportPoolClick = (): void => history.push(IMPORT_POOL_URL);
   const onAddLiquidityClick = (): void => history.push(ADD_LIQUIDITY_URL);
 
   const poolsView = pools
-    .map((pool) => 
-      <li key={pool.poolAddress} className="list-item mt-2">
-        <PoolManager {...pool} />
+    .map(({
+      token1, token2, liquidity, poolAddress, contract,
+    }) => (
+      <li key={poolAddress} className="list-item mt-2">
+        <PoolManager
+          token1={token1}
+          token2={token2}
+          contract={contract}
+          liquidity={liquidity}
+          poolAddress={poolAddress}
+        />
       </li>
-    );
+    ));
 
   return (
     <div>
@@ -30,14 +38,15 @@ const PoolsContoller = (): JSX.Element => {
         </div>
       </div>
 
-      { pools.length 
-        ? <div className="row overflow-auto" style={{ maxHeight: "500px" }}>
+      { pools.length
+        ? (
+          <div className="row overflow-auto" style={{ maxHeight: '500px' }}>
             <ul className="list-group list-group-full col-12">
               {poolsView}
             </ul>
-        </div> 
-        : <div>No pool was found, you can import desired pool or add liquidity!</div>
-      }
+          </div>
+        )
+        : <div>No pool was found, you can import desired pool or add liquidity!</div>}
     </div>
   );
 };

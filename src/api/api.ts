@@ -33,13 +33,11 @@ export const balanceOf = async (address: string, balanceAddress: string, signer:
   const contract = await getContract(address, signer);
   const balance = await contract.balanceOf(balanceAddress);
   return balance;
-}
+};
 
-export const getReefswapRouter = (signer: Signer): Contract => 
-  new Contract('0x0A2906130B1EcBffbE1Edb63D5417002956dFd41', ReefswapRouter, signer);
+export const getReefswapRouter = (signer: Signer): Contract => new Contract('0x0A2906130B1EcBffbE1Edb63D5417002956dFd41', ReefswapRouter, signer);
 
-export const getReefswapFactory = (signer: Signer): Contract =>
-  new Contract('0xcA36bA38f2776184242d3652b17bA4A77842707e', ReefswapFactory, signer);
+export const getReefswapFactory = (signer: Signer): Contract => new Contract('0xcA36bA38f2776184242d3652b17bA4A77842707e', ReefswapFactory, signer);
 
 export const loadToken = async (address: string, signer: Signer): Promise<Token> => {
   const token = await getContract(address, signer);
@@ -61,8 +59,7 @@ export const defaultGasLimit = (): {gasLimit: string;} => ({
   gasLimit: '300000000',
 });
 
-
-export const calculateFee = (token: Token, feeRation=0.03): Token => {
+export const calculateFee = (token: Token, feeRation = 0.03): Token => {
   const mm = Math.min(Math.max(feeRation, 0), 100);
   const fee = Math.round(mm * 100);
   const fullAmount = BigNumber.from(token.balance);
@@ -70,5 +67,5 @@ export const calculateFee = (token: Token, feeRation=0.03): Token => {
     .div(BigNumber.from(100))
     .sub(BigNumber.from(fee));
   const balance = fullAmount.add(feeAmount).toString();
-  return {...token, balance};
-}
+  return { ...token, balance };
+};

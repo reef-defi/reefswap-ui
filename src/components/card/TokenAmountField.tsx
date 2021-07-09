@@ -35,8 +35,8 @@ const TokenAmountField = ({
         />
       </div>
       <small className="ms-2">
-        Balance: 
-        {" " + showBalance(token)}
+        Balance:
+        {` ${showBalance(token)}`}
       </small>
     </div>
   );

@@ -31,5 +31,5 @@ export const setAllTokensAction = (tokens: Token[]): SetAllTokens => ({
 });
 
 export const reloadTokensAction = (): ReloadTokens => ({
-  type: RELOAD_TOKENS
+  type: RELOAD_TOKENS,
 });
