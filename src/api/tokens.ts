@@ -1,7 +1,8 @@
 import { Signer } from '@reef-defi/evm-provider';
-import { calculateAmount, calculateBalance } from '../utils/math';
+import { toGasLimitObj } from '../store/internalStore';
+import { calculateAmount } from '../utils/math';
 import {
-  defaultGasLimit, getContract, getReefswapRouter, ReefChains,
+  getContract, getReefswapRouter, ReefChains,
 } from './api';
 
 export interface Token {
@@ -14,6 +15,11 @@ export interface Token {
 export interface TokenWithAmount extends Token {
   amount: string;
 }
+
+export const toTokenAmount = (token: Token, amount: string): TokenWithAmount => ({
+  ...token,
+  amount
+});
 
 const defaultTestnetTokenAddresses = [
   '0x0000000000000000000000000000000001000000', // Reef
@@ -74,7 +80,7 @@ export const approveTokenAmount = async (token: TokenWithAmount, signer: Signer)
   await contract.approve(reefswapContrctAddress, bnAmount);
 };
 
-export const swapTokens = async (sellToken: TokenWithAmount, buyToken: TokenWithAmount, signer: Signer): Promise<void> => {
+export const swapTokens = async (sellToken: TokenWithAmount, buyToken: TokenWithAmount, signer: Signer, gasLimit: string): Promise<void> => {
   const signerAddress = await signer.getAddress();
 
   const buyAmount = calculateAmount(buyToken);
@@ -88,11 +94,11 @@ export const swapTokens = async (sellToken: TokenWithAmount, buyToken: TokenWith
     [sellToken.address, buyToken.address],
     signerAddress,
     10000000000,
-    defaultGasLimit(),
+    toGasLimitObj(gasLimit),
   );
 };
 
-export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmount, signer: Signer): Promise<void> => {
+export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmount, signer: Signer, gasLimit: string): Promise<void> => {
   await approveTokenAmount(token1, signer);
   await approveTokenAmount(token2, signer);
 
@@ -109,6 +115,6 @@ export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmo
     0,
     signerAddress,
     10000000000,
-    defaultGasLimit(),
+    toGasLimitObj(gasLimit),
   );
 };

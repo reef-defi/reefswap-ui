@@ -1,12 +1,12 @@
 import React from 'react';
-import { Token, TokenWithAmount } from '../../api/tokens';
+import { TokenWithAmount } from '../../api/tokens';
 import SelectToken from '../buttons/SelectToken';
 import { showBalance } from '../../utils/math';
 
 interface TokenAmountFieldProps {
   id?: string;
   token: TokenWithAmount;
-  onTokenSelect: (token: Token) => void;
+  onTokenSelect: (index: number) => void;
   onAmountChange: (amount: string) => void;
   placeholder?: string;
 }

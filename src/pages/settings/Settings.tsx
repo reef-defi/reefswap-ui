@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { ReefChains } from '../../api/api';
 import Card, { CardTitle } from '../../components/card/Card';
 import { settingsSetChainUrl } from '../../store/actions/settings';
-import { ReducerState } from '../../store/reducers';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { SWAP_URL } from '../../utils/urls';
 
 const Settings = (): JSX.Element => {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const { chainUrl } = useSelector((state: ReducerState) => state.settings);
+  const dispatch = useAppDispatch();
+  const { chainUrl } = useAppSelector((state) => state.settings);
   const [url, setUrl] = useState<ReefChains>(chainUrl as ReefChains);
 
   const applyChanges = (): void => {

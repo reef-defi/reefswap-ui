@@ -55,10 +55,6 @@ export const loadToken = async (address: string, signer: Signer): Promise<Token>
   };
 };
 
-export const defaultGasLimit = (): {gasLimit: string;} => ({
-  gasLimit: '300000000',
-});
-
 export const calculateFee = (token: Token, feeRation = 0.03): Token => {
   const mm = Math.min(Math.max(feeRation, 0), 100);
   const fee = Math.round(mm * 100);

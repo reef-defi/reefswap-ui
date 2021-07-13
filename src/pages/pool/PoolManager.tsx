@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { ReefswapPool, removeLiquidity } from '../../api/pools';
 import Card from '../../components/card/Card';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import {
+  defaultGasLimit,
   InitialState, LoadingState, toInit, toLoading,
 } from '../../store/internalStore';
 import { showBalance } from '../../utils/math';
 import { ADD_LIQUIDITY_URL } from '../../utils/urls';
-import { ReducerState } from '../../store/reducers';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 type PoolManagerState =
   | LoadingState
@@ -22,11 +22,12 @@ type PoolManager = ReefswapPool
 
 const PoolManager = (pool : PoolManager): JSX.Element => {
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
+  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const [state, setState] = useState<PoolManagerState>(toInit());
+  const [gasLimit] = useState(defaultGasLimit());
   const [isOpen, setIsOpen] = useState(false);
 
   const { token1, token2, liquidity } = pool;
@@ -37,7 +38,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
     try {
       setState(toLoading());
       const { signer } = accounts[selectedAccount];
-      await removeLiquidity(pool, signer);
+      await removeLiquidity(pool, signer, gasLimit);
       toast.success('Liquidity removed successfully!');
       dispatch(reloadPool());
       dispatch(reloadTokensAction());

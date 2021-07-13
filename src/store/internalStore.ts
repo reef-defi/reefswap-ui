@@ -26,3 +26,19 @@ export const toSuccess = (): SuccessState => ({ _type: 'SuccessState' });
 export const toError = (message: string): ErrorState => ({ message, _type: 'ErrorState' });
 export const toLoadingMessage = (message: string): LoadingMessageState => ({ message, _type: 'LoadingMessageState' });
 export const toSuccessContent = <T, > (content: T): SuccessContentState<T> => ({ content, _type: 'SuccessContentState' });
+
+
+export interface TokenState {
+  index: number;
+  amount: string;
+}
+
+export const defaultTokenState = (index=0): TokenState => ({
+  index,
+  amount: ""
+});
+
+export const defaultGasLimit = (): string => '300000000';
+export const toGasLimitObj = (gasLimit: string): {gasLimit: string} => ({
+  gasLimit
+});
