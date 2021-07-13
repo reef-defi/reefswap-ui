@@ -1,7 +1,7 @@
 import { Signer } from '@reef-defi/evm-provider';
 import { calculateAmount, calculateBalance } from '../utils/math';
 import {
-  defaultGasLimit, getContract, getReefswapRouter, ReefChains,
+  defaultGasLimitObj, getContract, getReefswapRouter, ReefChains,
 } from './api';
 
 export interface Token {
@@ -93,7 +93,7 @@ export const swapTokens = async (sellToken: TokenWithAmount, buyToken: TokenWith
     [sellToken.address, buyToken.address],
     signerAddress,
     10000000000,
-    defaultGasLimit(),
+    defaultGasLimitObj(),
   );
 };
 
@@ -114,6 +114,6 @@ export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmo
     0,
     signerAddress,
     10000000000,
-    defaultGasLimit(),
+    defaultGasLimitObj(),
   );
 };

@@ -1,7 +1,7 @@
 import { Signer } from '@reef-defi/evm-provider';
 import { Contract, BigNumber } from 'ethers';
 import {
-  balanceOf, defaultGasLimit, getReefswapFactory, getReefswapRouter,
+  balanceOf, defaultGasLimitObj, getReefswapFactory, getReefswapRouter,
 } from './api';
 import { approveTokenAmount, Token, TokenWithAmount } from './tokens';
 import { ensure, uniqueCombinations } from '../utils/utils';
@@ -103,6 +103,6 @@ export const removeLiquidity = async ({
     0, // TODO same as above
     signerAddress,
     10000000000,
-    defaultGasLimit(),
+    defaultGasLimitObj(),
   );
 };

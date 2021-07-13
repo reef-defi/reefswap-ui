@@ -11,7 +11,7 @@ html, body, #root {
   border-radius: 11px;
 }
 .btn:focus {
-  box-shadow: rgb(0 0 0 / 8%) 0px 6px 10px;
+  box-shadow: none;
 }
 .field-size {
   max-width: 600px;

@@ -55,7 +55,7 @@ export const loadToken = async (address: string, signer: Signer): Promise<Token>
   };
 };
 
-export const defaultGasLimit = (): {gasLimit: string;} => ({
+export const defaultGasLimitObj = (): {gasLimit: string;} => ({
   gasLimit: '300000000',
 });
 
