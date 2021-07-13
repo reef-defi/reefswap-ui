@@ -1,0 +1,19 @@
+{
+  "tokens": [
+    {
+      "name": "REEF",
+      "address": "0x0000000000000000000000000000000001000000",
+      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/64x64/6951.png"
+    },
+    {
+      "name": "RUSD",
+      "address": "0x0000000000000000000000000000000001000001",
+      "iconUrl": "https://findicons.com/files/icons/2219/dot_pictograms/256/usd_dollar_money_cash.png"
+    },
+    {
+      "name": "REEF2",
+      "address": "0x3C4Bf01eb3bd2B88E1aCE7fd76Ccb4F12d2867a8",
+      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/64x64/6951.png"
+    }
+  ]
+}
