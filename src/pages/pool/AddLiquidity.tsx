@@ -5,7 +5,7 @@ import {
   addLiquidity, reloadTokens, TokenWithAmount, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
-import { CardSettingsTitle } from '../../components/card/Card';
+import Card, { CardBack, CardHeader, CardSettings, CardTitle } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
@@ -68,22 +68,21 @@ const AddLiquidity = (): JSX.Element => {
   };
 
   return (
-    <CardSettingsTitle
-      title="Add liquidity"
-      onBack={back}
-      settings={{
-        gasLimit: gasLimit,
-        setGasLimit: setGasLimit,
-      }}
-    >
+    <Card>
+      <CardHeader>
+        <CardBack onBack={back} />
+        <CardTitle title="Add liquidity" />
+        <CardSettings settings={{ gasLimit, setGasLimit }} />
+      </CardHeader>
+
       <div className="alert alert-danger mt-2 border-rad" role="alert">
         <b>Tip: </b>
         When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.
       </div>
 
       <TokenAmountField
-        id="add-liquidity-token-1"
         token={token1}
+        id="add-liquidity-token-1"
         onTokenSelect={changeToken1}
         onAmountChange={setAmount1}
       />
@@ -98,8 +97,8 @@ const AddLiquidity = (): JSX.Element => {
       </div>
 
       <TokenAmountField
-        id="add-liquidity-token-2"
         token={token2}
+        id="add-liquidity-token-2"
         onTokenSelect={changeToken2}
         onAmountChange={setAmount2}
       />
@@ -112,7 +111,7 @@ const AddLiquidity = (): JSX.Element => {
       >
         {isLoading ? <LoadingButtonIcon /> : text}
       </button>
-    </CardSettingsTitle>
+    </Card>
   );
 };
 

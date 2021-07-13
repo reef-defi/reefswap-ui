@@ -4,12 +4,13 @@ import {
   reloadTokens, swapTokens, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
-import Card, { CardTitle } from '../../components/card/Card';
+import Card, { CardHeader, CardHeaderBlank, CardSettings, CardTitle } from '../../components/card/Card';
+import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { defaultTokenState } from '../../store/internalStore';
+import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
 
 const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -31,7 +32,8 @@ const SwapController = (): JSX.Element => {
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
   const [buy, setBuy] = useState(defaultTokenState(1));
-  const [sell, setSell] = useState(defaultTokenState());            
+  const [sell, setSell] = useState(defaultTokenState());
+  const [gasLimit, setGasLimit] = useState(defaultGasLimit()) 
   const [isLoading, setIsLoading] = useState(false);
 
   const buyToken = toTokenAmount(tokens[buy.index], buy.amount);
@@ -66,7 +68,12 @@ const SwapController = (): JSX.Element => {
 
   return (
     <Card>
-      <CardTitle title="Swap" />
+      <CardHeader>
+        <CardHeaderBlank />
+        <CardTitle title="Swap" />
+        <CardSettings settings={{ gasLimit, setGasLimit }} />
+      </CardHeader>
+      
       <TokenAmountField
         id="sell-token-field"
         token={sellToken}
@@ -76,9 +83,7 @@ const SwapController = (): JSX.Element => {
       <div className="d-flex justify-content-center">
         <div className="btn-content-field border-rad">
           <button type="button" className="btn btn-field border-rad hover-border" onClick={onSwitch}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-down-short" viewBox="0 0 16 16">
-              <path fillRule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z" />
-            </svg>
+            <DownArrowIcon />
           </button>
         </div>
       </div>

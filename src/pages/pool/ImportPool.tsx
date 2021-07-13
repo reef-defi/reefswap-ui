@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import SelectToken from '../../components/buttons/SelectToken';
-import { CardWithBackTitle } from '../../components/card/Card';
+import Card, { CardBack, CardHeader, CardHeaderBlank, CardTitle } from '../../components/card/Card';
 import { ReducerState } from '../../store';
 import { POOL_URL } from '../../utils/urls';
 
@@ -19,7 +19,13 @@ const ImportPool = (): JSX.Element => {
   const name2 = tokens[token2].name;
 
   return (
-    <CardWithBackTitle title="Import pool" onBack={back}>
+    <Card>
+      <CardHeader>
+        <CardBack onBack={back} />
+        <CardTitle title="Import pool" />
+        <CardHeaderBlank />
+      </CardHeader>
+      
       <div className="alert alert-danger mt-2 border-rad" role="alert">
         <b>Tip: </b>
         Use this tool to find pools that don not automatically appear in the interface.
@@ -43,7 +49,7 @@ const ImportPool = (): JSX.Element => {
         </div>
       </div>
       <button type="button" className="btn btn-reef border-rad w-100 mt-2">Import</button>
-    </CardWithBackTitle>
+    </Card>
   );
 };
 

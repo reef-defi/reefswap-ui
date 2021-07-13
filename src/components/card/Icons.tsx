@@ -33,4 +33,10 @@ export const DownIcon = (): JSX.Element => (
   <Icon className="bi-chevron-down" small>
     <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
   </Icon>
-)
+);
+
+export const DownArrowIcon = (): JSX.Element => (
+  <Icon className="bi-arrow-down-short">
+    <path fillRule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z" />
+  </Icon>
+);
