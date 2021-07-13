@@ -39,22 +39,6 @@ export const getReefswapRouter = (signer: Signer): Contract => new Contract('0x0
 
 export const getReefswapFactory = (signer: Signer): Contract => new Contract('0xcA36bA38f2776184242d3652b17bA4A77842707e', ReefswapFactory, signer);
 
-export const loadToken = async (address: string, signer: Signer): Promise<Token> => {
-  const token = await getContract(address, signer);
-
-  const signerAddress = await signer.getAddress();
-  const balance = await token.balanceOf(signerAddress);
-  const symbol = await token.symbol();
-  const decimals = await token.decimals();
-
-  return {
-    address: token.address,
-    balance: balance.toString(),
-    name: symbol,
-    decimals,
-  };
-};
-
 export const calculateFee = (token: Token, feeRation = 0.03): Token => {
   const mm = Math.min(Math.max(feeRation, 0), 100);
   const fee = Math.round(mm * 100);
