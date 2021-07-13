@@ -7,13 +7,12 @@ import {
 } from 'react-router-dom';
 import NavBar from './components/navigation/NavBar';
 import AppInitialization from './pages/AppInitialization';
-import { configureStore } from './store';
+import { store } from './store';
 import {
-  INITIALIZED_URLS, POOL_URL, SETTINGS_URL, SWAP_URL,
+  INITIALIZED_URLS, SETTINGS_URL, SWAP_URL,
 } from './utils/urls';
 import Settings from './pages/settings/Settings';
 
-const store = configureStore();
 toast.configure();
 
 const App = (): JSX.Element => (
