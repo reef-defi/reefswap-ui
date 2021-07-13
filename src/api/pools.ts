@@ -84,6 +84,7 @@ const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
   decimals: 18,
   balance: '0',
   name: 'ReefswapERC20',
+  iconUrl: '',
 });
 
 export const removeLiquidity = async ({

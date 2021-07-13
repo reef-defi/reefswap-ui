@@ -27,18 +27,17 @@ export const toError = (message: string): ErrorState => ({ message, _type: 'Erro
 export const toLoadingMessage = (message: string): LoadingMessageState => ({ message, _type: 'LoadingMessageState' });
 export const toSuccessContent = <T, > (content: T): SuccessContentState<T> => ({ content, _type: 'SuccessContentState' });
 
-
 export interface TokenState {
   index: number;
   amount: string;
 }
 
-export const defaultTokenState = (index=0): TokenState => ({
+export const defaultTokenState = (index = 0): TokenState => ({
   index,
-  amount: ""
+  amount: '',
 });
 
 export const defaultGasLimit = (): string => '300000000';
 export const toGasLimitObj = (gasLimit: string): {gasLimit: string} => ({
-  gasLimit
+  gasLimit,
 });

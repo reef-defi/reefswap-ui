@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import {
-  addLiquidity, reloadTokens, TokenWithAmount, toTokenAmount,
+  addLiquidity, loadTokens, TokenWithAmount, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
-import Card, { CardBack, CardHeader, CardSettings, CardTitle } from '../../components/card/Card';
+import Card, {
+  CardBack, CardHeader, CardSettings, CardTitle,
+} from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
@@ -17,14 +19,13 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
-    return { isValid: false, text: "Bind account"};
-  } else if (token1.amount.length === 0) {
+    return { isValid: false, text: 'Bind account' };
+  } if (token1.amount.length === 0) {
     return { isValid: false, text: 'Missing first token amount' };
-  } else if (token2.amount.length === 0) {
+  } if (token2.amount.length === 0) {
     return { isValid: false, text: 'Missing second token amount' };
-  } else {
-    return { isValid: true, text: 'Add liquidity' };
   }
+  return { isValid: true, text: 'Add liquidity' };
 };
 
 const AddLiquidity = (): JSX.Element => {
@@ -61,7 +62,7 @@ const AddLiquidity = (): JSX.Element => {
     } catch (error) {
       toast.error(error.message ? error.message : error);
     } finally {
-      const newTokens = await reloadTokens(tokens, signer);
+      const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
       setIsLoading(false);
     }

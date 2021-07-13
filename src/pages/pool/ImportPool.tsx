@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import SelectToken from '../../components/buttons/SelectToken';
-import Card, { CardBack, CardHeader, CardHeaderBlank, CardTitle } from '../../components/card/Card';
+import Card, {
+  CardBack, CardHeader, CardHeaderBlank, CardTitle,
+} from '../../components/card/Card';
 import { ReducerState } from '../../store';
 import { POOL_URL } from '../../utils/urls';
 
@@ -25,7 +27,7 @@ const ImportPool = (): JSX.Element => {
         <CardTitle title="Import pool" />
         <CardHeaderBlank />
       </CardHeader>
-      
+
       <div className="alert alert-danger mt-2 border-rad" role="alert">
         <b>Tip: </b>
         Use this tool to find pools that don not automatically appear in the interface.

@@ -12,7 +12,7 @@ const Card: React.FC = ({ children }): JSX.Element => (
 
 export default Card;
 
-export const CardHeader: React.FC<{}> = ({children}) => (
+export const CardHeader: React.FC<unknown> = ({ children }) => (
   <div className="d-flex justify-content-between mb-2">
     { children }
   </div>
@@ -34,7 +34,7 @@ interface CardBack {
   onBack: () => void;
 }
 
-export const CardBack = ({onBack}: CardBack): JSX.Element => (
+export const CardBack = ({ onBack }: CardBack): JSX.Element => (
   <button type="button" className="btn" onClick={onBack}>
     <BackIcon />
   </button>
@@ -49,12 +49,12 @@ interface CardSettings {
   settings: Settings;
 }
 
-export const CardSettings: React.FC<CardSettings> = ({settings, id="settings"}) => (
+export const CardSettings: React.FC<CardSettings> = ({ settings, id = 'settings' }) => (
   <div className="btn-group">
     <button className="btn" type="button" id={id} data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
       <GearIcon />
     </button>
-    <div className="dropdown-menu dropdown-menu-end" aria-labelledby={id} style={{ minWidth: "300px" }}>
+    <div className="dropdown-menu dropdown-menu-end" aria-labelledby={id} style={{ minWidth: '300px' }}>
       <div className="m-3 d-flex flex-column">
         <label className="ms-2 form-label" htmlFor="gas-limit">Gas limit</label>
         <input
