@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   reloadTokens, swapTokens, toTokenAmount,
@@ -9,8 +8,8 @@ import Card, { CardTitle } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { setAllTokensAction } from '../../store/actions/tokens';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultTokenState } from '../../store/internalStore';
-import { ReducerState } from '../../store/reducers';
 
 const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -26,13 +25,13 @@ const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean
 
 
 const SwapController = (): JSX.Element => {
-  const dispatch = useDispatch();
-  const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
+  const dispatch = useAppDispatch();
+  const { tokens } = useAppSelector((state) => state.tokens);
+  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
   const [buy, setBuy] = useState(defaultTokenState(1));
-  const [sell, setSell] = useState(defaultTokenState());
+  const [sell, setSell] = useState(defaultTokenState());            
   const [isLoading, setIsLoading] = useState(false);
 
   const buyToken = toTokenAmount(tokens[buy.index], buy.amount);

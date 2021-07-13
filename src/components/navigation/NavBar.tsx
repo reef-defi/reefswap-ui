@@ -1,8 +1,6 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { utilsSetSelectedAccount } from '../../store/actions/accounts';
-import { ReducerState } from '../../store/reducers';
 import {
   BIND_URL, POOL_URL, SETTINGS_URL, SWAP_URL,
 } from '../../utils/urls';
@@ -13,6 +11,7 @@ import { showBalance } from '../../utils/math';
 import { trim } from '../../utils/utils';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 interface ButtonProps {
   to: string;
@@ -25,11 +24,11 @@ const Button = ({ to, name, selected = false }: ButtonProps): JSX.Element => (
 );
 
 const NavBar = (): JSX.Element => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { pathname } = useLocation();
 
-  const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
+  const { tokens } = useAppSelector((state) => state.tokens);
+  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const selectAccount = (index: number): void => {
     dispatch(utilsSetSelectedAccount(index));

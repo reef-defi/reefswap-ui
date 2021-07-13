@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
 import Card, { CardTitle } from '../../components/card/Card';
-import { ReducerState } from '../../store/reducers';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { bindSigner } from '../../api/accounts';
 import { utilsSetSelectedAccount } from '../../store/actions/accounts';
 import { ensure } from '../../utils/utils';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 const BindController = (): JSX.Element => {
-  const dispatch = useDispatch();
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
+  const dispatch = useAppDispatch();
+  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
   const [isLoading, setIsLoading] = useState(false);

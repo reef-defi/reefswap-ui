@@ -1,13 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { ReducerState } from '../../store/reducers';
+import { useAppSelector } from '../../store/hooks';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
 import PoolManager from './PoolManager';
 
 const PoolsContoller = (): JSX.Element => {
   const history = useHistory();
-  const { pools } = useSelector((state: ReducerState) => state.pools);
+  const { pools } = useAppSelector((state) => state.pools);
 
   const onImportPoolClick = (): void => history.push(IMPORT_POOL_URL);
   const onAddLiquidityClick = (): void => history.push(ADD_LIQUIDITY_URL);

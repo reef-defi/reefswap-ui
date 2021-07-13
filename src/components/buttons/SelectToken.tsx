@@ -1,9 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { loadToken, getContract } from '../../api/api';
-import { Token } from '../../api/tokens';
 import { addTokenAction } from '../../store/actions/tokens';
-import { ReducerState } from '../../store/reducers';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { ensure, trim } from '../../utils/utils';
 import { CardTitle } from '../card/Card';
 import { LoadingButtonIcon } from '../loading/Loading';
@@ -23,9 +21,9 @@ const SELECT_ACCOUNT = 'Select account';
 const SelectToken = ({
   id = 'exampleModal', selectedTokenName, onTokenSelect, fullWidth,
 } : SelectTokenProps): JSX.Element => {
-  const dispatch = useDispatch();
-  const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
+  const dispatch = useAppDispatch();
+  const { tokens } = useAppSelector((state) => state.tokens);
+  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const [address, setAddress] = useState('');
   const [isValid, setIsValid] = useState(false);

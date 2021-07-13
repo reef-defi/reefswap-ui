@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
-  addLiquidity, reloadTokens, Token, TokenWithAmount, toTokenAmount,
+  addLiquidity, reloadTokens, TokenWithAmount, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import { CardWithBackTitle } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
-import { ReducerState } from '../../store/reducers';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { loadPools } from '../../api/pools';
 import { setPools } from '../../store/actions/pools';
 import { defaultTokenState } from '../../store/internalStore';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -30,9 +29,9 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmCla
 
 const AddLiquidity = (): JSX.Element => {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const { tokens } = useSelector((state: ReducerState) => state.tokens);
-  const { accounts, selectedAccount } = useSelector((state: ReducerState) => state.accounts);
+  const dispatch = useAppDispatch();
+  const { tokens } = useAppSelector((state) => state.tokens);
+  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const [isLoading, setIsLoading] = useState(false);
   const [pointer1, setPointer1] = useState(defaultTokenState());

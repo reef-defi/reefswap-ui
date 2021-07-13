@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import SelectToken from '../../components/buttons/SelectToken';
 import { CardWithBackTitle } from '../../components/card/Card';
-import { ReducerState } from '../../store/reducers';
+import { ReducerState } from '../../store';
 import { POOL_URL } from '../../utils/urls';
 
 const ImportPool = (): JSX.Element => {
