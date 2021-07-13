@@ -1,5 +1,6 @@
 import React from 'react';
 import './Card.css';
+import Icon, { BackIcon, GearIcon } from './Icons';
 
 const Card: React.FC = ({ children }): JSX.Element => (
   <div className="card border-rad">
@@ -20,16 +21,14 @@ export const CardTitle: React.FC<CardTitle> = ({ title }): JSX.Element => (
 );
 
 interface CardWithBackTitle extends CardTitle {
-  onClick: () => void
+  onBack: () => void
 }
 
-export const CardWithBackTitle: React.FC<CardWithBackTitle> = ({ title, onClick, children }): JSX.Element => (
+export const CardWithBackTitle: React.FC<CardWithBackTitle> = ({ title, onBack: onBack, children }): JSX.Element => (
   <Card>
     <div className="d-flex justify-content-between">
-      <button type="button" className="btn" onClick={onClick}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
-          <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
-        </svg>
+      <button type="button" className="btn" onClick={onBack}>
+        <BackIcon />
       </button>
       <h5 className="my-auto">{title}</h5>
       <div style={{ width: '46px' }} />
@@ -37,3 +36,44 @@ export const CardWithBackTitle: React.FC<CardWithBackTitle> = ({ title, onClick,
     {children}
   </Card>
 );
+
+interface Settings {
+  gasLimit: string;
+  setGasLimit: (value: string) => void;
+}
+
+interface CardSettingsTitle extends CardWithBackTitle {
+  settings: Settings;
+}
+
+export const CardSettingsTitle: React.FC<CardSettingsTitle> = ({title, settings, onBack, children}): JSX.Element => {
+  return (
+    <Card>
+      <div className="d-flex justify-content-between">
+        <button type="button" className="btn" onClick={onBack}>
+          <BackIcon />
+        </button>
+        <h5 className="my-auto">{title}</h5>
+        <div className="btn-group">
+          <button className="btn" type="button" id="settings" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            <GearIcon />
+          </button>
+          <div className="dropdown-menu dropdown-menu-end" aria-labelledby="settings" style={{ minWidth: "300px" }}>
+            <div className="m-3 d-flex flex-column">
+              <label className="ms-2 form-label" htmlFor="gas-limit">Gas limit</label>
+              <input
+                min="0"
+                type="number"
+                id="gas-limit"
+                value={settings.gasLimit}
+                className="form-control field-input"
+                onChange={(event) => settings.setGasLimit(event.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      {children}
+    </Card>
+  );
+}

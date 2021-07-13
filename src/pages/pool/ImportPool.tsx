@@ -19,7 +19,7 @@ const ImportPool = (): JSX.Element => {
   const name2 = tokens[token2].name;
 
   return (
-    <CardWithBackTitle title="Import pool" onClick={back}>
+    <CardWithBackTitle title="Import pool" onBack={back}>
       <div className="alert alert-danger mt-2 border-rad" role="alert">
         <b>Tip: </b>
         Use this tool to find pools that don not automatically appear in the interface.

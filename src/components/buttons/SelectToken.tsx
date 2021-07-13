@@ -4,6 +4,7 @@ import { addTokenAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { ensure, trim } from '../../utils/utils';
 import { CardTitle } from '../card/Card';
+import { DownIcon } from '../card/Icons';
 import { LoadingButtonIcon } from '../loading/Loading';
 import './Buttons.css';
 
@@ -94,10 +95,8 @@ const SelectToken = ({
   return (
     <>
       <button type="button" className={`btn btn-token-select border-1 border-rad hover-border ${fullWidth ? 'w-100' : ''}`} data-bs-toggle="modal" data-bs-target={`#${id}`}>
-        {selectedTokenName}
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down ms-1" viewBox="0 0 16 16">
-          <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
-        </svg>
+        <span className="me-2">{selectedTokenName}</span>
+        <DownIcon />
       </button>
       <div className="modal fade" id={id} tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">

@@ -5,14 +5,14 @@ import {
   addLiquidity, reloadTokens, TokenWithAmount, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
-import { CardWithBackTitle } from '../../components/card/Card';
+import { CardSettingsTitle } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { loadPools } from '../../api/pools';
 import { setPools } from '../../store/actions/pools';
-import { defaultTokenState } from '../../store/internalStore';
+import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
@@ -36,6 +36,7 @@ const AddLiquidity = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const [pointer1, setPointer1] = useState(defaultTokenState());
   const [pointer2, setPointer2] = useState(defaultTokenState(1));
+  const [gasLimit, setGasLimit] = useState(defaultGasLimit());
 
   const token1 = toTokenAmount(tokens[pointer1.index], pointer1.amount);
   const token2 = toTokenAmount(tokens[pointer2.index], pointer2.amount);
@@ -67,7 +68,14 @@ const AddLiquidity = (): JSX.Element => {
   };
 
   return (
-    <CardWithBackTitle title="Add liquidity" onClick={back}>
+    <CardSettingsTitle
+      title="Add liquidity"
+      onBack={back}
+      settings={{
+        gasLimit: gasLimit,
+        setGasLimit: setGasLimit,
+      }}
+    >
       <div className="alert alert-danger mt-2 border-rad" role="alert">
         <b>Tip: </b>
         When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.
@@ -104,7 +112,7 @@ const AddLiquidity = (): JSX.Element => {
       >
         {isLoading ? <LoadingButtonIcon /> : text}
       </button>
-    </CardWithBackTitle>
+    </CardSettingsTitle>
   );
 };
 
