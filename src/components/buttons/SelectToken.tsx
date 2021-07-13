@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useState } from 'react';
-import { loadToken, getContract } from '../../api/api';
+import { getContract } from '../../api/api';
+import { loadToken, Token } from '../../api/tokens';
 import { addTokenAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { ensure, trim } from '../../utils/utils';
@@ -18,6 +19,10 @@ interface SelectTokenProps {
 const TO_SHORT_ADDRESS = 'To short address';
 const UNKNOWN_ADDRESS = 'Unknow address';
 const SELECT_ACCOUNT = 'Select account';
+const TOKEN_EXISTS = 'Token exists';
+
+const doesAddressAlreadyExist = (address: string, tokens: Token[]): boolean => 
+  tokens.find((token) => token.address === address) !== undefined;
 
 const SelectToken = ({
   id = 'exampleModal', selectedTokenName, onTokenSelect, fullWidth,
@@ -37,25 +42,30 @@ const SelectToken = ({
       ensure(isValid, UNKNOWN_ADDRESS);
       ensure(selectedAccount !== -1, SELECT_ACCOUNT);
       const { signer } = accounts[selectedAccount];
-      const token = await loadToken(address, signer);
+      const token = await loadToken(address, signer, "https://profit-mine.com/assets/coins/empty-coin.png");
       dispatch(addTokenAction(token));
+      onTokenSelect(tokens.length);
+      setAddress('');
+      setIsValid(false);
+      setButtonText(TO_SHORT_ADDRESS);
     } catch (error) {
       setButtonText(error.message);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   const onAddressChange = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const newAddress = event.target.value;
     setAddress(newAddress);
     setIsValid(false);
     setButtonText(TO_SHORT_ADDRESS);
-
+    
     if (newAddress.length === 42) {
       try {
         setIsLoading(true);
         ensure(selectedAccount !== -1, SELECT_ACCOUNT);
+        ensure(!doesAddressAlreadyExist(newAddress, tokens), TOKEN_EXISTS);
         const { signer } = accounts[selectedAccount];
         const contract = await getContract(newAddress, signer);
         const symbol = await contract.symbol();
