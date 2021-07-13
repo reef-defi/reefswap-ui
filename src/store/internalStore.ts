@@ -39,3 +39,6 @@ export const defaultTokenState = (index=0): TokenState => ({
 });
 
 export const defaultGasLimit = (): string => '300000000';
+export const toGasLimitObj = (gasLimit: string): {gasLimit: string} => ({
+  gasLimit
+});

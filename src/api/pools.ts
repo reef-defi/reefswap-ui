@@ -1,11 +1,12 @@
 import { Signer } from '@reef-defi/evm-provider';
 import { Contract, BigNumber } from 'ethers';
 import {
-  balanceOf, defaultGasLimitObj, getReefswapFactory, getReefswapRouter,
+  balanceOf, getReefswapFactory, getReefswapRouter,
 } from './api';
 import { approveTokenAmount, Token, TokenWithAmount } from './tokens';
 import { ensure, uniqueCombinations } from '../utils/utils';
 import { ReefswapPair } from '../assets/abi/ReefswapPair';
+import { toGasLimitObj } from '../store/internalStore';
 
 const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -87,7 +88,7 @@ const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
 
 export const removeLiquidity = async ({
   token1, token2, liquidity, poolAddress,
-}: ReefswapPool, signer: Signer): Promise<void> => {
+}: ReefswapPool, signer: Signer, gasLimit: string): Promise<void> => {
   const reefswapRouter = getReefswapRouter(signer);
   const signerAddress = await signer.getAddress();
 
@@ -103,6 +104,6 @@ export const removeLiquidity = async ({
     0, // TODO same as above
     signerAddress,
     10000000000,
-    defaultGasLimitObj(),
+    toGasLimitObj(gasLimit),
   );
 };

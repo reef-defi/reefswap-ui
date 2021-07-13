@@ -55,7 +55,7 @@ const SwapController = (): JSX.Element => {
   const onSwap = async (): Promise<void> => {
     try {
       setIsLoading(true);
-      await swapTokens(sellToken, buyToken, signer);
+      await swapTokens(sellToken, buyToken, signer, gasLimit);
       toast.success('Swap complete!');
     } catch (error) {
       toast.error(error.message ? error.message : error);

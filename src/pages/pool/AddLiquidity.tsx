@@ -53,7 +53,7 @@ const AddLiquidity = (): JSX.Element => {
   const addLiquidityClick = async (): Promise<void> => {
     try {
       setIsLoading(true);
-      await addLiquidity(token1, token2, signer);
+      await addLiquidity(token1, token2, signer, gasLimit);
       const pools = await loadPools(tokens, signer);
       dispatch(setPools(pools));
       history.push(POOL_URL);
