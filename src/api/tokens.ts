@@ -4,6 +4,8 @@ import { calculateAmount } from '../utils/math';
 import {
   getContract, getReefswapRouter, ReefChains,
 } from './api';
+import testnetTokens from '../validated-tokens-testnet.json';
+import mainnetTokens from '../validated-tokens-mainnet.json';
 
 interface ValidatedToken {
   name: string;
@@ -14,9 +16,6 @@ interface ValidatedToken {
 interface ValidatedTokens {
   tokens: ValidatedToken[];
 }
-
-const testnetTokens: ValidatedTokens = require("./../validated-tokens-testnet.json");
-const mainnetTokens: ValidatedTokens = require("./../validated-tokens-mainnet.json");
 
 export interface Token extends ValidatedToken {
   balance: string;
@@ -29,7 +28,7 @@ export interface TokenWithAmount extends Token {
 
 export const toTokenAmount = (token: Token, amount: string): TokenWithAmount => ({
   ...token,
-  amount
+  amount,
 });
 
 export const loadVerifiedERC20Tokens = async (chainUrl: string): Promise<ValidatedToken[]> => {

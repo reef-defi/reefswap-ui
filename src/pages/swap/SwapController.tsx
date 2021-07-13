@@ -5,7 +5,9 @@ import {
   swapTokens, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
-import Card, { CardHeader, CardHeaderBlank, CardSettings, CardTitle } from '../../components/card/Card';
+import Card, {
+  CardHeader, CardHeaderBlank, CardSettings, CardTitle,
+} from '../../components/card/Card';
 import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
@@ -15,16 +17,14 @@ import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
 
 const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
-    return { isValid: false, text: "Bind account"};
-  } else if (sellAmount.length === 0) {
+    return { isValid: false, text: 'Bind account' };
+  } if (sellAmount.length === 0) {
     return { isValid: false, text: 'Missing sell amount' };
-  } else if (buyAmount.length === 0) {
+  } if (buyAmount.length === 0) {
     return { isValid: false, text: 'Missing buy amount' };
-  } else {
-    return { isValid: true, text: 'Swap' };
   }
+  return { isValid: true, text: 'Swap' };
 };
-
 
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -34,7 +34,7 @@ const SwapController = (): JSX.Element => {
 
   const [buy, setBuy] = useState(defaultTokenState(1));
   const [sell, setSell] = useState(defaultTokenState());
-  const [gasLimit, setGasLimit] = useState(defaultGasLimit()) 
+  const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isLoading, setIsLoading] = useState(false);
 
   const buyToken = toTokenAmount(tokens[buy.index], buy.amount);
@@ -42,15 +42,15 @@ const SwapController = (): JSX.Element => {
   const { text, isValid } = swapStatus(sell.amount, buy.amount, isEvmClaimed);
 
   const setBuyAmount = (amount: string): void => setBuy({ ...buy, amount });
-  const setSellAmount = (amount: string): void => setSell({ ...sell, amount })
+  const setSellAmount = (amount: string): void => setSell({ ...sell, amount });
 
-  const changeBuyToken = (index: number): void => setBuy({...buy, index});
-  const changeSellToken = (index: number): void => setSell({...sell, index});
+  const changeBuyToken = (index: number): void => setBuy({ ...buy, index });
+  const changeSellToken = (index: number): void => setSell({ ...sell, index });
 
   const onSwitch = (): void => {
-    const subState = {...buy};
-    setBuy({...sell});
-    setSell({...subState});
+    const subState = { ...buy };
+    setBuy({ ...sell });
+    setSell({ ...subState });
   };
 
   const onSwap = async (): Promise<void> => {
@@ -74,7 +74,7 @@ const SwapController = (): JSX.Element => {
         <CardTitle title="Swap" />
         <CardSettings settings={{ gasLimit, setGasLimit }} />
       </CardHeader>
-      
+
       <TokenAmountField
         id="sell-token-field"
         token={sellToken}

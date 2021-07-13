@@ -21,8 +21,7 @@ const UNKNOWN_ADDRESS = 'Unknow address';
 const SELECT_ACCOUNT = 'Select account';
 const TOKEN_EXISTS = 'Token exists';
 
-const doesAddressAlreadyExist = (address: string, tokens: Token[]): boolean => 
-  tokens.find((token) => token.address === address) !== undefined;
+const doesAddressAlreadyExist = (address: string, tokens: Token[]): boolean => tokens.find((token) => token.address === address) !== undefined;
 
 const SelectToken = ({
   id = 'exampleModal', selectedTokenName, onTokenSelect, fullWidth,
@@ -42,7 +41,7 @@ const SelectToken = ({
       ensure(isValid, UNKNOWN_ADDRESS);
       ensure(selectedAccount !== -1, SELECT_ACCOUNT);
       const { signer } = accounts[selectedAccount];
-      const token = await loadToken(address, signer, "https://profit-mine.com/assets/coins/empty-coin.png");
+      const token = await loadToken(address, signer, 'https://profit-mine.com/assets/coins/empty-coin.png');
       dispatch(addTokenAction(token));
       onTokenSelect(tokens.length);
       setAddress('');
@@ -54,13 +53,13 @@ const SelectToken = ({
       setIsLoading(false);
     }
   };
-  
+
   const onAddressChange = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const newAddress = event.target.value;
     setAddress(newAddress);
     setIsValid(false);
     setButtonText(TO_SHORT_ADDRESS);
-    
+
     if (newAddress.length === 42) {
       try {
         setIsLoading(true);
