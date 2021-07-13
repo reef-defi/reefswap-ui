@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import {
-  addLiquidity, reloadTokens, TokenWithAmount, toTokenAmount,
+  addLiquidity, loadTokens, TokenWithAmount, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, { CardBack, CardHeader, CardSettings, CardTitle } from '../../components/card/Card';
@@ -61,7 +61,7 @@ const AddLiquidity = (): JSX.Element => {
     } catch (error) {
       toast.error(error.message ? error.message : error);
     } finally {
-      const newTokens = await reloadTokens(tokens, signer);
+      const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
       setIsLoading(false);
     }

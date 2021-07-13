@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import {
-  reloadTokens, swapTokens, toTokenAmount,
+  loadTokens,
+  swapTokens, toTokenAmount,
 } from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, { CardHeader, CardHeaderBlank, CardSettings, CardTitle } from '../../components/card/Card';
@@ -60,7 +61,7 @@ const SwapController = (): JSX.Element => {
     } catch (error) {
       toast.error(error.message ? error.message : error);
     } finally {
-      const newTokens = await reloadTokens(tokens, signer);
+      const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
       setIsLoading(false);
     }

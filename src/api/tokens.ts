@@ -5,9 +5,20 @@ import {
   getContract, getReefswapRouter, ReefChains,
 } from './api';
 
-export interface Token {
+interface ValidatedToken {
   name: string;
   address: string;
+  iconUrl: string;
+}
+
+interface ValidatedTokens {
+  tokens: ValidatedToken[];
+}
+
+const testnetTokens: ValidatedTokens = require("./../validated-tokens-testnet.json");
+const mainnetTokens: ValidatedTokens = require("./../validated-tokens-mainnet.json");
+
+export interface Token extends ValidatedToken {
   balance: string;
   decimals: number;
 }
@@ -21,54 +32,39 @@ export const toTokenAmount = (token: Token, amount: string): TokenWithAmount => 
   amount
 });
 
-const defaultTestnetTokenAddresses = [
-  '0x0000000000000000000000000000000001000000', // Reef
-  '0x0000000000000000000000000000000001000001', // RUSD
-  '0x3C4Bf01eb3bd2B88E1aCE7fd76Ccb4F12d2867a8', // Reef copy ?
-];
-
-const defaultMainnetTokenAddresses = [
-  '0x0000000000000000000000000000000001000000', // Reef
-  '0x0000000000000000000000000000000001000001', // RUSD
-];
-
-// TODO add api call on reef explore
-export const loadVerifiedERC20TokenAddresses = async (chainUrl: string): Promise<string[]> => {
+export const loadVerifiedERC20Tokens = async (chainUrl: string): Promise<ValidatedToken[]> => {
   if (chainUrl === ReefChains.Testnet) {
-    return Promise.resolve([...defaultTestnetTokenAddresses]);
+    return testnetTokens.tokens;
   } if (chainUrl === ReefChains.Mainnet) {
-    return Promise.resolve([...defaultMainnetTokenAddresses]);
+    return mainnetTokens.tokens;
   }
   throw new Error('Chain URL does not exist!');
 };
 
-const loadToken = async (address: string, signer: Signer): Promise<Token> => {
+export const retrieveTokenAddresses = (tokens: Token[]): string[] => tokens.map((token) => token.address);
+
+export const loadToken = async (address: string, signer: Signer, iconUrl: string): Promise<Token> => {
+  const token = await getContract(address, signer);
+
   const signerAddress = await signer.getAddress();
-  const contract = await getContract(address, signer);
-  const balance = await contract.balanceOf(signerAddress);
-  const decimals = await contract.decimals();
-  const symbol = await contract.symbol();
+  const balance = await token.balanceOf(signerAddress);
+  const symbol = await token.symbol();
+  const decimals = await token.decimals();
 
   return {
+    iconUrl,
     decimals,
-    name: symbol,
-    address: contract.address,
+    address: token.address,
     balance: balance.toString(),
+    name: symbol,
   };
 };
 
-export const retrieveTokenAddresses = (tokens: Token[]): string[] => tokens.map((token) => token.address);
-
-export const loadTokens = async (addresses: string[], signer: Signer): Promise<Token[]> => {
+export const loadTokens = async (addresses: ValidatedToken[], signer: Signer): Promise<Token[]> => {
   const tokens = Promise.all(
-    addresses.map((address) => loadToken(address, signer)),
+    addresses.map((token) => loadToken(token.address, signer, token.iconUrl)),
   );
   return tokens;
-};
-
-export const reloadTokens = async (tokens: Token[], signer: Signer): Promise<Token[]> => {
-  const addresses = retrieveTokenAddresses(tokens);
-  return loadTokens(addresses, signer);
 };
 
 export const approveTokenAmount = async (token: TokenWithAmount, signer: Signer): Promise<void> => {
