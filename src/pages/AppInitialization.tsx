@@ -10,7 +10,7 @@ import {
   utilsSetSelectedAccount,
 } from '../store/actions/accounts';
 import { accountsToSigners } from '../api/accounts';
-import { loadTokens, loadVerifiedERC20TokenAddresses } from '../api/tokens';
+import { loadTokens, loadVerifiedERC20Tokens } from '../api/tokens';
 import { setAllTokensAction } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
 import { loadPools } from '../api/pools';
@@ -70,8 +70,8 @@ const AppInitialization = (): JSX.Element => {
       );
 
       message('Loading tokens...');
-      const addresses = await loadVerifiedERC20TokenAddresses(chainUrl);
-      const newTokens = await loadTokens(addresses, signers[0].signer);
+      const verifiedTokens = await loadVerifiedERC20Tokens(chainUrl);
+      const newTokens = await loadTokens(verifiedTokens, signers[0].signer);
 
       message('Loading pools...');
       const pools = await loadPools(newTokens, signers[0].signer);
@@ -94,8 +94,7 @@ const AppInitialization = (): JSX.Element => {
 
     const tokenLoader = async (): Promise<void> => {
       message('Loading token balances...');
-      const addresses = tokens.map((token) => token.address);
-      const newTokens = await loadTokens(addresses, signer);
+      const newTokens = await loadTokens(tokens, signer);
 
       dispatch(setAllTokensAction(newTokens));
     };
