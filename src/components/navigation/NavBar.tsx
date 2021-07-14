@@ -57,7 +57,7 @@ const NavBar = (): JSX.Element => {
     ));
 
   return (
-    <nav className="container-fluid m-1 mt-3 row">
+    <nav className="container-fluid m-1 mt-3 row w-auto">
       <div className="col-md-4 col-sm-1 p-0">
         <Link to={SWAP_URL}>
           <img src={logo} alt="Not found!" />
