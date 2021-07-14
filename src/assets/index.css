@@ -98,3 +98,26 @@ input {
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
+
+.dropdown-menu {
+  background-color: rgb(237 238 242);
+}
+
+.dropdown-item {
+  background-color: inherit;
+}
+
+.dropdown-item:hover .lead-text, .dropdown-item:hover .sub-text, .dropdown-item:hover {
+  color: whitesmoke;
+  background-color: #46288b;
+}
+
+.lead-text {
+  color: #111;
+  font-size: 1em;
+}
+
+.sub-text {
+  color: #333;
+  font-size: 0.8em;
+}

@@ -47,7 +47,9 @@
       "react-hooks/exhaustive-deps": "warn",
       "import/prefer-default-export": "off",
       "react/prop-types": "off",
-      "import/no-extraneous-dependencies": ["warn", {"devDependencies": ["**/*.test.ts", "**/*.test.tsx"]}]
+      "react/require-default-props": "warn",
+      "import/no-extraneous-dependencies": ["warn", {"devDependencies": ["**/*.test.ts", "**/*.test.tsx"]}],
+      "jsx-a11y/click-events-have-key-events": "off"
     },
     "settings": {
       "import/resolver": {
