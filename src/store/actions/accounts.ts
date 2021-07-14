@@ -7,6 +7,7 @@ export interface ReefswapSigner {
   signer: Signer;
   name: string;
   address: string;
+  evmAddress: string;
   isEvmClaimed: boolean;
 }
 
