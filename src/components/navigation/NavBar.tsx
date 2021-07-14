@@ -12,6 +12,7 @@ import { trim } from '../../utils/utils';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import AccountInfo from './AccountInfo';
 
 interface ButtonProps {
   to: string;
@@ -41,11 +42,14 @@ const NavBar = (): JSX.Element => {
 
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
   const accountsView = accounts
-    .map((account, index) => (
-      <li key={account.address}>
-        <button type="button" className="dropdown-item" onClick={() => selectAccount(index)}>
-          { trim(account.name) }
-        </button>
+    .map(({address, evmAddress, name}, index) => (
+      <li key={address}>
+        <AccountInfo
+          name={name}
+          address={address}
+          evmAddress={evmAddress}
+          onClick={() => selectAccount(index)}
+        />
       </li>
     ));
 
@@ -75,7 +79,7 @@ const NavBar = (): JSX.Element => {
               <button className="btn btn-secondary dropdown-toggle no-shadow nav-acc-button border-rad hover-border" type="button" id="dropdownMenuReference" data-bs-toggle="dropdown" aria-expanded="false">
                 {trim(accName)}
               </button>
-              <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuReference">
+              <ul className="dropdown-menu dropdown-menu-end border-rad m-1" aria-labelledby="dropdownMenuReference">
                 {accountsView}
               </ul>
             </div>
