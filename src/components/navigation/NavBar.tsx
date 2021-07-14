@@ -13,7 +13,9 @@ import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import AccountInfo from './AccountInfo';
-import { BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon } from '../card/Icons';
+import {
+  BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon,
+} from '../card/Icons';
 
 interface ButtonProps {
   to: string;
@@ -43,7 +45,7 @@ const NavBar = (): JSX.Element => {
 
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
   const accountsView = accounts
-    .map(({address, evmAddress, name}, index) => (
+    .map(({ address, evmAddress, name }, index) => (
       <li key={address}>
         <AccountInfo
           name={name}

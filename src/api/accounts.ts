@@ -9,7 +9,7 @@ export const accountsToSigners = async (accounts: InjectedAccountWithMeta[], pro
     .map((account) => ({
       signer: new Signer(provider, account.address, sign),
       name: account.meta.name || '',
-      address: account.address
+      address: account.address,
     }))
     .map(async (signer): Promise<ReefswapSigner> => ({
       ...signer,
