@@ -13,6 +13,7 @@ import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import AccountInfo from './AccountInfo';
+import { BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon } from '../card/Icons';
 
 interface ButtonProps {
   to: string;
@@ -89,11 +90,37 @@ const NavBar = (): JSX.Element => {
               <button className="btn btn-secondary d-flex flex-column no-shadow nav-acc-button border-rad" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                 ...
               </button>
-              <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                <li><a className="dropdown-item" href="https://docs.reef.finance/docs/prologue/introduction/" target="_blank" rel="noreferrer">Docs</a></li>
-                <li><a className="dropdown-item" href="https://app.element.io/#/room/#reef:matrix.org" target="_blank" rel="noreferrer">Matrix chat</a></li>
-                <li><hr className="dropdown-divider" /></li>
-                <li><Link className="dropdown-item" to={SETTINGS_URL}>Settings</Link></li>
+              <ul className="dropdown-menu dropdown-menu-end border-rad m-1" aria-labelledby="dropdownMenuButton1">
+                <li>
+                  <a className="dropdown-item" href="https://reef.finance/" target="_blank" rel="noreferrer">
+                    <InfoIcon />
+                    <span className="ms-3 lead-text">About</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="https://docs.reef.finance/docs/prologue/introduction/" target="_blank" rel="noreferrer">
+                    <BookIcon />
+                    <span className="ms-3 lead-text">Docs</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="https://github.com/reef-defi" target="_blank" rel="noreferrer">
+                    <CodeIcon />
+                    <span className="ms-3 lead-text">Code</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="https://app.element.io/#/room/#reef:matrix.org" target="_blank" rel="noreferrer">
+                    <ChatIcon />
+                    <span className="ms-3 lead-text">Matrix chat</span>
+                  </a>
+                </li>
+                <li>
+                  <Link className="dropdown-item" to={SETTINGS_URL}>
+                    <GearIcon />
+                    <span className="ms-3 lead-text">Settings</span>
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
