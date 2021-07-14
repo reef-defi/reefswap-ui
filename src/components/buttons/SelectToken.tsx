@@ -105,7 +105,7 @@ const SelectToken = ({
     <>
       <button type="button" className={`btn btn-token-select border-1 border-rad hover-border ${fullWidth ? 'w-100' : ''}`} data-bs-toggle="modal" data-bs-target={`#${id}`}>
         <span className="me-2">{selectedTokenName}</span>
-        <DownIcon />
+        <DownIcon small />
       </button>
       <div className="modal fade" id={id} tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
