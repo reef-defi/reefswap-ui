@@ -13,6 +13,7 @@ import { ADD_LIQUIDITY_URL } from '../../utils/urls';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { errorToast } from '../../utils/errorHandler';
 
 type PoolManagerState =
   | LoadingState
@@ -43,7 +44,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
       dispatch(reloadPool());
       dispatch(reloadTokensAction());
     } catch (error) {
-      toast.error(error.message ? error.message : error);
+      errorToast(error.message);
       setState(toInit());
     }
   };
@@ -70,26 +71,22 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
         && (
         <div>
           <div className="d-flex justify-content-between mt-3">
-            <label htmlFor="token-liquidity-amo">Your pool tokens:</label>
-            <span className="balance-span" id="token-liquidity-amo">
+            <label htmlFor="token-liquidity-amo" className="lead-text">Your pool tokens:</label>
+            <span className="sub-text" id="token-liquidity-amo">
               {showBalance({ ...token1, balance: liquidity, decimals: 18 })}
             </span>
           </div>
           <div className="d-flex justify-content-between">
-            <label htmlFor="token-balance-1">
-              Pooled
-              {token1.name}
-              :
+            <label htmlFor="token-balance-1" className="lead-text">
+              {`Pooled ${token1.name}:`}
             </label>
-            <span className="balance-span" id="token-balance-1">{showBalance(token1)}</span>
+            <span className="sub-text" id="token-balance-1">{showBalance(token1)}</span>
           </div>
           <div className="d-flex justify-content-between">
-            <label htmlFor="token-balance-2">
-              Pooled
-              {token2.name}
-              :
+            <label htmlFor="token-balance-2" className="lead-text">
+              {`Pooled ${token2.name}:`}
             </label>
-            <span className="balance-span" id="token-balance-2">{showBalance(token2)}</span>
+            <span className="sub-text" id="token-balance-2">{showBalance(token2)}</span>
           </div>
           <div className="d-flex mt-3">
             <div className="w-50 px-1">
