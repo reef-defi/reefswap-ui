@@ -25,7 +25,7 @@ const BindController = (): JSX.Element => {
       dispatch(utilsSetSelectedAccount(selectedAccount));
       toast.success('Account binded successfully');
     } catch (error) {
-      errorToast(error.message)
+      errorToast(error.message);
     } finally {
       setIsLoading(false);
     }

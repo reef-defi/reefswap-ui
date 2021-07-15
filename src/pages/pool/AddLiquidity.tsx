@@ -61,7 +61,7 @@ const AddLiquidity = (): JSX.Element => {
       history.push(POOL_URL);
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
     } catch (error) {
-      errorToast(error.message)
+      errorToast(error.message);
     } finally {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
