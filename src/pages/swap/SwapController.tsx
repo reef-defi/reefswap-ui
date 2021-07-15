@@ -14,6 +14,7 @@ import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
+import { errorToast } from '../../utils/errorHandler';
 
 const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -59,7 +60,7 @@ const SwapController = (): JSX.Element => {
       await swapTokens(sellToken, buyToken, signer, gasLimit);
       toast.success('Swap complete!');
     } catch (error) {
-      toast.error(error.message ? error.message : error);
+      errorToast(error.message);
     } finally {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));

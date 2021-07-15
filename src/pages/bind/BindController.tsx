@@ -6,6 +6,7 @@ import { bindSigner } from '../../api/accounts';
 import { utilsSetSelectedAccount } from '../../store/actions/accounts';
 import { ensure } from '../../utils/utils';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { errorToast } from '../../utils/errorHandler';
 
 const BindController = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -24,7 +25,7 @@ const BindController = (): JSX.Element => {
       dispatch(utilsSetSelectedAccount(selectedAccount));
       toast.success('Account binded successfully');
     } catch (error) {
-      toast.error(error.message ? error.message : error);
+      errorToast(error.message)
     } finally {
       setIsLoading(false);
     }

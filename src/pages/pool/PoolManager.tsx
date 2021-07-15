@@ -13,6 +13,7 @@ import { ADD_LIQUIDITY_URL } from '../../utils/urls';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { errorToast } from '../../utils/errorHandler';
 
 type PoolManagerState =
   | LoadingState
@@ -43,7 +44,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
       dispatch(reloadPool());
       dispatch(reloadTokensAction());
     } catch (error) {
-      toast.error(error.message ? error.message : error);
+      errorToast(error.message);
       setState(toInit());
     }
   };

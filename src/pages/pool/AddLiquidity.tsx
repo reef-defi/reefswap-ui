@@ -16,6 +16,7 @@ import { loadPools } from '../../api/pools';
 import { setPools } from '../../store/actions/pools';
 import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { errorToast } from '../../utils/errorHandler';
 
 const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -60,7 +61,7 @@ const AddLiquidity = (): JSX.Element => {
       history.push(POOL_URL);
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
     } catch (error) {
-      toast.error(error.message ? error.message : error);
+      errorToast(error.message)
     } finally {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
