@@ -1,7 +1,7 @@
 import React from 'react';
-import { TokenWithAmount } from '../../api/tokens';
 import SelectToken from '../buttons/SelectToken';
 import { showBalance } from '../../utils/math';
+import { TokenWithAmount } from '../../api/rpc/tokens';
 
 interface TokenAmountFieldProps {
   id?: string;

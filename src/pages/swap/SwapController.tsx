@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import {
-  loadTokens,
-  swapTokens, toTokenAmount,
-} from '../../api/tokens';
+import { toTokenAmount, swapTokens, loadTokens } from '../../api/rpc/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, {
   CardHeader, CardHeaderBlank, CardSettings, CardTitle,

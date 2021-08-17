@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import {
-  addLiquidity, loadTokens, TokenWithAmount, toTokenAmount,
-} from '../../api/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, {
   CardBack, CardHeader, CardSettings, CardTitle,
@@ -12,11 +9,12 @@ import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
-import { loadPools } from '../../api/pools';
 import { setPools } from '../../store/actions/pools';
 import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
+import { loadPools } from '../../api/rpc/pools';
+import { TokenWithAmount, toTokenAmount, addLiquidity, loadTokens } from '../../api/rpc/tokens';
 
 const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {

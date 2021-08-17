@@ -1,4 +1,4 @@
-import { ReefChains } from '../../api/api';
+import { ReefChains } from '../../api/rpc/rpc';
 import { SET_CHAIN_URL } from '../actionCreator';
 import { SettingsActions } from '../actions/settings';
 

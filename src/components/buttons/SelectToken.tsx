@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState } from 'react';
-import { getContract } from '../../api/api';
-import { loadToken, Token } from '../../api/tokens';
+import { getContract } from '../../api/rpc/rpc';
+import { Token, loadToken } from '../../api/rpc/tokens';
 import { addTokenAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { ensure, trim } from '../../utils/utils';

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import Card, { CardTitle } from '../../components/card/Card';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
-import { bindSigner } from '../../api/accounts';
+import { bindSigner } from '../../api/rpc/accounts';
 import { utilsSetSelectedAccount } from '../../store/actions/accounts';
 import { ensure } from '../../utils/utils';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';

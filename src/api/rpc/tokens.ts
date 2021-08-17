@@ -1,11 +1,11 @@
 import { Signer } from '@reef-defi/evm-provider';
-import { toGasLimitObj } from '../store/internalStore';
-import { calculateAmount } from '../utils/math';
 import {
   getContract, getReefswapRouter, ReefChains,
-} from './api';
-import testnetTokens from '../validated-tokens-testnet.json';
-import mainnetTokens from '../validated-tokens-mainnet.json';
+} from './rpc';
+import testnetTokens from './../../validated-tokens-testnet.json';
+import mainnetTokens from './../../validated-tokens-mainnet.json';
+import { toGasLimitObj } from '../../store/internalStore';
+import { calculateAmount } from '../../utils/math';
 
 interface ValidatedToken {
   name: string;

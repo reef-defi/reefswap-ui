@@ -1,4 +1,4 @@
-import { Token, TokenWithAmount } from '../api/tokens';
+import { TokenWithAmount, Token } from "../api/rpc/tokens";
 
 const findDecimalPoint = (amount: string): number => {
   const { length } = amount;
