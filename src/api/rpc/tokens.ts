@@ -4,7 +4,7 @@ import {
 } from './rpc';
 import testnetTokens from './../../validated-tokens-testnet.json';
 import mainnetTokens from './../../validated-tokens-mainnet.json';
-import { toGasLimitObj } from '../../store/internalStore';
+import { toGasLimitObj, TokenState } from '../../store/internalStore';
 import { calculateAmount } from '../../utils/math';
 
 interface ValidatedToken {
@@ -20,14 +20,14 @@ export interface Token extends ValidatedToken {
 }
 
 export interface TokenWithAmount extends Token {
+  index: number;
   amount: string;
   price: number;
 }
 
-export const toTokenAmount = (token: Token, amount: string, price: number): TokenWithAmount => ({
+export const toTokenAmount = (token: Token, state: TokenState): TokenWithAmount => ({
   ...token,
-  amount,
-  price,
+  ...state
 });
 
 export const loadVerifiedERC20Tokens = async (chainUrl: string): Promise<ValidatedToken[]> => {

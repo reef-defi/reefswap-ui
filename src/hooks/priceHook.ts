@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getTokenPrice } from "../api/prices";
 import { TokenWithAmount, toTokenAmount } from "../api/rpc/tokens";
 import { useAppSelector } from "../store/hooks";
-import { defaultTokenState, TokenState } from "../store/internalStore";
+import { defaultTokenState } from "../store/internalStore";
 
 export const priceHook = (tokenIndex: number): [TokenWithAmount, boolean, (value: TokenWithAmount) => void] => {
   const { tokens } = useAppSelector((state) => state.tokens);
@@ -10,7 +10,7 @@ export const priceHook = (tokenIndex: number): [TokenWithAmount, boolean, (value
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(defaultTokenState(tokenIndex));
 
-  const pointer = tokens[tokenIndex];
+  const pointer = tokens[token.index];
 
   useEffect(() => {
     const load = async () => {
@@ -25,14 +25,11 @@ export const priceHook = (tokenIndex: number): [TokenWithAmount, boolean, (value
       }
     };
     load()
-  }, [tokenIndex]);
-
-  const convertor = ({amount, price}: TokenWithAmount) =>
-    setToken({amount, price, index: tokenIndex});
+  }, [token.index]);
 
   return [
-    toTokenAmount(pointer, token.amount, token.price),
+    toTokenAmount(pointer, token),
     isLoading,
-    convertor,
+    setToken,
   ];
 }
