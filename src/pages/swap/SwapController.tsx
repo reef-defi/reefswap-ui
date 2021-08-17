@@ -32,10 +32,8 @@ const SwapController = (): JSX.Element => {
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
-  const [buyIndex, setBuyIndex] = useState(1);
-  const [sellIndex, setSellIndex] = useState(0);
-  const [buy, isBuyLoading, setBuy] = priceHook(buyIndex);
-  const [sell, isSellLoading, setSell] = priceHook(sellIndex);
+  const [buy, isBuyLoading, setBuy] = priceHook(1);
+  const [sell, isSellLoading, setSell] = priceHook(0);
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
@@ -44,37 +42,25 @@ const SwapController = (): JSX.Element => {
 
   const setBuyAmount = (amount: string): void => {
     setBuy({ ...buy, amount });
-    setSell({...sell, amount: amount
-      ? calculateCurrencyAmount(amount, buy.price, sell.price)
-      : amount
-    });
+    setSell({...sell, amount: calculateCurrencyAmount(amount, buy.price, sell.price)});
   };
   const setSellAmount = (amount: string): void => {
     setSell({ ...sell, amount });
-    setBuy({...buy, amount: amount 
-      ? calculateCurrencyAmount(amount, sell.price, buy.price) 
-      : amount
-    });
+    setBuy({...buy, amount: calculateCurrencyAmount(amount, sell.price, buy.price)});
   }
 
   const changeBuyToken = (index: number): void => {
     setSell({ ...sell, amount: ""});
-    setBuy({ ...buy, amount: ""});
-    setBuyIndex(index);
+    setBuy({ ...tokens[index], index, amount: "", price: 0});
   }
   const changeSellToken = (index: number): void => {
     setBuy({...buy, amount: ""});
-    setSell({ ...sell, amount: "" });
-    setSellIndex(index);
+    setSell({ ...tokens[index], index, amount: "", price: 0});
   };
 
   const onSwitch = (): void => {
     const subBuyState = { ...buy };
-    const subSellState = { ...sell };
-    const bi = buyIndex;
-    setBuyIndex(sellIndex);
-    setSellIndex(bi);
-    setBuy({...subSellState});
+    setBuy({...sell });
     setSell({ ...subBuyState });
   };
 
