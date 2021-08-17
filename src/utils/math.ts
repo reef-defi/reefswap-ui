@@ -15,6 +15,9 @@ const transformAmount = (decimals: number, amount: string): string => {
   return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
 };
 
+export const calculateCurrencyAmount = (amount: string, fromPrice: number, toPrice: number): string => 
+  (parseFloat(amount) * fromPrice / toPrice).toFixed(3);
+
 export const calculateAmount = ({ decimals, amount }: TokenWithAmount): string => transformAmount(decimals, amount);
 
 export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance);
