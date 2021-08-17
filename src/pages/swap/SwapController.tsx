@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getTokenPrice } from '../../api/prices';
 import { toTokenAmount, swapTokens, loadTokens } from '../../api/rpc/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, {
@@ -10,7 +11,7 @@ import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
+import { defaultGasLimit, defaultTokenState, TokenState } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
 
 const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean): ButtonStatus => {
@@ -24,6 +25,13 @@ const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean
   return { isValid: true, text: 'Swap' };
 };
 
+interface PriceUpdate {
+  coingeckoId: string;
+  token: TokenState;
+  update: (token: TokenState) => void;
+  setIsLoading: (value: boolean) => void;
+}
+
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { tokens } = useAppSelector((state) => state.tokens);
@@ -35,15 +43,50 @@ const SwapController = (): JSX.Element => {
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isLoading, setIsLoading] = useState(false);
 
-  const buyToken = toTokenAmount(tokens[buy.index], buy.amount);
-  const sellToken = toTokenAmount(tokens[sell.index], sell.amount);
+  const buyToken = toTokenAmount(tokens[buy.index], buy.amount, buy.price);
+  const sellToken = toTokenAmount(tokens[sell.index], sell.amount, sell.price);
   const { text, isValid } = swapStatus(sell.amount, buy.amount, isEvmClaimed);
 
-  const setBuyAmount = (amount: string): void => setBuy({ ...buy, amount });
-  const setSellAmount = (amount: string): void => setSell({ ...sell, amount });
+  const setBuyAmount = (amount: string): void => {
+    if (!amount) {
+      setBuy({...buy, amount: ""});
+      setSell({...sell, amount: ""});
+      return;
+    }
+    const sellAmount = parseFloat(amount) * buyToken.price / sellToken.price;
+    setBuy({ ...buy, amount });
+    setSell({...sell, amount: sellAmount.toFixed(3) + ""})
+  };
+  const setSellAmount = (amount: string): void => {
+    if (!amount) {
+      setBuy({...buy, amount: ""});
+      setSell({...sell, amount: ""});
+      return;
+    }
+    const buyAmount = parseFloat(amount) * sellToken.price / buyToken.price;
+    setSell({ ...sell, amount });
+    setBuy({...buy, amount: buyAmount.toFixed(3) + ""});
+  }
 
   const changeBuyToken = (index: number): void => setBuy({ ...buy, index });
   const changeSellToken = (index: number): void => setSell({ ...sell, index });
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setIsLoading(true);
+        const buyPrice = await getTokenPrice(buyToken.coingeckoId);
+        const sellPrice = await getTokenPrice(sellToken.coingeckoId);
+        setBuy({...buy, price: buyPrice});
+        setSell({...sell, price: sellPrice});
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const onSwitch = (): void => {
     const subState = { ...buy };
