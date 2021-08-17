@@ -41,7 +41,7 @@ const SelectToken = ({
       ensure(isValid, UNKNOWN_ADDRESS);
       ensure(selectedAccount !== -1, SELECT_ACCOUNT);
       const { signer } = accounts[selectedAccount];
-      const token = await loadToken(address, signer, 'https://profit-mine.com/assets/coins/empty-coin.png');
+      const token = await loadToken(address, signer, 'https://profit-mine.com/assets/coins/empty-coin.png', 'rusd');
       dispatch(addTokenAction(token));
       onTokenSelect(tokens.length);
       setAddress('');

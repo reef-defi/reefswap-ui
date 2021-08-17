@@ -3,12 +3,14 @@
     {
       "name": "REEF",
       "address": "0x0000000000000000000000000000000001000000",
-      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/64x64/6951.png"
+      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/64x64/6951.png",
+      "coingeckoId": "reef-finance"
     },
     {
       "name": "RUSD",
       "address": "0x0000000000000000000000000000000001000001",
-      "iconUrl": "https://findicons.com/files/icons/2219/dot_pictograms/256/usd_dollar_money_cash.png"
+      "iconUrl": "https://findicons.com/files/icons/2219/dot_pictograms/256/usd_dollar_money_cash.png",
+      "coingeckoId": "rusd"
     }
   ]
 }
