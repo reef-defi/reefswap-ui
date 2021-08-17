@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import SelectToken from '../buttons/SelectToken';
 import { showBalance } from '../../utils/math';
 import { TokenWithAmount } from '../../api/rpc/tokens';
@@ -14,7 +14,8 @@ interface TokenAmountFieldProps {
 const TokenAmountField = ({
   id = 'exampleModal', token, onTokenSelect, onAmountChange, placeholder = '0,0',
 } : TokenAmountFieldProps): JSX.Element => {
-  const { name, amount } = token;
+  const { name, amount, price } = token;
+  const amt = parseFloat(amount);
 
   return (
     <div className="field p-3 border-rad">
@@ -34,10 +35,14 @@ const TokenAmountField = ({
           onChange={(event) => onAmountChange(event.target.value)}
         />
       </div>
-      <small className="ms-2">
-        Balance:
-        {` ${showBalance(token)}`}
-      </small>
+      <div className="d-flex justify-content-between mx-2">
+        <small>
+          Balance: {`${showBalance(token)}`}
+        </small>
+        <small>
+          {price !== 0 && amount !== "" && `~$: ${(amt * price).toFixed(3)}`}
+        </small>
+      </div>
     </div>
   );
 };

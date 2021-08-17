@@ -11,6 +11,7 @@ interface ValidatedToken {
   name: string;
   address: string;
   iconUrl: string;
+  coingeckoId: string;
 }
 
 export interface Token extends ValidatedToken {
@@ -20,11 +21,13 @@ export interface Token extends ValidatedToken {
 
 export interface TokenWithAmount extends Token {
   amount: string;
+  price: number;
 }
 
-export const toTokenAmount = (token: Token, amount: string): TokenWithAmount => ({
+export const toTokenAmount = (token: Token, amount: string, price: number): TokenWithAmount => ({
   ...token,
   amount,
+  price,
 });
 
 export const loadVerifiedERC20Tokens = async (chainUrl: string): Promise<ValidatedToken[]> => {
@@ -38,7 +41,7 @@ export const loadVerifiedERC20Tokens = async (chainUrl: string): Promise<Validat
 
 export const retrieveTokenAddresses = (tokens: Token[]): string[] => tokens.map((token) => token.address);
 
-export const loadToken = async (address: string, signer: Signer, iconUrl: string): Promise<Token> => {
+export const loadToken = async (address: string, signer: Signer, iconUrl: string, coingeckoId: string): Promise<Token> => {
   const token = await getContract(address, signer);
 
   const signerAddress = await signer.getAddress();
@@ -49,6 +52,7 @@ export const loadToken = async (address: string, signer: Signer, iconUrl: string
   return {
     iconUrl,
     decimals,
+    coingeckoId,
     address: token.address,
     balance: balance.toString(),
     name: symbol,
@@ -57,7 +61,7 @@ export const loadToken = async (address: string, signer: Signer, iconUrl: string
 
 export const loadTokens = async (addresses: ValidatedToken[], signer: Signer): Promise<Token[]> => {
   const tokens = Promise.all(
-    addresses.map((token) => loadToken(token.address, signer, token.iconUrl)),
+    addresses.map((token) => loadToken(token.address, signer, token.iconUrl, token.coingeckoId)),
   );
   return tokens;
 };
