@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { getTokenPrice } from '../../api/prices';
-import { toTokenAmount, swapTokens, loadTokens } from '../../api/rpc/tokens';
+import { swapTokens, loadTokens } from '../../api/rpc/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, {
   CardHeader, CardHeaderBlank, CardSettings, CardTitle,
@@ -9,9 +8,10 @@ import Card, {
 import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
+import { priceHook } from '../../hooks/priceHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { defaultGasLimit, defaultTokenState, TokenState } from '../../store/internalStore';
+import { defaultGasLimit } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
 import { calculateCurrencyAmount } from '../../utils/math';
 
@@ -32,31 +32,15 @@ const SwapController = (): JSX.Element => {
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
-  const [buy, setBuy] = useState(defaultTokenState(1));
-  const [sell, setSell] = useState(defaultTokenState());
+  const [buyIndex, setBuyIndex] = useState(1);
+  const [sellIndex, setSellIndex] = useState(0);
+  const [buy, isBuyLoading, setBuy] = priceHook(buyIndex);
+  const [sell, isSellLoading, setSell] = priceHook(sellIndex);
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-  const buyToken = toTokenAmount(tokens[buy.index], buy.amount, buy.price);
-  const sellToken = toTokenAmount(tokens[sell.index], sell.amount, sell.price);
   const { text, isValid } = swapStatus(sell.amount, buy.amount, isEvmClaimed);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setIsLoading(true);
-        const buyPrice = await getTokenPrice(buyToken.coingeckoId);
-        const sellPrice = await getTokenPrice(sellToken.coingeckoId);
-        setBuy({...buy, price: buyPrice});
-        setSell({...sell, price: sellPrice});
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    load();
-  }, [buy.index, sell.index]);
+  const isLoading = isSwapLoading || isBuyLoading || isSellLoading;
 
   const setBuyAmount = (amount: string): void => {
     setBuy({ ...buy, amount });
@@ -75,30 +59,36 @@ const SwapController = (): JSX.Element => {
 
   const changeBuyToken = (index: number): void => {
     setSell({ ...sell, amount: ""});
-    setBuy({ ...buy, index, amount: ""});
+    setBuy({ ...buy, amount: ""});
+    setBuyIndex(index);
   }
   const changeSellToken = (index: number): void => {
     setBuy({...buy, amount: ""});
-    setSell({ ...sell, index, amount: "" });
+    setSell({ ...sell, amount: "" });
+    setSellIndex(index);
   };
 
   const onSwitch = (): void => {
-    const subState = { ...buy };
-    setBuy({ ...sell });
-    setSell({ ...subState });
+    const subBuyState = { ...buy };
+    const subSellState = { ...sell };
+    const bi = buyIndex;
+    setBuyIndex(sellIndex);
+    setSellIndex(bi);
+    setBuy({...subSellState});
+    setSell({ ...subBuyState });
   };
 
   const onSwap = async (): Promise<void> => {
     try {
-      setIsLoading(true);
-      await swapTokens(sellToken, buyToken, signer, gasLimit);
+      setIsSwapLoading(true);
+      await swapTokens(sell, buy, signer, gasLimit);
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);
     } finally {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
-      setIsLoading(false);
+      setIsSwapLoading(false);
     }
   };
 
@@ -112,7 +102,7 @@ const SwapController = (): JSX.Element => {
 
       <TokenAmountField
         id="sell-token-field"
-        token={sellToken}
+        token={sell}
         onAmountChange={setSellAmount}
         onTokenSelect={changeSellToken}
       />
@@ -125,7 +115,7 @@ const SwapController = (): JSX.Element => {
       </div>
       <TokenAmountField
         id="buy-token-field"
-        token={buyToken}
+        token={buy}
         onAmountChange={setBuyAmount}
         onTokenSelect={changeBuyToken}
       />
