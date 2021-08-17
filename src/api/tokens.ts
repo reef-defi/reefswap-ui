@@ -13,10 +13,6 @@ interface ValidatedToken {
   iconUrl: string;
 }
 
-interface ValidatedTokens {
-  tokens: ValidatedToken[];
-}
-
 export interface Token extends ValidatedToken {
   balance: string;
   decimals: number;

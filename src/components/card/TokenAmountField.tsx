@@ -12,7 +12,7 @@ interface TokenAmountFieldProps {
 }
 
 const TokenAmountField = ({
-  id, token, onTokenSelect, onAmountChange, placeholder = '0,0',
+  id = 'exampleModal', token, onTokenSelect, onAmountChange, placeholder = '0,0',
 } : TokenAmountFieldProps): JSX.Element => {
   const { name, amount } = token;
 
@@ -40,11 +40,6 @@ const TokenAmountField = ({
       </small>
     </div>
   );
-};
-
-TokenAmountField.defaultProps = {
-  id: 'exampleModal',
-  placeholder: '0,0',
 };
 
 export default TokenAmountField;
