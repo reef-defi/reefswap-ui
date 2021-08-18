@@ -42,7 +42,7 @@ const TokenAmountField = ({
           {`${showBalance(token)}`}
         </small>
         <small>
-          {price !== 0 && amount !== '' && `~$: ${(amt * price).toFixed(2)}`}
+          {price !== 0 && amount !== '' && `~$ ${(amt * price).toFixed(4)}`}
         </small>
       </div>
     </div>
