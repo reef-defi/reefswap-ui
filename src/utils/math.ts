@@ -1,4 +1,4 @@
-import { Token, TokenWithAmount } from '../api/tokens';
+import { TokenWithAmount, Token } from '../api/rpc/tokens';
 
 const findDecimalPoint = (amount: string): number => {
   const { length } = amount;
@@ -14,6 +14,10 @@ const transformAmount = (decimals: number, amount: string): string => {
   const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
   return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
 };
+
+export const calculateCurrencyAmount = (amount: string, fromPrice: number, toPrice: number): string => (amount
+  ? (parseFloat(amount) * fromPrice / toPrice).toFixed(3)
+  : '');
 
 export const calculateAmount = ({ decimals, amount }: TokenWithAmount): string => transformAmount(decimals, amount);
 

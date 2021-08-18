@@ -1,4 +1,4 @@
-import { Token } from '../../api/tokens';
+import { Token } from '../../api/rpc/tokens';
 import { ADD_TOKEN, RELOAD_TOKENS, SET_ALL_TOKENS } from '../actionCreator';
 import { TokensAction } from '../actions/tokens';
 

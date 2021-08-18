@@ -1,20 +1,17 @@
 import { Signer } from '@reef-defi/evm-provider';
-import { toGasLimitObj } from '../store/internalStore';
-import { calculateAmount } from '../utils/math';
 import {
   getContract, getReefswapRouter, ReefChains,
-} from './api';
-import testnetTokens from '../validated-tokens-testnet.json';
-import mainnetTokens from '../validated-tokens-mainnet.json';
+} from './rpc';
+import testnetTokens from '../../validated-tokens-testnet.json';
+import mainnetTokens from '../../validated-tokens-mainnet.json';
+import { toGasLimitObj, TokenState } from '../../store/internalStore';
+import { calculateAmount } from '../../utils/math';
 
 interface ValidatedToken {
   name: string;
   address: string;
   iconUrl: string;
-}
-
-interface ValidatedTokens {
-  tokens: ValidatedToken[];
+  coingeckoId: string;
 }
 
 export interface Token extends ValidatedToken {
@@ -23,12 +20,14 @@ export interface Token extends ValidatedToken {
 }
 
 export interface TokenWithAmount extends Token {
+  index: number;
   amount: string;
+  price: number;
 }
 
-export const toTokenAmount = (token: Token, amount: string): TokenWithAmount => ({
+export const toTokenAmount = (token: Token, state: TokenState): TokenWithAmount => ({
   ...token,
-  amount,
+  ...state,
 });
 
 export const loadVerifiedERC20Tokens = async (chainUrl: string): Promise<ValidatedToken[]> => {
@@ -42,7 +41,7 @@ export const loadVerifiedERC20Tokens = async (chainUrl: string): Promise<Validat
 
 export const retrieveTokenAddresses = (tokens: Token[]): string[] => tokens.map((token) => token.address);
 
-export const loadToken = async (address: string, signer: Signer, iconUrl: string): Promise<Token> => {
+export const loadToken = async (address: string, signer: Signer, iconUrl: string, coingeckoId: string): Promise<Token> => {
   const token = await getContract(address, signer);
 
   const signerAddress = await signer.getAddress();
@@ -53,6 +52,7 @@ export const loadToken = async (address: string, signer: Signer, iconUrl: string
   return {
     iconUrl,
     decimals,
+    coingeckoId,
     address: token.address,
     balance: balance.toString(),
     name: symbol,
@@ -61,7 +61,7 @@ export const loadToken = async (address: string, signer: Signer, iconUrl: string
 
 export const loadTokens = async (addresses: ValidatedToken[], signer: Signer): Promise<Token[]> => {
   const tokens = Promise.all(
-    addresses.map((token) => loadToken(token.address, signer, token.iconUrl)),
+    addresses.map((token) => loadToken(token.address, signer, token.iconUrl, token.coingeckoId)),
   );
   return tokens;
 };

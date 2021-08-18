@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ReefChains } from '../../api/api';
+import { ReefChains } from '../../api/rpc/rpc';
 import Card, { CardTitle } from '../../components/card/Card';
 import { settingsSetChainUrl } from '../../store/actions/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';

@@ -1,8 +1,8 @@
 import { Signer, Provider } from '@reef-defi/evm-provider';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import type { Signer as InjectedSigner } from '@polkadot/api/types';
-import { ReefswapSigner } from '../store/actions/accounts';
-import { ensure } from '../utils/utils';
+import { ReefswapSigner } from '../../store/actions/accounts';
+import { ensure } from '../../utils/utils';
 
 export const accountsToSigners = async (accounts: InjectedAccountWithMeta[], provider: Provider, sign: InjectedSigner): Promise<ReefswapSigner[]> => Promise.all(
   accounts

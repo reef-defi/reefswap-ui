@@ -9,16 +9,16 @@ import {
   utilsSetAccounts,
   utilsSetSelectedAccount,
 } from '../store/actions/accounts';
-import { accountsToSigners } from '../api/accounts';
-import { loadTokens, loadVerifiedERC20Tokens } from '../api/tokens';
 import { setAllTokensAction } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
-import { loadPools } from '../api/pools';
 import { setPools } from '../store/actions/pools';
 import {
   ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess,
 } from '../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { accountsToSigners } from '../api/rpc/accounts';
+import { loadPools } from '../api/rpc/pools';
+import { loadVerifiedERC20Tokens, loadTokens } from '../api/rpc/tokens';
 
 type State =
   | ErrorState

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { ReefswapPool, removeLiquidity } from '../../api/pools';
 import Card from '../../components/card/Card';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import {
@@ -14,6 +13,7 @@ import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
+import { ReefswapPool, removeLiquidity } from '../../api/rpc/pools';
 
 type PoolManagerState =
   | LoadingState

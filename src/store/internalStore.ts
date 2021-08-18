@@ -30,11 +30,13 @@ export const toSuccessContent = <T, > (content: T): SuccessContentState<T> => ({
 export interface TokenState {
   index: number;
   amount: string;
+  price: number;
 }
 
 export const defaultTokenState = (index = 0): TokenState => ({
   index,
   amount: '',
+  price: 0,
 });
 
 export const defaultGasLimit = (): string => '300000000';

@@ -1,8 +1,8 @@
 import { Signer } from '@reef-defi/evm-provider';
 import { Contract, BigNumber } from 'ethers';
-import { ERC20 } from '../assets/abi/ERC20';
-import ReefswapFactory from '../assets/abi/ReefswapFactory';
-import ReefswapRouter from '../assets/abi/ReefswapRouter';
+import { ERC20 } from '../../assets/abi/ERC20';
+import ReefswapFactory from '../../assets/abi/ReefswapFactory';
+import ReefswapRouter from '../../assets/abi/ReefswapRouter';
 import { Token } from './tokens';
 
 export enum ReefChains {
@@ -36,7 +36,6 @@ export const balanceOf = async (address: string, balanceAddress: string, signer:
 };
 
 export const getReefswapRouter = (signer: Signer): Contract => new Contract('0x0A2906130B1EcBffbE1Edb63D5417002956dFd41', ReefswapRouter, signer);
-
 export const getReefswapFactory = (signer: Signer): Contract => new Contract('0xcA36bA38f2776184242d3652b17bA4A77842707e', ReefswapFactory, signer);
 
 export const calculateFee = (token: Token, feeRation = 0.03): Token => {

@@ -1,4 +1,4 @@
-import { ReefswapPool } from '../../api/pools';
+import { ReefswapPool } from '../../api/rpc/pools';
 import { ADD_POOL, RELOAD_POOL, SET_POOLS } from '../actionCreator';
 import { PoolsActions } from '../actions/pools';
 

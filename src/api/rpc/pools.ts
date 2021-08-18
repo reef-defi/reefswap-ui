@@ -2,11 +2,11 @@ import { Signer } from '@reef-defi/evm-provider';
 import { Contract, BigNumber } from 'ethers';
 import {
   balanceOf, getReefswapFactory, getReefswapRouter,
-} from './api';
+} from './rpc';
 import { approveTokenAmount, Token, TokenWithAmount } from './tokens';
-import { ensure, uniqueCombinations } from '../utils/utils';
-import { ReefswapPair } from '../assets/abi/ReefswapPair';
-import { toGasLimitObj } from '../store/internalStore';
+import { ReefswapPair } from '../../assets/abi/ReefswapPair';
+import { toGasLimitObj } from '../../store/internalStore';
+import { ensure, uniqueCombinations } from '../../utils/utils';
 
 const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -85,6 +85,9 @@ const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
   balance: '0',
   name: 'ReefswapERC20',
   iconUrl: '',
+  coingeckoId: 'rusd',
+  price: 0,
+  index: 0,
 });
 
 export const removeLiquidity = async ({
