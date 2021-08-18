@@ -4,7 +4,7 @@ import {
   balanceOf, getReefswapFactory, getReefswapRouter,
 } from './rpc';
 import { approveTokenAmount, Token, TokenWithAmount } from './tokens';
-import { ReefswapPair } from './../../assets/abi/ReefswapPair';
+import { ReefswapPair } from '../../assets/abi/ReefswapPair';
 import { toGasLimitObj } from '../../store/internalStore';
 import { ensure, uniqueCombinations } from '../../utils/utils';
 
@@ -87,7 +87,7 @@ const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
   iconUrl: '',
   coingeckoId: 'rusd',
   price: 0,
-  index: 0
+  index: 0,
 });
 
 export const removeLiquidity = async ({

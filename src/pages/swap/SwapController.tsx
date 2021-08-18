@@ -8,7 +8,7 @@ import Card, {
 import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
-import { priceHook } from '../../hooks/priceHook';
+import { PriceHook } from '../../hooks/priceHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultGasLimit } from '../../store/internalStore';
@@ -32,35 +32,39 @@ const SwapController = (): JSX.Element => {
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
-  const [buy, isBuyLoading, setBuy] = priceHook(1);
-  const [sell, isSellLoading, setSell] = priceHook(0);
+  const [buy, isBuyLoading, setBuy] = PriceHook(1);
+  const [sell, isSellLoading, setSell] = PriceHook(0);
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
   const { text, isValid } = swapStatus(sell.amount, buy.amount, isEvmClaimed);
-  const isLoading = isSwapLoading || isBuyLoading || isSellLoading;
+  const isLoading = isSwapLoading || isBuyLoading || isSellLoading;
 
   const setBuyAmount = (amount: string): void => {
     setBuy({ ...buy, amount });
-    setSell({...sell, amount: calculateCurrencyAmount(amount, buy.price, sell.price)});
+    setSell({ ...sell, amount: calculateCurrencyAmount(amount, buy.price, sell.price) });
   };
   const setSellAmount = (amount: string): void => {
     setSell({ ...sell, amount });
-    setBuy({...buy, amount: calculateCurrencyAmount(amount, sell.price, buy.price)});
-  }
+    setBuy({ ...buy, amount: calculateCurrencyAmount(amount, sell.price, buy.price) });
+  };
 
   const changeBuyToken = (index: number): void => {
-    setSell({ ...sell, amount: ""});
-    setBuy({ ...tokens[index], index, amount: "", price: 0});
-  }
+    setSell({ ...sell, amount: '' });
+    setBuy({
+      ...tokens[index], index, amount: '', price: 0,
+    });
+  };
   const changeSellToken = (index: number): void => {
-    setBuy({...buy, amount: ""});
-    setSell({ ...tokens[index], index, amount: "", price: 0});
+    setBuy({ ...buy, amount: '' });
+    setSell({
+      ...tokens[index], index, amount: '', price: 0,
+    });
   };
 
   const onSwitch = (): void => {
     const subBuyState = { ...buy };
-    setBuy({...sell });
+    setBuy({ ...sell });
     setSell({ ...subBuyState });
   };
 

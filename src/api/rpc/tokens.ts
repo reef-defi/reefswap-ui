@@ -2,8 +2,8 @@ import { Signer } from '@reef-defi/evm-provider';
 import {
   getContract, getReefswapRouter, ReefChains,
 } from './rpc';
-import testnetTokens from './../../validated-tokens-testnet.json';
-import mainnetTokens from './../../validated-tokens-mainnet.json';
+import testnetTokens from '../../validated-tokens-testnet.json';
+import mainnetTokens from '../../validated-tokens-mainnet.json';
 import { toGasLimitObj, TokenState } from '../../store/internalStore';
 import { calculateAmount } from '../../utils/math';
 
@@ -27,7 +27,7 @@ export interface TokenWithAmount extends Token {
 
 export const toTokenAmount = (token: Token, state: TokenState): TokenWithAmount => ({
   ...token,
-  ...state
+  ...state,
 });
 
 export const loadVerifiedERC20Tokens = async (chainUrl: string): Promise<ValidatedToken[]> => {

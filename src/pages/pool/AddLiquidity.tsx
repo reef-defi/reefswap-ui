@@ -14,7 +14,11 @@ import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
-import { TokenWithAmount, toTokenAmount, addLiquidity, loadTokens } from '../../api/rpc/tokens';
+import {
+  TokenWithAmount, toTokenAmount, addLiquidity, loadTokens,
+} from '../../api/rpc/tokens';
+import { PriceHook } from '../../hooks/priceHook';
+import { calculateCurrencyAmount } from '../../utils/math';
 
 const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -33,37 +37,52 @@ const AddLiquidity = (): JSX.Element => {
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [pointer1, setPointer1] = useState(defaultTokenState());
-  const [pointer2, setPointer2] = useState(defaultTokenState(1));
+  const [isLiquidityLoading, setIsLiquidityLoading] = useState(false);
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
+  const [token1, isToken1Loading, setToken1] = PriceHook(0);
+  const [token2, isToken2Loading, setToken2] = PriceHook(1);
 
-  const token1 = toTokenAmount(tokens[pointer1.index], pointer1.amount);
-  const token2 = toTokenAmount(tokens[pointer2.index], pointer2.amount);
+  const isLoading = isLiquidityLoading || isToken1Loading || isToken2Loading;
   const { signer, isEvmClaimed } = accounts[selectedAccount];
   const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
 
   const back = (): void => history.push(POOL_URL);
-  const changeToken1 = (index: number): void => setPointer1({ ...pointer1, index });
-  const changeToken2 = (index: number): void => setPointer2({ ...pointer2, index });
+  const changeToken1 = (index: number): void => {
+    setToken2({ ...token2, amount: '' });
+    setToken1({
+      ...tokens[index], amount: '', price: 0, index,
+    });
+  };
+  const changeToken2 = (index: number): void => {
+    setToken1({ ...token1, amount: '' });
+    setToken2({
+      ...tokens[index], amount: '', price: 0, index,
+    });
+  };
 
-  const setAmount1 = (amount: string): void => setPointer1({ ...pointer1, amount });
-  const setAmount2 = (amount: string): void => setPointer2({ ...pointer2, amount });
+  const setAmount1 = (amount: string): void => {
+    setToken1({ ...token1, amount });
+    setToken2({ ...token2, amount: calculateCurrencyAmount(amount, token1.price, token2.price) });
+  };
+  const setAmount2 = (amount: string): void => {
+    setToken2({ ...token2, amount });
+    setToken1({ ...token1, amount: calculateCurrencyAmount(amount, token2.price, token1.price) });
+  };
 
   const addLiquidityClick = async (): Promise<void> => {
     try {
-      setIsLoading(true);
+      setIsLiquidityLoading(true);
       await addLiquidity(token1, token2, signer, gasLimit);
       const pools = await loadPools(tokens, signer);
       dispatch(setPools(pools));
-      history.push(POOL_URL);
+      back();
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
     } catch (error) {
       errorToast(error.message);
     } finally {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
-      setIsLoading(false);
+      setIsLiquidityLoading(false);
     }
   };
 

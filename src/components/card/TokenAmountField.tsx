@@ -37,10 +37,12 @@ const TokenAmountField = ({
       </div>
       <div className="d-flex justify-content-between mx-2">
         <small>
-          Balance: {`${showBalance(token)}`}
+          Balance:
+          {' '}
+          {`${showBalance(token)}`}
         </small>
         <small>
-          {price !== 0 && amount !== "" && `~$: ${(amt * price).toFixed(3)}`}
+          {price !== 0 && amount !== '' && `~$: ${(amt * price).toFixed(2)}`}
         </small>
       </div>
     </div>
