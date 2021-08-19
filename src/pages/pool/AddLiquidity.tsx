@@ -48,15 +48,15 @@ const AddLiquidity = (): JSX.Element => {
   const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
 
   const back = (): void => history.push(POOL_URL);
-  const changeToken1 = (index: number): void =>
-    setToken1({...tokens[index], amount: '', price: 0, index,});
-  const changeToken2 = (index: number): void =>
-    setToken2({...tokens[index], amount: '', price: 0, index,});
+  const changeToken1 = (index: number): void => setToken1({
+    ...tokens[index], amount: '', price: 0, index,
+  });
+  const changeToken2 = (index: number): void => setToken2({
+    ...tokens[index], amount: '', price: 0, index,
+  });
 
-  const setAmount1 = (amount: string): void =>
-    setToken1({ ...token1, amount });
-  const setAmount2 = (amount: string): void => 
-    setToken2({ ...token2, amount });
+  const setAmount1 = (amount: string): void => setToken1({ ...token1, amount });
+  const setAmount2 = (amount: string): void => setToken2({ ...token2, amount });
 
   const addLiquidityClick = async (): Promise<void> => {
     try {

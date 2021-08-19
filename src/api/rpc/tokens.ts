@@ -30,7 +30,7 @@ export const toTokenAmount = (token: Token, state: TokenState): TokenWithAmount 
   ...state,
 });
 
-export const loadVerifiedERC20Tokens = async ({name}: ReefNetwork): Promise<ValidatedToken[]> => {
+export const loadVerifiedERC20Tokens = async ({ name }: ReefNetwork): Promise<ValidatedToken[]> => {
   switch (name) {
     case 'testnet': return testnetTokens.tokens;
     case 'mainnet': return mainnetTokens.tokens;

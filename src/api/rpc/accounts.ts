@@ -20,8 +20,8 @@ export const accountsToSigners = async (accounts: InjectedAccountWithMeta[], pro
 
 export const bindSigner = async (signer: Signer): Promise<void> => {
   const hasEvmAddress = await signer.isClaimed();
-  console.log("Has evm address: ", hasEvmAddress);
+  console.log('Has evm address: ', hasEvmAddress);
   ensure(!hasEvmAddress, 'Account already has EVM address!');
-  console.log("claiming address");
+  console.log('claiming address');
   await signer.claimDefaultAccount();
 };

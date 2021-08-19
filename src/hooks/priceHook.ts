@@ -13,17 +13,15 @@ export const PriceHook = (tokenIndex: number): [TokenWithAmount, boolean, (value
 
   const pointer = { ...tokens[token.index] };
 
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    }
+  useEffect(() => () => {
+    isMounted.current = false;
   }, []);
 
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
         setIsLoading(true);
-        console.log("Loading")
+        console.log('Loading');
         const price = await getTokenPrice(pointer.coingeckoId);
         isMounted.current && setToken(({ ...token, price }));
       } catch (error) {

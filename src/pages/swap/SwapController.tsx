@@ -41,15 +41,15 @@ const SwapController = (): JSX.Element => {
   const { text, isValid } = swapStatus(sell.amount, buy.amount, isEvmClaimed);
   const isLoading = isSwapLoading || isBuyLoading || isSellLoading;
 
-  const setBuyAmount = (amount: string): void =>
-    setBuy({ ...buy, amount });
-  const setSellAmount = (amount: string): void => 
-    setSell({ ...sell, amount });
+  const setBuyAmount = (amount: string): void => setBuy({ ...buy, amount });
+  const setSellAmount = (amount: string): void => setSell({ ...sell, amount });
 
-  const changeBuyToken = (index: number): void => 
-    setBuy({...tokens[index], index, amount: '', price: 0});
-  const changeSellToken = (index: number): void =>
-    setSell({...tokens[index], index, amount: '', price: 0,});
+  const changeBuyToken = (index: number): void => setBuy({
+    ...tokens[index], index, amount: '', price: 0,
+  });
+  const changeSellToken = (index: number): void => setSell({
+    ...tokens[index], index, amount: '', price: 0,
+  });
 
   const onSwitch = (): void => {
     const subBuyState = { ...buy };

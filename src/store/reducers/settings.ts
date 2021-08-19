@@ -6,7 +6,8 @@ export interface SettingsReducer extends ReefNetwork {
   reloadBalance: boolean;
 }
 
-const defaultSettings: SettingsReducer = {...reefNetworks.mainnet,
+const defaultSettings: SettingsReducer = {
+  ...reefNetworks.mainnet,
   reloadBalance: false,
 };
 

@@ -5,7 +5,7 @@ import ReefswapFactory from '../../assets/abi/ReefswapFactory';
 import ReefswapRouter from '../../assets/abi/ReefswapRouter';
 import { Token } from './tokens';
 
-export type AvailableNetworks = "mainnet" | "testnet";
+export type AvailableNetworks = 'mainnet' | 'testnet';
 export interface ReefNetwork {
   rpcUrl: string;
   routerAddress: string;
@@ -26,8 +26,8 @@ export const reefNetworks: ReefNetworks = {
     rpcUrl: 'wss://rpc.reefscan.com/ws',
     routerAddress: '0x641e34931C03751BFED14C4087bA395303bEd1A5',
     factoryAddress: '0x380a9033500154872813F6E1120a81ed6c0760a8',
-  }
-}
+  },
+};
 
 export const checkIfERC20ContractExist = async (address: string, signer: Signer): Promise<void> => {
   try {
