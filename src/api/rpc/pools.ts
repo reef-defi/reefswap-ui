@@ -1,7 +1,7 @@
 import { Signer } from '@reef-defi/evm-provider';
 import { Contract, BigNumber } from 'ethers';
 import {
-  balanceOf, getReefswapFactory, getReefswapRouter,
+  balanceOf, getReefswapFactory, getReefswapRouter, ReefNetwork,
 } from './rpc';
 import { approveTokenAmount, Token, TokenWithAmount } from './tokens';
 import { ReefswapPair } from '../../assets/abi/ReefswapPair';
@@ -18,14 +18,14 @@ export interface ReefswapPool {
   poolAddress: string;
 }
 
-const findPoolTokenAddress = async (token1: Token, token2: Token, signer: Signer): Promise<string> => {
-  const reefswapFactory = getReefswapFactory(signer);
+const findPoolTokenAddress = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<string> => {
+  const reefswapFactory = getReefswapFactory(network, signer);
   const address = await reefswapFactory.getPair(token1.address, token2.address);
   return address;
 };
 
-const poolContract = async (token1: Token, token2: Token, signer: Signer): Promise<ReefswapPool> => {
-  const address = await findPoolTokenAddress(token1, token2, signer);
+const poolContract = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<ReefswapPool> => {
+  const address = await findPoolTokenAddress(token1, token2, signer, network);
   ensure(address !== EMPTY_ADDRESS, 'Pool does not exist!');
   const contract = new Contract(address, ReefswapPair, signer);
   const liquidity = await contract.balanceOf(await signer.getAddress());
@@ -49,9 +49,9 @@ const ensurePoolBalance = async (pool: ReefswapPool, signer: Signer): Promise<vo
   ensure(balance.gt(BigNumber.from(0)), 'Signer not in pool!');
 };
 
-export const isSignerInPool = async (token1: Token, token2: Token, signer: Signer): Promise<boolean> => {
+export const isSignerInPool = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<boolean> => {
   try {
-    const pool = await poolContract(token1, token2, signer);
+    const pool = await poolContract(token1, token2, signer, network);
     await ensurePoolBalance(pool, signer);
     return true;
   } catch (_) {
@@ -59,7 +59,7 @@ export const isSignerInPool = async (token1: Token, token2: Token, signer: Signe
   }
 };
 
-export const loadPools = async (tokens: Token[], signer: Signer): Promise<ReefswapPool[]> => {
+export const loadPools = async (tokens: Token[], signer: Signer, network: ReefNetwork): Promise<ReefswapPool[]> => {
   const tokenCombinations = uniqueCombinations(tokens);
 
   const pools: ReefswapPool[] = [];
@@ -67,7 +67,7 @@ export const loadPools = async (tokens: Token[], signer: Signer): Promise<Reefsw
     try {
       const [token1, token2] = tokenCombinations[index];
       /* eslint-disable no-await-in-loop */
-      const pool = await poolContract(token1, token2, signer);
+      const pool = await poolContract(token1, token2, signer, network);
       /* eslint-disable no-await-in-loop */
       await ensurePoolBalance(pool, signer);
       pools.push(pool);
@@ -92,13 +92,13 @@ const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
 
 export const removeLiquidity = async ({
   token1, token2, liquidity, poolAddress,
-}: ReefswapPool, signer: Signer, gasLimit: string): Promise<void> => {
-  const reefswapRouter = getReefswapRouter(signer);
+}: ReefswapPool, signer: Signer, gasLimit: string, network: ReefNetwork): Promise<void> => {
+  const reefswapRouter = getReefswapRouter(network, signer);
   const signerAddress = await signer.getAddress();
 
   const pairToken = createPoolToken(poolAddress, liquidity);
 
-  await approveTokenAmount(pairToken, signer);
+  await approveTokenAmount(pairToken, network.routerAddress, signer);
 
   await reefswapRouter.removeLiquidity(
     token1.address,

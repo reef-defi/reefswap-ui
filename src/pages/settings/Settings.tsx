@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ReefChains } from '../../api/rpc/rpc';
+import { AvailableNetworks } from '../../api/rpc/rpc';
 import Card, { CardTitle } from '../../components/card/Card';
-import { settingsSetChainUrl } from '../../store/actions/settings';
+import { settingsSetNetwork } from '../../store/actions/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { SWAP_URL } from '../../utils/urls';
 
 const Settings = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const { chainUrl } = useAppSelector((state) => state.settings);
-  const [url, setUrl] = useState<ReefChains>(chainUrl as ReefChains);
+  const { name } = useAppSelector((state) => state.settings);
+  const [networkName, setNetworkName] = useState(name);
 
   const applyChanges = (): void => {
-    dispatch(settingsSetChainUrl(url));
+    dispatch(settingsSetNetwork(networkName));
     history.push(SWAP_URL);
   };
 
@@ -26,11 +26,11 @@ const Settings = (): JSX.Element => {
         <select
           id="chain-selector"
           className="form-select field-input"
-          onChange={(event) => setUrl(event.target.value as ReefChains)}
-          value={url}
+          onChange={(event) => setNetworkName(event.target.value as AvailableNetworks)}
+          value={networkName}
         >
-          <option value={ReefChains.Mainnet}>Reef Mainnet</option>
-          <option value={ReefChains.Testnet}>Reef Testnet</option>
+          <option value={'mainnet' as AvailableNetworks}>Reef Mainnet</option>
+          <option value={'testnet' as AvailableNetworks}>Reef Testnet</option>
         </select>
       </label>
 
