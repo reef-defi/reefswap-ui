@@ -25,6 +25,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
+  const settings = useAppSelector((state) => state.settings);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const [state, setState] = useState<PoolManagerState>(toInit());
@@ -39,7 +40,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
     try {
       setState(toLoading());
       const { signer } = accounts[selectedAccount];
-      await removeLiquidity(pool, signer, gasLimit);
+      await removeLiquidity(pool, signer, gasLimit, settings);
       toast.success('Liquidity removed successfully!');
       dispatch(reloadPool());
       dispatch(reloadTokensAction());

@@ -5,10 +5,29 @@ import ReefswapFactory from '../../assets/abi/ReefswapFactory';
 import ReefswapRouter from '../../assets/abi/ReefswapRouter';
 import { Token } from './tokens';
 
-export enum ReefChains {
-  Testnet='wss://rpc-testnet.reefscan.com/ws',
-  Mainnet='wss://rpc.reefscan.com/ws',
+export type AvailableNetworks = 'mainnet' | 'testnet';
+export interface ReefNetwork {
+  rpcUrl: string;
+  routerAddress: string;
+  factoryAddress: string;
+  name: AvailableNetworks;
 }
+type ReefNetworks = Record<AvailableNetworks, ReefNetwork>;
+
+export const reefNetworks: ReefNetworks = {
+  testnet: {
+    name: 'testnet',
+    rpcUrl: 'wss://rpc-testnet.reefscan.com/ws',
+    factoryAddress: '0xcA36bA38f2776184242d3652b17bA4A77842707e',
+    routerAddress: '0x0A2906130B1EcBffbE1Edb63D5417002956dFd41',
+  },
+  mainnet: {
+    name: 'mainnet',
+    rpcUrl: 'wss://rpc.reefscan.com/ws',
+    routerAddress: '0x641e34931C03751BFED14C4087bA395303bEd1A5',
+    factoryAddress: '0x380a9033500154872813F6E1120a81ed6c0760a8',
+  },
+};
 
 export const checkIfERC20ContractExist = async (address: string, signer: Signer): Promise<void> => {
   try {
@@ -35,8 +54,8 @@ export const balanceOf = async (address: string, balanceAddress: string, signer:
   return balance;
 };
 
-export const getReefswapRouter = (signer: Signer): Contract => new Contract('0x0A2906130B1EcBffbE1Edb63D5417002956dFd41', ReefswapRouter, signer);
-export const getReefswapFactory = (signer: Signer): Contract => new Contract('0xcA36bA38f2776184242d3652b17bA4A77842707e', ReefswapFactory, signer);
+export const getReefswapRouter = (network: ReefNetwork, signer: Signer): Contract => new Contract(network.routerAddress, ReefswapRouter, signer);
+export const getReefswapFactory = (network: ReefNetwork, signer: Signer): Contract => new Contract(network.factoryAddress, ReefswapFactory, signer);
 
 export const calculateFee = (token: Token, feeRation = 0.03): Token => {
   const mm = Math.min(Math.max(feeRation, 0), 100);

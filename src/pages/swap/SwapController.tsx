@@ -28,6 +28,7 @@ const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean
 
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const settings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
@@ -40,27 +41,15 @@ const SwapController = (): JSX.Element => {
   const { text, isValid } = swapStatus(sell.amount, buy.amount, isEvmClaimed);
   const isLoading = isSwapLoading || isBuyLoading || isSellLoading;
 
-  const setBuyAmount = (amount: string): void => {
-    setBuy({ ...buy, amount });
-    setSell({ ...sell, amount: calculateCurrencyAmount(amount, buy.price, sell.price) });
-  };
-  const setSellAmount = (amount: string): void => {
-    setSell({ ...sell, amount });
-    setBuy({ ...buy, amount: calculateCurrencyAmount(amount, sell.price, buy.price) });
-  };
+  const setBuyAmount = (amount: string): void => setBuy({ ...buy, amount });
+  const setSellAmount = (amount: string): void => setSell({ ...sell, amount });
 
-  const changeBuyToken = (index: number): void => {
-    setSell({ ...sell, amount: '' });
-    setBuy({
-      ...tokens[index], index, amount: '', price: 0,
-    });
-  };
-  const changeSellToken = (index: number): void => {
-    setBuy({ ...buy, amount: '' });
-    setSell({
-      ...tokens[index], index, amount: '', price: 0,
-    });
-  };
+  const changeBuyToken = (index: number): void => setBuy({
+    ...tokens[index], index, amount: '', price: 0,
+  });
+  const changeSellToken = (index: number): void => setSell({
+    ...tokens[index], index, amount: '', price: 0,
+  });
 
   const onSwitch = (): void => {
     const subBuyState = { ...buy };
@@ -71,7 +60,7 @@ const SwapController = (): JSX.Element => {
   const onSwap = async (): Promise<void> => {
     try {
       setIsSwapLoading(true);
-      await swapTokens(sell, buy, signer, gasLimit);
+      await swapTokens(sell, buy, signer, settings, gasLimit);
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);

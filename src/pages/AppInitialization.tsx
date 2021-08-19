@@ -27,8 +27,8 @@ type State =
 
 const AppInitialization = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const settings = useAppSelector((state) => state.settings);
   const { reloadPool } = useAppSelector((state) => state.pools);
-  const { chainUrl } = useAppSelector((state) => state.settings);
   const { tokens, reloadTokens } = useAppSelector((state) => state.tokens);
   const { selectedAccount, accounts } = useAppSelector((state) => state.accounts);
 
@@ -58,7 +58,7 @@ const AppInitialization = (): JSX.Element => {
 
       message('Connecting to chain...');
       const provider = new Provider({
-        provider: new WsProvider(chainUrl),
+        provider: new WsProvider(settings.rpcUrl),
       });
       await provider.api.isReadyOrError;
 
@@ -70,11 +70,11 @@ const AppInitialization = (): JSX.Element => {
       );
 
       message('Loading tokens...');
-      const verifiedTokens = await loadVerifiedERC20Tokens(chainUrl);
+      const verifiedTokens = await loadVerifiedERC20Tokens(settings);
       const newTokens = await loadTokens(verifiedTokens, signers[0].signer);
 
       message('Loading pools...');
-      const pools = await loadPools(newTokens, signers[0].signer);
+      const pools = await loadPools(newTokens, signers[0].signer, settings);
 
       dispatch(setPools(pools));
       dispatch(setAllTokensAction(newTokens));
@@ -85,7 +85,7 @@ const AppInitialization = (): JSX.Element => {
     };
 
     loader(load);
-  }, [chainUrl]);
+  }, [settings]);
 
   // Reload tokens
   useEffect(() => {
@@ -101,7 +101,7 @@ const AppInitialization = (): JSX.Element => {
 
     const poolLoader = async (): Promise<void> => {
       message('Loading pools...');
-      const pools = await loadPools(tokens, signer);
+      const pools = await loadPools(tokens, signer, settings);
 
       dispatch(setPools(pools));
     };

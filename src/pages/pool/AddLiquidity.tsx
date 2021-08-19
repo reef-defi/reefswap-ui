@@ -10,12 +10,12 @@ import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
-import { defaultGasLimit, defaultTokenState } from '../../store/internalStore';
+import { defaultGasLimit } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
 import {
-  TokenWithAmount, toTokenAmount, addLiquidity, loadTokens,
+  TokenWithAmount, addLiquidity, loadTokens,
 } from '../../api/rpc/tokens';
 import { PriceHook } from '../../hooks/priceHook';
 import { calculateCurrencyAmount } from '../../utils/math';
@@ -34,6 +34,7 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmCla
 const AddLiquidity = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const settings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
@@ -47,33 +48,21 @@ const AddLiquidity = (): JSX.Element => {
   const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
 
   const back = (): void => history.push(POOL_URL);
-  const changeToken1 = (index: number): void => {
-    setToken2({ ...token2, amount: '' });
-    setToken1({
-      ...tokens[index], amount: '', price: 0, index,
-    });
-  };
-  const changeToken2 = (index: number): void => {
-    setToken1({ ...token1, amount: '' });
-    setToken2({
-      ...tokens[index], amount: '', price: 0, index,
-    });
-  };
+  const changeToken1 = (index: number): void => setToken1({
+    ...tokens[index], amount: '', price: 0, index,
+  });
+  const changeToken2 = (index: number): void => setToken2({
+    ...tokens[index], amount: '', price: 0, index,
+  });
 
-  const setAmount1 = (amount: string): void => {
-    setToken1({ ...token1, amount });
-    setToken2({ ...token2, amount: calculateCurrencyAmount(amount, token1.price, token2.price) });
-  };
-  const setAmount2 = (amount: string): void => {
-    setToken2({ ...token2, amount });
-    setToken1({ ...token1, amount: calculateCurrencyAmount(amount, token2.price, token1.price) });
-  };
+  const setAmount1 = (amount: string): void => setToken1({ ...token1, amount });
+  const setAmount2 = (amount: string): void => setToken2({ ...token2, amount });
 
   const addLiquidityClick = async (): Promise<void> => {
     try {
       setIsLiquidityLoading(true);
-      await addLiquidity(token1, token2, signer, gasLimit);
-      const pools = await loadPools(tokens, signer);
+      await addLiquidity(token1, token2, signer, settings, gasLimit);
+      const pools = await loadPools(tokens, signer, settings);
       dispatch(setPools(pools));
       back();
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);

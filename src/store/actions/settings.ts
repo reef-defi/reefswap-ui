@@ -1,14 +1,15 @@
+import { AvailableNetworks } from '../../api/rpc/rpc';
 import { SET_CHAIN_URL } from '../actionCreator';
 
-interface SetChainUrlAction {
+interface SetNetworkAction {
   type: typeof SET_CHAIN_URL;
-  url: string;
+  name: AvailableNetworks;
 }
 
 export type SettingsActions =
-  | SetChainUrlAction;
+  | SetNetworkAction;
 
-export const settingsSetChainUrl = (url: string): SetChainUrlAction => ({
+export const settingsSetNetwork = (name: AvailableNetworks): SetNetworkAction => ({
   type: SET_CHAIN_URL,
-  url,
+  name,
 });
