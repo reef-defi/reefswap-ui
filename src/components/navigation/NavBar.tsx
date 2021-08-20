@@ -16,6 +16,7 @@ import AccountInfo from './AccountInfo';
 import {
   BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon,
 } from '../card/Icons';
+import { saveSignerPointer } from '../../store/localStore';
 
 interface ButtonProps {
   to: string;
@@ -35,6 +36,7 @@ const NavBar = (): JSX.Element => {
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const selectAccount = (index: number): void => {
+    saveSignerPointer(index);
     dispatch(utilsSetSelectedAccount(index));
     dispatch(reloadTokensAction());
     dispatch(reloadPool());
