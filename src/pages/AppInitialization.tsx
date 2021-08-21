@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { accountsToSigners } from '../api/rpc/accounts';
 import { loadPools } from '../api/rpc/pools';
 import { loadVerifiedERC20Tokens, loadTokens } from '../api/rpc/tokens';
+import { getSignerPointer } from '../store/localStore';
 
 type State =
   | ErrorState
@@ -75,13 +76,14 @@ const AppInitialization = (): JSX.Element => {
 
       message('Loading pools...');
       const pools = await loadPools(newTokens, signers[0].signer, settings);
+      const signerPointer = getSignerPointer();
 
       dispatch(setPools(pools));
       dispatch(setAllTokensAction(newTokens));
       dispatch(utilsSetAccounts(signers));
       // Make sure selecting account is after setting signers
       // Else error will occure
-      dispatch(utilsSetSelectedAccount(0));
+      dispatch(utilsSetSelectedAccount(signers.length > signerPointer ? signerPointer : 0));
     };
 
     loader(load);

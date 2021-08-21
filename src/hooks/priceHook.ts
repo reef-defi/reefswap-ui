@@ -13,6 +13,7 @@ export const PriceHook = (tokenIndex: number): [TokenWithAmount, boolean, (value
 
   const pointer = { ...tokens[token.index] };
 
+  // ensuring state update only if component exists!
   useEffect(() => () => {
     isMounted.current = false;
   }, []);
@@ -21,7 +22,6 @@ export const PriceHook = (tokenIndex: number): [TokenWithAmount, boolean, (value
     const load = async (): Promise<void> => {
       try {
         setIsLoading(true);
-        console.log('Loading');
         const price = await getTokenPrice(pointer.coingeckoId);
         isMounted.current && setToken(({ ...token, price }));
       } catch (error) {

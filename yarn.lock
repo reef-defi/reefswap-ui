@@ -2711,19 +2711,19 @@
     "@types/websocket" "^1.0.2"
     websocket "^1.0.34"
 
-"@reef-defi/api-derive@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@reef-defi/api-derive/-/api-derive-0.1.6.tgz#e56b14dbdca18db6c5602981cf4bb9bf3a64da89"
-  integrity sha512-DiP1yTk1n0wtnc7nTszW6G7mm9wglK5Ttkq1YRJ5AeFgmU3YrqkT3OoF2hhGSYlfoCe9LLpeUdIk1xl+r3QgAg==
+"@reef-defi/api-derive@^0.1.6", "@reef-defi/api-derive@^0.1.7-0":
+  version "0.1.7-0"
+  resolved "https://registry.yarnpkg.com/@reef-defi/api-derive/-/api-derive-0.1.7-0.tgz#d96a54100bd3d70dcaa6a833c404168914b98321"
+  integrity sha512-womiG/7VA+I+N8J+bxMUnbt0HF2FFXu5nAaLsdOceRzU2N8YoMpK03Uj8Sl2MrVeUR3YBVE2H0N3ksJutWzQgw==
   dependencies:
     "@babel/runtime" "^7.10.2"
     "@open-web3/orml-types" "^0.9.1"
     "@polkadot/api-derive" "^4.3.1"
 
-"@reef-defi/api@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@reef-defi/api/-/api-0.1.6.tgz#e0e931bf46273de59840ea69f2139e4a00b3b67a"
-  integrity sha512-U+L3huPgVqS6WEsStfCWYg8q/XNb9JthYdQL1MElG14ecMBe+Tj6QpScJNPgkEzpYjvIMZWkZlt9Y7LE0Db3jQ==
+"@reef-defi/api@^0.1.6", "@reef-defi/api@^0.1.7-0":
+  version "0.1.7-0"
+  resolved "https://registry.yarnpkg.com/@reef-defi/api/-/api-0.1.7-0.tgz#ca8c9883a38ed6c8d49aa8c9fab9baeb07ac92d3"
+  integrity sha512-OQikZCSZnSmpDmfQxBzv7/donqTcqzEHDgH0wlDck3PsZowugN4nc3anyF7Oq6WZxi3+rJJyybLlEx4fsSsopQ==
   dependencies:
     "@babel/runtime" "^7.10.2"
     "@open-web3/orml-api-derive" "^0.9.1"
@@ -2746,17 +2746,17 @@
     blakejs "^1.1.0"
     ethers "^5.0.21"
 
-"@reef-defi/type-definitions@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@reef-defi/type-definitions/-/type-definitions-0.1.6.tgz#e9fafbeb69223def2df8202e3a78ed776c05537f"
-  integrity sha512-9l6iIaV+avWYHadCl/8ywhtgEG/oQQRmwX7eglFvMxIOpYQSZO6TH7nTcVvf7qbWTmS8JgEZstuI02trUELE9w==
+"@reef-defi/type-definitions@^0.1.6", "@reef-defi/type-definitions@^0.1.7-0":
+  version "0.1.7-0"
+  resolved "https://registry.yarnpkg.com/@reef-defi/type-definitions/-/type-definitions-0.1.7-0.tgz#43b2015667541055b161a7d723f54e4ca1ec4eba"
+  integrity sha512-kjsHngBax3GN1YaD8NoP//j5bb53aNgCklIi743y8gmJScWe3a1hrWJP1q4kLEecHpRsIRQ79PZD+Zu2fD2paQ==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.9.1"
 
-"@reef-defi/types@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@reef-defi/types/-/types-0.1.6.tgz#ad43cd4be9db0338ea728adeecb038272d4406c4"
-  integrity sha512-U1z2SWSslXEz9ZvXu3yO8g98tLGYXz0aTbCQ0fBBR7/F5kr2EbQNz1oztDSPT8KLrHAD3nj4Aju0dhRGe+GsVQ==
+"@reef-defi/types@^0.1.6", "@reef-defi/types@^0.1.7-0":
+  version "0.1.7-0"
+  resolved "https://registry.yarnpkg.com/@reef-defi/types/-/types-0.1.7-0.tgz#78088f5cefd28e56a33990db4d83d897bc3e6fba"
+  integrity sha512-2ZYCNJBgPfAb/vcSaaG3vAXJ+p2nRPZXZ+Lqr6aVsy0+2uXh4gktJfLHCOhKNqwUQRXc7Hk1UT7UE2jzIQPetQ==
   dependencies:
     "@babel/runtime" "^7.10.2"
     "@open-web3/api-mobx" "^0.9.1"
