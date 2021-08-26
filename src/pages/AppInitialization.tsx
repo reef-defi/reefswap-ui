@@ -70,20 +70,22 @@ const AppInitialization = (): JSX.Element => {
         inj[0].signer,
       );
 
+      const signerPointer = getSignerPointer();
+      const selectedSigner = signers.length > signerPointer ? signerPointer : 0;
       message('Loading tokens...');
       const verifiedTokens = await loadVerifiedERC20Tokens(settings);
-      const newTokens = await loadTokens(verifiedTokens, signers[0].signer);
+      const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);
 
       message('Loading pools...');
-      const pools = await loadPools(newTokens, signers[0].signer, settings);
-      const signerPointer = getSignerPointer();
+      const pools = await loadPools(newTokens, signers[selectedSigner].signer, settings);
 
       dispatch(setPools(pools));
       dispatch(setAllTokensAction(newTokens));
       dispatch(utilsSetAccounts(signers));
       // Make sure selecting account is after setting signers
       // Else error will occure
-      dispatch(utilsSetSelectedAccount(signers.length > signerPointer ? signerPointer : 0));
+      dispatch(utilsSetSelectedAccount(selectedSigner));
+
     };
 
     loader(load);
