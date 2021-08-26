@@ -6,10 +6,13 @@ import Card, {
   CardBack, CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
 import { ReducerState } from '../../store';
+import { reloadPool } from '../../store/actions/pools';
+import { useAppDispatch } from '../../store/hooks';
 import { POOL_URL } from '../../utils/urls';
 
 const ImportPool = (): JSX.Element => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
   const back = (): void => history.push(POOL_URL);
 
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
@@ -19,6 +22,11 @@ const ImportPool = (): JSX.Element => {
 
   const name1 = tokens[token1].name;
   const name2 = tokens[token2].name;
+
+  const importPool = () => {
+    dispatch(reloadPool());
+    history.push(POOL_URL);
+  };
 
   return (
     <Card>
@@ -37,6 +45,7 @@ const ImportPool = (): JSX.Element => {
         <div className="col-6">
           <SelectToken
             fullWidth
+            id="token1"
             onTokenSelect={setToken1}
             selectedTokenName={name1}
           />
@@ -45,12 +54,17 @@ const ImportPool = (): JSX.Element => {
         <div className="col-6">
           <SelectToken
             fullWidth
+            id="token2"
             onTokenSelect={setToken2}
             selectedTokenName={name2}
           />
         </div>
       </div>
-      <button type="button" className="btn btn-reef border-rad w-100 mt-2">Import</button>
+      <button
+        type="button"
+        className="btn btn-reef border-rad w-100 mt-2"
+        onClick={importPool}
+      >Import</button>
     </Card>
   );
 };

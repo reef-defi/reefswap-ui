@@ -19,7 +19,12 @@ export const calculateCurrencyAmount = (amount: string, fromPrice: number, toPri
   ? (parseFloat(amount) * fromPrice / toPrice).toFixed(3)
   : '');
 
-export const calculateAmount = ({ decimals, amount }: TokenWithAmount, percentage = 0): string => transformAmount(decimals, `${parseFloat(amount) * (1 - percentage)}`);
+interface CalculateAmount {
+  decimals: number;
+  amount: string;
+}
+
+export const calculateAmount = ({ decimals, amount }: CalculateAmount, percentage = 0): string => transformAmount(decimals, `${parseFloat(amount) * (1 - percentage)}`);
 
 export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance);
 
