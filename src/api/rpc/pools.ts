@@ -7,6 +7,7 @@ import { approveTokenAmount, Token, TokenWithAmount } from './tokens';
 import { ReefswapPair } from '../../assets/abi/ReefswapPair';
 import { toGasLimitObj } from '../../store/internalStore';
 import { ensure, uniqueCombinations } from '../../utils/utils';
+import { calculateAmount } from '../../utils/math';
 
 const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -97,15 +98,15 @@ export const removeLiquidity = async ({
   const signerAddress = await signer.getAddress();
 
   const pairToken = createPoolToken(poolAddress, liquidity);
-
   await approveTokenAmount(pairToken, network.routerAddress, signer);
+
 
   await reefswapRouter.removeLiquidity(
     token1.address,
     token2.address,
     liquidity,
-    0, // TODO set the amount wiht fee calculateBalance(calculateFee(token1, 0.999999999)),
-    0, // TODO same as above
+    calculateAmount({...token1, amount: token1.balance}, 5),
+    calculateAmount({...token2, amount: token2.balance}, 5),
     signerAddress,
     10000000000,
     toGasLimitObj(gasLimit),

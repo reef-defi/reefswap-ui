@@ -80,8 +80,8 @@ const SwapController = (): JSX.Element => {
       </CardHeader>
 
       <TokenAmountField
-        id="sell-token-field"
         token={sell}
+        id="sell-token-field"
         onAmountChange={setSellAmount}
         onTokenSelect={changeSellToken}
       />
@@ -93,8 +93,8 @@ const SwapController = (): JSX.Element => {
         </div>
       </div>
       <TokenAmountField
-        id="buy-token-field"
         token={buy}
+        id="buy-token-field"
         onAmountChange={setBuyAmount}
         onTokenSelect={changeBuyToken}
       />

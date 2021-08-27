@@ -1,4 +1,5 @@
-import { TokenWithAmount, Token } from '../api/rpc/tokens';
+import { Token } from '../api/rpc/tokens';
+import { BigNumber } from "ethers";
 
 const findDecimalPoint = (amount: string): number => {
   const { length } = amount;
@@ -24,7 +25,12 @@ interface CalculateAmount {
   amount: string;
 }
 
-export const calculateAmount = ({ decimals, amount }: CalculateAmount, percentage = 0): string => transformAmount(decimals, `${parseFloat(amount) * (1 - percentage)}`);
+export const calculateAmount = ({ decimals, amount }: CalculateAmount, percentage = 0): string => 
+  BigNumber
+    .from(transformAmount(decimals, amount))
+    .mul(BigNumber.from(Math.round(100-percentage)))
+    .div(BigNumber.from(100))
+    .toString();
 
 export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance);
 

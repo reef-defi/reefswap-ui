@@ -59,10 +59,9 @@ export const loadToken = async (address: string, signer: Signer, iconUrl: string
 };
 
 export const loadTokens = async (addresses: ValidatedToken[], signer: Signer): Promise<Token[]> => {
-  const tokens = Promise.all(
+  return Promise.all(
     addresses.map((token) => loadToken(token.address, signer, token.iconUrl, token.coingeckoId)),
   );
-  return tokens;
 };
 
 export const approveTokenAmount = async (token: TokenWithAmount, routerAddress: string, signer: Signer): Promise<void> => {
@@ -102,8 +101,8 @@ export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmo
     token2.address,
     calculateAmount(token1),
     calculateAmount(token2),
-    calculateAmount(token1, 0.05), // min amount token1
-    calculateAmount(token2, 0.05), // min amount token2
+    calculateAmount(token1, 5), // min amount token1
+    calculateAmount(token2, 5), // min amount token2
     signerAddress,
     10000000000,
     toGasLimitObj(gasLimit),
