@@ -53,9 +53,10 @@ export const PoolHook = ({
           }
         }
       } catch (e) {
-        setError('Pool does not exist');
+        // TODO not totally appropriet error handling...
+        mounted.current && setError('Pool does not exist');
       } finally {
-        setIsLoading(false);
+        mounted.current && setIsLoading(false);
       }
     };
     load();
