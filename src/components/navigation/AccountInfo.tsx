@@ -6,13 +6,14 @@ interface AccountInfo {
   name: string;
   address: string;
   evmAddress: string;
+  toggle?: string;
   onClick: () => void;
 }
 
 const AccountInfo = ({
-  name, address, evmAddress, onClick,
+  name, address, evmAddress, toggle="exampleModalToggle", onClick,
 } : AccountInfo): JSX.Element => (
-  <div className="dropdown-item d-flex flex-row px-0">
+  <div className="d-flex flex-row px-0">
     <div className="my-auto mx-2 rounded-circle bg-white">
       <Identicon
         value={address}
@@ -20,9 +21,9 @@ const AccountInfo = ({
         theme="substrate"
       />
     </div>
-    <div className="d-flex flex-column align-start ps-2 pe-4" onClick={onClick} role="button" tabIndex={0}>
-      <span className="lead-text">{trim(name, 25)}</span>
-      <span className="sub-text">{trim(evmAddress, 25)}</span>
+    <div className="d-flex flex-column align-start ps-2 pe-4" onClick={onClick} role="button" tabIndex={0} data-bs-target={`#${toggle}`} data-bs-toggle="modal" data-bs-dismiss="modal">
+      <span className="lead-text">{trim(name, 40)}</span>
+      <span className="sub-text">{trim(evmAddress, 40)}</span>
     </div>
   </div>
 );
