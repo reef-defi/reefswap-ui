@@ -15,20 +15,30 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
 import {
-  TokenWithAmount, addLiquidity, loadTokens,
+  TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token,
 } from '../../api/rpc/tokens';
-import { PriceHook } from '../../hooks/priceHook';
-import { calculateCurrencyAmount } from '../../utils/math';
+import { PoolHook } from '../../hooks/poolHook';
 
-const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
+const errorStatus = (text: string): ButtonStatus => ({
+  isValid: false,
+  text,
+});
+
+const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
-    return { isValid: false, text: 'Bind account' };
+    return errorStatus('Bind account');
+  } if (token1.isEmpty) {
+    return errorStatus('Select first token');
+  } if (token2.isEmpty) {
+    return errorStatus('Select second token');
+  } if (poolError) {
+    return errorStatus(poolError);
   } if (token1.amount.length === 0) {
-    return { isValid: false, text: 'Missing first token amount' };
+    return errorStatus('Missing first token amount');
   } if (token2.amount.length === 0) {
-    return { isValid: false, text: 'Missing second token amount' };
+    return errorStatus('Missing second token amount');
   }
-  return { isValid: true, text: 'Add liquidity' };
+  return { isValid: true, text: 'Supply' };
 };
 
 const AddLiquidity = (): JSX.Element => {
@@ -37,22 +47,32 @@ const AddLiquidity = (): JSX.Element => {
   const settings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
+  const { signer, isEvmClaimed } = accounts[selectedAccount];
 
   const [isLiquidityLoading, setIsLiquidityLoading] = useState(false);
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
-  const [token1, isToken1Loading, setToken1] = PriceHook(0);
-  const [token2, isToken2Loading, setToken2] = PriceHook(1);
 
-  const isLoading = isLiquidityLoading || isToken1Loading || isToken2Loading;
-  const { signer, isEvmClaimed } = accounts[selectedAccount];
-  const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
+  const [token2, setToken2] = useState(createEmptyTokenWithAmount());
+  const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
+
+  const { poolError, isPoolLoading } = PoolHook({
+    token1,
+    token2,
+    signer,
+    settings,
+    setToken1,
+    setToken2,
+  });
+
+  const isLoading = isLiquidityLoading || isPoolLoading;
+  const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed, poolError);
 
   const back = (): void => history.push(POOL_URL);
-  const changeToken1 = (index: number): void => setToken1({
-    ...tokens[index], amount: '', price: 0, index,
+  const changeToken1 = (newToken: Token): void => setToken1({
+    ...newToken, amount: '', price: 0, isEmpty: false,
   });
-  const changeToken2 = (index: number): void => setToken2({
-    ...tokens[index], amount: '', price: 0, index,
+  const changeToken2 = (newToken: Token): void => setToken2({
+    ...newToken, amount: '', price: 0, isEmpty: false,
   });
 
   const setAmount1 = (amount: string): void => setToken1({ ...token1, amount });
@@ -64,7 +84,6 @@ const AddLiquidity = (): JSX.Element => {
       await addLiquidity(token1, token2, signer, settings, gasLimit);
       const pools = await loadPools(tokens, signer, settings);
       dispatch(setPools(pools));
-      back();
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
     } catch (error) {
       errorToast(error.message);

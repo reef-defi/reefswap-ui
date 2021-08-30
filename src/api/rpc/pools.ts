@@ -7,6 +7,7 @@ import { approveTokenAmount, Token, TokenWithAmount } from './tokens';
 import { ReefswapPair } from '../../assets/abi/ReefswapPair';
 import { toGasLimitObj } from '../../store/internalStore';
 import { ensure, uniqueCombinations } from '../../utils/utils';
+import { calculateAmount } from '../../utils/math';
 
 const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -24,7 +25,7 @@ const findPoolTokenAddress = async (token1: Token, token2: Token, signer: Signer
   return address;
 };
 
-const poolContract = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<ReefswapPool> => {
+export const poolContract = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<ReefswapPool> => {
   const address = await findPoolTokenAddress(token1, token2, signer, network);
   ensure(address !== EMPTY_ADDRESS, 'Pool does not exist!');
   const contract = new Contract(address, ReefswapPair, signer);
@@ -36,8 +37,8 @@ const poolContract = async (token1: Token, token2: Token, signer: Signer, networ
   return {
     poolAddress: address,
     contract,
-    token1: { ...token1, balance: tokenBalance1.toString() },
-    token2: { ...token2, balance: tokenBalance2.toString() },
+    token1: { ...token1, balance: tokenBalance1 },
+    token2: { ...token2, balance: tokenBalance2 },
     liquidity: liquidity.toString(),
   };
 };
@@ -82,12 +83,11 @@ const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
   address,
   amount,
   decimals: 18,
-  balance: '0',
+  balance: BigNumber.from('0'),
   name: 'ReefswapERC20',
   iconUrl: '',
-  coingeckoId: 'rusd',
-  price: 0,
-  index: 0,
+  price: -1,
+  isEmpty: true,
 });
 
 export const removeLiquidity = async ({
@@ -97,15 +97,14 @@ export const removeLiquidity = async ({
   const signerAddress = await signer.getAddress();
 
   const pairToken = createPoolToken(poolAddress, liquidity);
-
   await approveTokenAmount(pairToken, network.routerAddress, signer);
 
   await reefswapRouter.removeLiquidity(
     token1.address,
     token2.address,
     liquidity,
-    0, // TODO set the amount wiht fee calculateBalance(calculateFee(token1, 0.999999999)),
-    0, // TODO same as above
+    calculateAmount({ ...token1, amount: token1.balance.toString() }, 5),
+    calculateAmount({ ...token2, amount: token2.balance.toString() }, 5),
     signerAddress,
     10000000000,
     toGasLimitObj(gasLimit),

@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { swapTokens, loadTokens } from '../../api/rpc/tokens';
+import { retrieveReefCoingeckoPrice } from '../../api/prices';
+import { poolContract } from '../../api/rpc/pools';
+import {
+  swapTokens, loadTokens, TokenWithAmount, createEmptyTokenWithAmount, toTokenAmount, Token,
+} from '../../api/rpc/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, {
   CardHeader, CardHeaderBlank, CardSettings, CardTitle,
@@ -8,19 +12,25 @@ import Card, {
 import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
-import { PriceHook } from '../../hooks/priceHook';
+import { PoolHook } from '../../hooks/poolHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultGasLimit } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
-import { calculateCurrencyAmount } from '../../utils/math';
+import { poolRatio } from '../../utils/math';
 
-const swapStatus = (sellAmount: string, buyAmount: string, isEvmClaimed: boolean): ButtonStatus => {
+const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
     return { isValid: false, text: 'Bind account' };
-  } if (sellAmount.length === 0) {
+  } if (sell.isEmpty) {
+    return { isValid: false, text: 'Select sell token' };
+  } if (buy.isEmpty) {
+    return { isValid: false, text: 'Select buy token' };
+  } if (poolError) {
+    return { isValid: false, text: poolError };
+  } if (sell.amount.length === 0) {
     return { isValid: false, text: 'Missing sell amount' };
-  } if (buyAmount.length === 0) {
+  } if (buy.amount.length === 0) {
     return { isValid: false, text: 'Missing buy amount' };
   }
   return { isValid: true, text: 'Swap' };
@@ -33,25 +43,68 @@ const SwapController = (): JSX.Element => {
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
-  const [buy, isBuyLoading, setBuy] = PriceHook(1);
-  const [sell, isSellLoading, setSell] = PriceHook(0);
+  const [buy, setBuy] = useState(createEmptyTokenWithAmount());
+  const [sell, setSell] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
+
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-  const { text, isValid } = swapStatus(sell.amount, buy.amount, isEvmClaimed);
-  const isLoading = isSwapLoading || isBuyLoading || isSellLoading;
-
-  const setBuyAmount = (amount: string): void => setBuy({ ...buy, amount });
-  const setSellAmount = (amount: string): void => setSell({ ...sell, amount });
-
-  const changeBuyToken = (index: number): void => setBuy({
-    ...tokens[index], index, amount: '', price: 0,
+  const { poolError, isPoolLoading } = PoolHook({
+    token1: sell,
+    token2: buy,
+    signer,
+    settings,
+    setToken1: setSell,
+    setToken2: setBuy,
   });
-  const changeSellToken = (index: number): void => setSell({
-    ...tokens[index], index, amount: '', price: 0,
+
+  const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, poolError);
+  const isLoading = isSwapLoading || isPoolLoading;
+
+  // Updating user token balance.. its a bit hecky
+  useEffect(() => {
+    tokens
+      .forEach((token) => {
+        if (token.address === buy.address) {
+          setBuy({ ...buy, ...token });
+        }
+        if (token.address === sell.address) {
+          setSell({ ...sell, ...token });
+        }
+      });
+  }, [tokens]);
+
+  // TODO both functions are alike, create a wrapper!
+  const setBuyAmount = (amount: string): void => {
+    if (amount === '') {
+      setSell({ ...sell, amount });
+      setBuy({ ...buy, amount });
+    } else {
+      const amo = parseFloat(amount) * buy.price / sell.price;
+      setBuy({ ...buy, amount });
+      setSell({ ...sell, amount: `${amo.toFixed(4)}` });
+    }
+  };
+  const setSellAmount = (amount: string): void => {
+    if (amount === '') {
+      setSell({ ...sell, amount });
+      setBuy({ ...buy, amount });
+    } else {
+      const amo = parseFloat(amount) * sell.price / buy.price;
+      setSell({ ...sell, amount });
+      setBuy({ ...buy, amount: `${amo.toFixed(4)}` });
+    }
+  };
+
+  const changeBuyToken = (newToken: Token): void => setBuy({
+    ...newToken, amount: '', price: 0, isEmpty: false,
+  });
+  const changeSellToken = (newToken: Token): void => setSell({
+    ...newToken, amount: '', price: 0, isEmpty: false,
   });
 
   const onSwitch = (): void => {
+    if (buy.isEmpty) { return; }
     const subBuyState = { ...buy };
     setBuy({ ...sell });
     setSell({ ...subBuyState });
@@ -60,7 +113,7 @@ const SwapController = (): JSX.Element => {
   const onSwap = async (): Promise<void> => {
     try {
       setIsSwapLoading(true);
-      await swapTokens(sell, buy, signer, settings, gasLimit);
+      await swapTokens(sell!, buy!, signer, settings, gasLimit);
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);
@@ -80,8 +133,8 @@ const SwapController = (): JSX.Element => {
       </CardHeader>
 
       <TokenAmountField
-        id="sell-token-field"
         token={sell}
+        id="sell-token-field"
         onAmountChange={setSellAmount}
         onTokenSelect={changeSellToken}
       />
@@ -93,8 +146,8 @@ const SwapController = (): JSX.Element => {
         </div>
       </div>
       <TokenAmountField
-        id="buy-token-field"
         token={buy}
+        id="buy-token-field"
         onAmountChange={setBuyAmount}
         onTokenSelect={changeBuyToken}
       />

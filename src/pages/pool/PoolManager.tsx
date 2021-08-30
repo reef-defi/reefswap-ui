@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
+import { BigNumber } from 'ethers';
 import Card from '../../components/card/Card';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import {
@@ -61,7 +62,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
 
         <button type="button" onClick={() => setIsOpen(!isOpen)} className="btn-empty nav-button">
           Manage
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down ms-1" viewBox="0 0 16 16">
+          <svg width="16" height="16" fill="currentColor" className="bi bi-chevron-down ms-1" viewBox="0 0 16 16">
             { isOpen
               ? <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z" />
               : <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />}
@@ -74,7 +75,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
           <div className="d-flex justify-content-between mt-3">
             <label htmlFor="token-liquidity-amo" className="lead-text">Your pool tokens:</label>
             <span className="sub-text" id="token-liquidity-amo">
-              {showBalance({ ...token1, balance: liquidity, decimals: 18 })}
+              {showBalance({ ...token1, balance: BigNumber.from(liquidity), decimals: 18 })}
             </span>
           </div>
           <div className="d-flex justify-content-between">

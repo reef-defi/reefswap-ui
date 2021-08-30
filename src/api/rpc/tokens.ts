@@ -1,4 +1,5 @@
 import { Signer } from '@reef-defi/evm-provider';
+import { BigNumber } from 'ethers';
 import {
   getContract, getReefswapRouter, ReefNetwork,
 } from './rpc';
@@ -11,23 +12,39 @@ interface ValidatedToken {
   name: string;
   address: string;
   iconUrl: string;
-  coingeckoId: string;
+  coingeckoId?: string;
 }
 
 export interface Token extends ValidatedToken {
-  balance: string;
+  balance: BigNumber;
   decimals: number;
 }
 
 export interface TokenWithAmount extends Token {
-  index: number;
   amount: string;
   price: number;
+  isEmpty: boolean;
 }
+
+export const createEmptyToken = (): Token => ({
+  name: 'Select token',
+  address: '',
+  balance: BigNumber.from('0'),
+  decimals: -1,
+  iconUrl: '',
+});
+
+export const createEmptyTokenWithAmount = (): TokenWithAmount => ({
+  ...createEmptyToken(),
+  price: -1,
+  amount: '',
+  isEmpty: true,
+});
 
 export const toTokenAmount = (token: Token, state: TokenState): TokenWithAmount => ({
   ...token,
   ...state,
+  isEmpty: false,
 });
 
 export const loadVerifiedERC20Tokens = async ({ name }: ReefNetwork): Promise<ValidatedToken[]> => {
@@ -40,7 +57,7 @@ export const loadVerifiedERC20Tokens = async ({ name }: ReefNetwork): Promise<Va
 
 export const retrieveTokenAddresses = (tokens: Token[]): string[] => tokens.map((token) => token.address);
 
-export const loadToken = async (address: string, signer: Signer, iconUrl: string, coingeckoId: string): Promise<Token> => {
+export const loadToken = async (address: string, signer: Signer, iconUrl: string): Promise<Token> => {
   const token = await getContract(address, signer);
 
   const signerAddress = await signer.getAddress();
@@ -51,19 +68,15 @@ export const loadToken = async (address: string, signer: Signer, iconUrl: string
   return {
     iconUrl,
     decimals,
-    coingeckoId,
     address: token.address,
     balance: balance.toString(),
     name: symbol,
   };
 };
 
-export const loadTokens = async (addresses: ValidatedToken[], signer: Signer): Promise<Token[]> => {
-  const tokens = Promise.all(
-    addresses.map((token) => loadToken(token.address, signer, token.iconUrl, token.coingeckoId)),
-  );
-  return tokens;
-};
+export const loadTokens = async (addresses: ValidatedToken[], signer: Signer): Promise<Token[]> => Promise.all(
+  addresses.map((token) => loadToken(token.address, signer, token.iconUrl)),
+);
 
 export const approveTokenAmount = async (token: TokenWithAmount, routerAddress: string, signer: Signer): Promise<void> => {
   const contract = await getContract(token.address, signer);
@@ -102,8 +115,8 @@ export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmo
     token2.address,
     calculateAmount(token1),
     calculateAmount(token2),
-    calculateAmount(token1, 0.01), // min amount token1
-    calculateAmount(token2, 0.01), // min amount token2
+    calculateAmount(token1, 5), // min amount token1
+    calculateAmount(token2, 5), // min amount token2
     signerAddress,
     10000000000,
     toGasLimitObj(gasLimit),

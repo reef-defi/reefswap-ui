@@ -1,4 +1,6 @@
-import { TokenWithAmount, Token } from '../api/rpc/tokens';
+import { BigNumber } from 'ethers';
+import { Token } from '../api/rpc/tokens';
+import { ReefswapPool } from '../api/rpc/pools';
 
 const findDecimalPoint = (amount: string): number => {
   const { length } = amount;
@@ -19,15 +21,36 @@ export const calculateCurrencyAmount = (amount: string, fromPrice: number, toPri
   ? (parseFloat(amount) * fromPrice / toPrice).toFixed(3)
   : '');
 
-export const calculateAmount = ({ decimals, amount }: TokenWithAmount, percentage = 0): string => transformAmount(decimals, `${parseFloat(amount) * (1 - percentage)}`);
+interface CalculateAmount {
+  decimals: number;
+  amount: string;
+}
 
-export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance);
+export const calculateAmount = ({ decimals, amount }: CalculateAmount, percentage = 0): string => BigNumber
+  .from(transformAmount(decimals, amount))
+  .mul(BigNumber.from(Math.round(100 - percentage)))
+  .div(BigNumber.from(100))
+  .toString();
+
+export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance.toString());
 
 export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 4): string => {
-  if (balance === '0') { return `${balance} ${name}`; }
-  const headLength = Math.max(balance.length - decimals, 0);
+  const balanceStr = balance.toString();
+  if (balanceStr === '0') { return `${balanceStr} ${name}`; }
+  const headLength = Math.max(balanceStr.length - decimals, 0);
   const tailLength = Math.max(headLength + decimalPoints, 0);
-  const head = balance.length < decimals ? '0' : balance.slice(0, headLength);
-  const tail = balance.slice(headLength, tailLength);
+  const head = balanceStr.length < decimals ? '0' : balanceStr.slice(0, headLength);
+  const tail = balanceStr.slice(headLength, tailLength);
   return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
 };
+
+export const toBalance = ({ balance, decimals }: Token): number => {
+  const num = balance.toString();
+  const diff = num.length - decimals;
+  const fullNum = diff <= 0
+    ? '0'
+    : num.slice(0, diff);
+  return parseFloat(`${fullNum}.${num.slice(diff, num.length)}`);
+};
+
+export const poolRatio = ({ token1, token2 }: ReefswapPool): number => toBalance(token2) / toBalance(token1);
