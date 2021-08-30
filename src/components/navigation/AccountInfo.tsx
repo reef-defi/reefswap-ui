@@ -22,8 +22,8 @@ const AccountInfo = ({
       />
     </div>
     <div className="d-flex flex-column align-start ps-2 pe-4" onClick={onClick} role="button" tabIndex={0} data-bs-target={`#${toggle}`} data-bs-toggle="modal" data-bs-dismiss="modal">
-      <span className="lead-text">{trim(name, 40)}</span>
-      <span className="sub-text">{trim(evmAddress, 40)}</span>
+      <span className="lead-text">{trim(name, 30)}</span>
+      <span className="sub-text">{trim(evmAddress, 30)}</span>
     </div>
   </div>
 );
