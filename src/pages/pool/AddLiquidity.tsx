@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools, poolContract } from '../../api/rpc/pools';
 import {
-  TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount,
+  TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token,
 } from '../../api/rpc/tokens';
 import { retrieveReefCoingeckoPrice } from '../../api/prices';
 import { poolRatio } from '../../utils/math';
@@ -24,9 +24,9 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmCla
   if (!isEvmClaimed) {
     return { isValid: false, text: 'Bind account' };
   } if (token1.isEmpty) {
-    return { isValid: false, text: 'Select first token'};
+    return { isValid: false, text: 'Select first token' };
   } if (token2.isEmpty) {
-    return { isValid: false, text: 'Select second token'};
+    return { isValid: false, text: 'Select second token' };
   } if (token1.amount.length === 0) {
     return { isValid: false, text: 'Missing first token amount' };
   } if (token2.amount.length === 0) {
@@ -47,32 +47,32 @@ const AddLiquidity = (): JSX.Element => {
 
   const [isPriceLoading, setIsPriceLoading] = useState(false);
   const [token2, setToken2] = useState(createEmptyTokenWithAmount());
-  const [token1, setToken1] = useState(toTokenAmount(tokens[0], {amount: "", price: 0, index: 0}));
+  const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
 
   const isLoading = isLiquidityLoading || isPriceLoading;
   const { signer, isEvmClaimed } = accounts[selectedAccount];
   const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
 
   useEffect(() => {
-    const load = async () => {
-      if (token1.isEmpty ||token2.isEmpty) { return; }
+    const load = async (): Promise<void> => {
+      if (token1.isEmpty || token2.isEmpty) { return; }
       try {
         setIsPriceLoading(true);
         const reefPrice = await retrieveReefCoingeckoPrice();
         const basePool = await poolContract(token1, token2, signer, settings);
         const baseRatio = poolRatio(basePool);
 
-        if (token1.name === "REEF") {
-          setToken1({...token1, price: reefPrice});
-          setToken2({...token2, price: reefPrice/baseRatio});
-        } else if (token2.name === "REEF") {
-          setToken1({...token1, price: reefPrice*baseRatio});
-          setToken2({...token2, price: reefPrice});
+        if (token1.name === 'REEF') {
+          setToken1({ ...token1, price: reefPrice });
+          setToken2({ ...token2, price: reefPrice / baseRatio });
+        } else if (token2.name === 'REEF') {
+          setToken1({ ...token1, price: reefPrice * baseRatio });
+          setToken2({ ...token2, price: reefPrice });
         } else {
           const sellPool = await poolContract(tokens[0], token1, signer, settings);
           const sellRatio = poolRatio(sellPool);
-          setToken1({...token1, price: reefPrice/sellRatio});
-          setToken2({...token2, price: reefPrice/sellRatio*baseRatio});
+          setToken1({ ...token1, price: reefPrice / sellRatio });
+          setToken2({ ...token2, price: reefPrice / sellRatio * baseRatio });
         }
       } catch (e) {
         console.error(e);
@@ -84,33 +84,17 @@ const AddLiquidity = (): JSX.Element => {
   }, [token1.address, token2.address]);
 
   const back = (): void => history.push(POOL_URL);
-  const changeToken1 = (index: number): void => setToken1({
-    ...tokens[index], amount: '', price: 0, index, isEmpty: false,
+  const changeToken1 = (newToken: Token): void => setToken1({
+    ...newToken, amount: '', price: 0, isEmpty: false,
   });
-  const changeToken2 = (index: number): void => setToken2({
-    ...tokens[index], amount: '', price: 0, index, isEmpty: false,
+  const changeToken2 = (newToken: Token): void => setToken2({
+    ...newToken, amount: '', price: 0, isEmpty: false,
   });
 
-  const setAmount1 = (amount: string): void => {
-    // if (amount === "") {
-    //   setToken1({...token1, amount: ''});
-    //   setToken2({...token2, amount: ''});
-    // } else {
-      // const amo = parseFloat(amount)*token1.price/token2.price;
-      setToken1({ ...token1, amount });
-    //   setToken2({...token2, amount: `${amo.toFixed(4)}`});
-    // }
-  };
-  const setAmount2 = (amount: string): void => {
-    // if (amount === "") {
-    //   setToken1({...token1, amount: ''});
-    //   setToken2({...token2, amount: ''});
-    // } else {
-    //   const amo = parseFloat(amount)*token2.price/token1.price;
-    //   setToken1({...token1, amount: `${amo.toFixed(4)}`});
-      setToken2({ ...token2, amount });
-    // }
-  };
+  const setAmount1 = (amount: string): void =>
+    setToken1({ ...token1, amount });
+  const setAmount2 = (amount: string): void =>
+    setToken2({ ...token2, amount });
 
   const addLiquidityClick = async (): Promise<void> => {
     try {
@@ -118,7 +102,6 @@ const AddLiquidity = (): JSX.Element => {
       await addLiquidity(token1, token2, signer, settings, gasLimit);
       const pools = await loadPools(tokens, signer, settings);
       dispatch(setPools(pools));
-      back();
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
     } catch (error) {
       errorToast(error.message);

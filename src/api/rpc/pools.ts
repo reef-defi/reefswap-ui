@@ -86,8 +86,7 @@ const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
   balance: BigNumber.from('0'),
   name: 'ReefswapERC20',
   iconUrl: '',
-  price: 0,
-  index: 0,
+  price: -1,
   isEmpty: true,
 });
 
@@ -100,13 +99,12 @@ export const removeLiquidity = async ({
   const pairToken = createPoolToken(poolAddress, liquidity);
   await approveTokenAmount(pairToken, network.routerAddress, signer);
 
-
   await reefswapRouter.removeLiquidity(
     token1.address,
     token2.address,
     liquidity,
-    calculateAmount({...token1, amount: token1.balance.toString()}, 5),
-    calculateAmount({...token2, amount: token2.balance.toString()}, 5),
+    calculateAmount({ ...token1, amount: token1.balance.toString() }, 5),
+    calculateAmount({ ...token2, amount: token2.balance.toString() }, 5),
     signerAddress,
     10000000000,
     toGasLimitObj(gasLimit),

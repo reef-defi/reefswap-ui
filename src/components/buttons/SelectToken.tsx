@@ -14,7 +14,7 @@ interface SelectTokenProps {
   isEmpty?: boolean;
   fullWidth?: boolean;
   selectedTokenName: string;
-  onTokenSelect: (index: number) => void;
+  onTokenSelect: (newToken: Token) => void;
 }
 
 const TO_SHORT_ADDRESS = 'To short address';
@@ -25,7 +25,7 @@ const TOKEN_EXISTS = 'Token exists';
 const doesAddressAlreadyExist = (address: string, tokens: Token[]): boolean => tokens.find((token) => token.address === address) !== undefined;
 
 const SelectToken = ({
-  id = 'exampleModal', selectedTokenName, onTokenSelect, fullWidth, isEmpty
+  id = 'exampleModal', selectedTokenName, onTokenSelect, fullWidth, isEmpty,
 } : SelectTokenProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { tokens } = useAppSelector((state) => state.tokens);
@@ -43,8 +43,8 @@ const SelectToken = ({
       ensure(selectedAccount !== -1, SELECT_ACCOUNT);
       const { signer } = accounts[selectedAccount];
       const token = await loadToken(address, signer, 'https://profit-mine.com/assets/coins/empty-coin.png');
+      onTokenSelect(token);
       dispatch(addTokenAction(token));
-      onTokenSelect(tokens.length);
       setAddress('');
       setIsValid(false);
       setButtonText(TO_SHORT_ADDRESS);
@@ -80,7 +80,7 @@ const SelectToken = ({
     }
   };
 
-  const selectToken = (index: number): void => onTokenSelect(index);
+  const selectToken = (index: number): void => onTokenSelect(tokens[index]);
 
   const tokensView = tokens
     .map((token, index) => (
@@ -104,8 +104,8 @@ const SelectToken = ({
 
   return (
     <>
-      <button type="button" className={`btn border-1 border-rad hover-border ${fullWidth && 'w-100'} ${isEmpty ? 'btn-reef' : 'btn-token-select' }`} data-bs-toggle="modal" data-bs-target={`#${id}`}>
-        <span className={`me-2`}>
+      <button type="button" className={`btn border-1 border-rad hover-border ${fullWidth && 'w-100'} ${isEmpty ? 'btn-reef' : 'btn-token-select'}`} data-bs-toggle="modal" data-bs-target={`#${id}`}>
+        <span className="me-2">
           {selectedTokenName}
         </span>
         <DownIcon small />

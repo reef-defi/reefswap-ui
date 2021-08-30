@@ -1,13 +1,13 @@
 import React from 'react';
 import SelectToken from '../buttons/SelectToken';
 // import { showBalance } from '../../utils/math';
-import { TokenWithAmount } from '../../api/rpc/tokens';
+import { Token, TokenWithAmount } from '../../api/rpc/tokens';
 import { showBalance } from '../../utils/math';
 
 interface TokenAmountFieldProps {
   id?: string;
   token: TokenWithAmount;
-  onTokenSelect: (index: number) => void;
+  onTokenSelect: (newToken: Token) => void;
   onAmountChange: (amount: string) => void;
   placeholder?: string;
 }
@@ -15,7 +15,9 @@ interface TokenAmountFieldProps {
 const TokenAmountField = ({
   id = 'exampleModal', token, onTokenSelect, onAmountChange, placeholder = '0,0',
 } : TokenAmountFieldProps): JSX.Element => {
-  const {name, isEmpty, amount, price} = token;
+  const {
+    name, isEmpty, amount, price,
+  } = token;
   const amo = parseFloat(amount);
 
   return (
@@ -32,14 +34,14 @@ const TokenAmountField = ({
           min={0}
           disabled={isEmpty}
           value={amount}
-          placeholder={isEmpty ? "": placeholder}
+          placeholder={isEmpty ? '' : placeholder}
           className="field-input ms-2 flex-grow-1 text-end"
           onChange={(event) => onAmountChange(event.target.value)}
         />
       </div>
       <div className="d-flex justify-content-between mx-2">
         <small>
-          {!isEmpty && `Balance: ${showBalance(token)}`} 
+          {!isEmpty && `Balance: ${showBalance(token)}`}
         </small>
         <small>
           {price !== 0 && amount !== '' && `~$ ${(amo * price).toFixed(4)}`}

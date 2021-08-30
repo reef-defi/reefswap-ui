@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { createEmptyToken, createEmptyTokenWithAmount } from '../../api/rpc/tokens';
 import SelectToken from '../../components/buttons/SelectToken';
 import Card, {
   CardBack, CardHeader, CardHeaderBlank, CardTitle,
@@ -17,13 +18,10 @@ const ImportPool = (): JSX.Element => {
 
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
 
-  const [token1, setToken1] = useState(0);
-  const [token2, setToken2] = useState(1);
+  const [token1, setToken1] = useState({...tokens[0]});
+  const [token2, setToken2] = useState(createEmptyToken());
 
-  const name1 = tokens[token1].name;
-  const name2 = tokens[token2].name;
-
-  const importPool = () => {
+  const importPool = (): void => {
     dispatch(reloadPool());
     history.push(POOL_URL);
   };
@@ -47,7 +45,7 @@ const ImportPool = (): JSX.Element => {
             fullWidth
             id="token1"
             onTokenSelect={setToken1}
-            selectedTokenName={name1}
+            selectedTokenName={token1.name}
           />
         </div>
 
@@ -56,7 +54,7 @@ const ImportPool = (): JSX.Element => {
             fullWidth
             id="token2"
             onTokenSelect={setToken2}
-            selectedTokenName={name2}
+            selectedTokenName={token2.name}
           />
         </div>
       </div>
@@ -64,7 +62,9 @@ const ImportPool = (): JSX.Element => {
         type="button"
         className="btn btn-reef border-rad w-100 mt-2"
         onClick={importPool}
-      >Import</button>
+      >
+        Import
+      </button>
     </Card>
   );
 };

@@ -1,5 +1,5 @@
+import { BigNumber } from 'ethers';
 import { Token } from '../api/rpc/tokens';
-import { BigNumber } from "ethers";
 import { ReefswapPool } from '../api/rpc/pools';
 
 const findDecimalPoint = (amount: string): number => {
@@ -26,12 +26,11 @@ interface CalculateAmount {
   amount: string;
 }
 
-export const calculateAmount = ({ decimals, amount }: CalculateAmount, percentage = 0): string => 
-  BigNumber
-    .from(transformAmount(decimals, amount))
-    .mul(BigNumber.from(Math.round(100-percentage)))
-    .div(BigNumber.from(100))
-    .toString();
+export const calculateAmount = ({ decimals, amount }: CalculateAmount, percentage = 0): string => BigNumber
+  .from(transformAmount(decimals, amount))
+  .mul(BigNumber.from(Math.round(100 - percentage)))
+  .div(BigNumber.from(100))
+  .toString();
 
 export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance.toString());
 
@@ -45,14 +44,13 @@ export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 
   return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
 };
 
-export const toBalance = ({balance, decimals}: Token): number => {
+export const toBalance = ({ balance, decimals }: Token): number => {
   const num = balance.toString();
-  const diff = num.length-decimals;
-  const fullNum = diff <= 0 
-    ? "0" 
+  const diff = num.length - decimals;
+  const fullNum = diff <= 0
+    ? '0'
     : num.slice(0, diff);
   return parseFloat(`${fullNum}.${num.slice(diff, num.length)}`);
-}
+};
 
-export const poolRatio = ({token1, token2}: ReefswapPool): number => 
-  toBalance(token2)/toBalance(token1);
+export const poolRatio = ({ token1, token2 }: ReefswapPool): number => toBalance(token2) / toBalance(token1);

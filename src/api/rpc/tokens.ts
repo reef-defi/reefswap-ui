@@ -1,4 +1,5 @@
 import { Signer } from '@reef-defi/evm-provider';
+import { BigNumber } from 'ethers';
 import {
   getContract, getReefswapRouter, ReefNetwork,
 } from './rpc';
@@ -6,7 +7,6 @@ import testnetTokens from '../../validated-tokens-testnet.json';
 import mainnetTokens from '../../validated-tokens-mainnet.json';
 import { toGasLimitObj, TokenState } from '../../store/internalStore';
 import { calculateAmount } from '../../utils/math';
-import { BigNumber } from "ethers";
 
 interface ValidatedToken {
   name: string;
@@ -21,30 +21,31 @@ export interface Token extends ValidatedToken {
 }
 
 export interface TokenWithAmount extends Token {
-  index: number;
   amount: string;
   price: number;
   isEmpty: boolean;
 }
 
-export const createEmptyTokenWithAmount = (): TokenWithAmount => ({
+export const createEmptyToken = (): Token => ({
   name: 'Select token',
-  address: "",
-  amount: "",
-  balance: BigNumber.from("0"),
+  address: '',
+  balance: BigNumber.from('0'),
   decimals: -1,
-  iconUrl: "",
-  index: -1,
+  iconUrl: '',
+})
+
+export const createEmptyTokenWithAmount = (): TokenWithAmount => ({
+  ...createEmptyToken(),
   price: -1,
+  amount: '',
   isEmpty: true,
 });
 
 export const toTokenAmount = (token: Token, state: TokenState): TokenWithAmount => ({
   ...token,
   ...state,
-  isEmpty: false
+  isEmpty: false,
 });
-
 
 export const loadVerifiedERC20Tokens = async ({ name }: ReefNetwork): Promise<ValidatedToken[]> => {
   switch (name) {
@@ -73,11 +74,9 @@ export const loadToken = async (address: string, signer: Signer, iconUrl: string
   };
 };
 
-export const loadTokens = async (addresses: ValidatedToken[], signer: Signer): Promise<Token[]> => {
-  return Promise.all(
-    addresses.map((token) => loadToken(token.address, signer, token.iconUrl)),
-  );
-};
+export const loadTokens = async (addresses: ValidatedToken[], signer: Signer): Promise<Token[]> => Promise.all(
+  addresses.map((token) => loadToken(token.address, signer, token.iconUrl)),
+);
 
 export const approveTokenAmount = async (token: TokenWithAmount, routerAddress: string, signer: Signer): Promise<void> => {
   const contract = await getContract(token.address, signer);
