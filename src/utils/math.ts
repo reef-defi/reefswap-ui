@@ -32,13 +32,14 @@ export const calculateAmount = ({ decimals, amount }: CalculateAmount, percentag
     .div(BigNumber.from(100))
     .toString();
 
-export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance);
+export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance.toString());
 
 export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 4): string => {
-  if (balance === '0') { return `${balance} ${name}`; }
-  const headLength = Math.max(balance.length - decimals, 0);
+  const balanceStr = balance.toString();
+  if (balanceStr === '0') { return `${balanceStr} ${name}`; }
+  const headLength = Math.max(balanceStr.length - decimals, 0);
   const tailLength = Math.max(headLength + decimalPoints, 0);
-  const head = balance.length < decimals ? '0' : balance.slice(0, headLength);
-  const tail = balance.slice(headLength, tailLength);
+  const head = balanceStr.length < decimals ? '0' : balanceStr.slice(0, headLength);
+  const tail = balanceStr.slice(headLength, tailLength);
   return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
 };

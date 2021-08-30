@@ -85,7 +85,6 @@ const AppInitialization = (): JSX.Element => {
       // Make sure selecting account is after setting signers
       // Else error will occure
       dispatch(utilsSetSelectedAccount(selectedSigner));
-
     };
 
     loader(load);
