@@ -5,11 +5,11 @@ import { reloadTokensAction } from "../../store/actions/tokens";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { saveSignerPointer } from "../../store/localStore";
 import { trim } from "../../utils/utils";
+import { BackIcon, CloseIcon } from "../card/Icons";
 import AccountInfo from "./AccountInfo";
 
 const AccountModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  // const settings = useAppSelector((state) => state.settings);
   const {accounts, selectedAccount} = useAppSelector((state) => state.accounts);
 
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
@@ -59,9 +59,13 @@ const AccountModal = (): JSX.Element => {
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header justify-content-between">
-            <button type="button" className="btn-close ms-0 me-auto"  data-bs-target="#exampleModalToggle" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" className="btn ms-0 me-auto py-0"  data-bs-target="#exampleModalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">
+              <BackIcon />
+            </button>
             <h5 className="modal-title" id="exampleModalToggleLabel2">Select account</h5>
-            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" className="btn py-0 ms-auto" data-bs-dismiss="modal">
+              <CloseIcon />
+            </button>
           </div>
           <div className="modal-body">
             <ul className="list-group overflow-scroll" style={{ height: "300px"}}>
