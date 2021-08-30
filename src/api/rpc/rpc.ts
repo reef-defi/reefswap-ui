@@ -64,6 +64,6 @@ export const calculateFee = (token: Token, feeRation = 0.03): Token => {
   const feeAmount = fullAmount
     .div(BigNumber.from(100))
     .sub(BigNumber.from(fee));
-  const balance = fullAmount.add(feeAmount).toString();
+  const balance = fullAmount.add(feeAmount);
   return { ...token, balance };
 };
