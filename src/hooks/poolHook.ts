@@ -20,17 +20,19 @@ interface PoolHookOutput {
   isPoolLoading: boolean;
 }
 
-export const PoolHook = ({token1, token2, signer, settings, setToken1, setToken2}: PoolHookInput): PoolHookOutput => {
+export const PoolHook = ({
+  token1, token2, signer, settings, setToken1, setToken2,
+}: PoolHookInput): PoolHookOutput => {
   const mounted = useRef(true);
-  const {tokens} = useAppSelector((state) => state.tokens);
+  const { tokens } = useAppSelector((state) => state.tokens);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const load = async (): Promise<void> => {
       if (token1.isEmpty || token2.isEmpty) { return; }
       try {
-        setError("");
+        setError('');
         setIsLoading(true);
         const reefPrice = await retrieveReefCoingeckoPrice();
         const basePool = await poolContract(token1, token2, signer, settings);
@@ -51,7 +53,7 @@ export const PoolHook = ({token1, token2, signer, settings, setToken1, setToken2
           }
         }
       } catch (e) {
-        setError("Pool does not exist");
+        setError('Pool does not exist');
       } finally {
         setIsLoading(false);
       }
@@ -60,11 +62,11 @@ export const PoolHook = ({token1, token2, signer, settings, setToken1, setToken2
 
     return () => {
       mounted.current = false;
-    }
+    };
   }, [token1.address, token2.address]);
 
   return {
     isPoolLoading: isLoading,
     poolError: !error ? undefined : error,
-  }
+  };
 };

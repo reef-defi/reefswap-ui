@@ -32,7 +32,7 @@ export const createEmptyToken = (): Token => ({
   balance: BigNumber.from('0'),
   decimals: -1,
   iconUrl: '',
-})
+});
 
 export const createEmptyTokenWithAmount = (): TokenWithAmount => ({
   ...createEmptyToken(),

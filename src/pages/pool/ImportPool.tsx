@@ -18,7 +18,7 @@ const ImportPool = (): JSX.Element => {
 
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
 
-  const [token1, setToken1] = useState({...tokens[0]});
+  const [token1, setToken1] = useState({ ...tokens[0] });
   const [token2, setToken2] = useState(createEmptyToken());
 
   const importPool = (): void => {

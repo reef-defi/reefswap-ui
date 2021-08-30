@@ -49,13 +49,13 @@ const SwapController = (): JSX.Element => {
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-  const {poolError, isPoolLoading} = PoolHook({
+  const { poolError, isPoolLoading } = PoolHook({
     token1: sell,
     token2: buy,
     signer,
     settings,
     setToken1: setSell,
-    setToken2: setBuy
+    setToken2: setBuy,
   });
 
   const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, poolError);
@@ -97,8 +97,8 @@ const SwapController = (): JSX.Element => {
   };
 
   const changeBuyToken = (newToken: Token): void => setBuy({
-      ...newToken, amount: '', price: 0, isEmpty: false,
-    });
+    ...newToken, amount: '', price: 0, isEmpty: false,
+  });
   const changeSellToken = (newToken: Token): void => setSell({
     ...newToken, amount: '', price: 0, isEmpty: false,
   });

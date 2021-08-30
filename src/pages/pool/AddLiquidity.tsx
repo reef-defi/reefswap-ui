@@ -21,14 +21,14 @@ import { PoolHook } from '../../hooks/poolHook';
 
 const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,
-  text
+  text,
 });
 
 const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
-    return errorStatus("Bind account");
+    return errorStatus('Bind account');
   } if (token1.isEmpty) {
-    return errorStatus("Select first token");
+    return errorStatus('Select first token');
   } if (token2.isEmpty) {
     return errorStatus('Select second token');
   } if (poolError) {
@@ -55,7 +55,7 @@ const AddLiquidity = (): JSX.Element => {
   const [token2, setToken2] = useState(createEmptyTokenWithAmount());
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
 
-  const {poolError, isPoolLoading} = PoolHook({
+  const { poolError, isPoolLoading } = PoolHook({
     token1,
     token2,
     signer,
@@ -75,10 +75,8 @@ const AddLiquidity = (): JSX.Element => {
     ...newToken, amount: '', price: 0, isEmpty: false,
   });
 
-  const setAmount1 = (amount: string): void =>
-    setToken1({ ...token1, amount });
-  const setAmount2 = (amount: string): void =>
-    setToken2({ ...token2, amount });
+  const setAmount1 = (amount: string): void => setToken1({ ...token1, amount });
+  const setAmount2 = (amount: string): void => setToken2({ ...token2, amount });
 
   const addLiquidityClick = async (): Promise<void> => {
     try {
