@@ -12,19 +12,22 @@ import Card, {
 import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
+import { PoolHook } from '../../hooks/poolHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultGasLimit } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
 import { poolRatio } from '../../utils/math';
 
-const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
+const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
     return { isValid: false, text: 'Bind account' };
   } if (sell.isEmpty) {
     return { isValid: false, text: 'Select sell token' };
   } if (buy.isEmpty) {
     return { isValid: false, text: 'Select buy token' };
+  } if (poolError) {
+    return { isValid: false, text: poolError };
   } if (sell.amount.length === 0) {
     return { isValid: false, text: 'Missing sell amount' };
   } if (buy.amount.length === 0) {
@@ -40,15 +43,23 @@ const SwapController = (): JSX.Element => {
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
-  const [isPriceLoading, setIsPriceLoading] = useState(false);
   const [buy, setBuy] = useState(createEmptyTokenWithAmount());
   const [sell, setSell] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
 
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-  const { text, isValid } = swapStatus(sell, buy, isEvmClaimed);
-  const isLoading = isSwapLoading || isPriceLoading;
+  const {poolError, isPoolLoading} = PoolHook({
+    token1: sell,
+    token2: buy,
+    signer,
+    settings,
+    setToken1: setSell,
+    setToken2: setBuy
+  });
+
+  const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, poolError);
+  const isLoading = isSwapLoading || isPoolLoading;
 
   // Updating user token balance.. its a bit hecky
   useEffect(() => {
@@ -62,37 +73,6 @@ const SwapController = (): JSX.Element => {
         }
       });
   }, [tokens]);
-
-  // Updating token price when address is changed
-  useEffect(() => {
-    const load = async (): Promise<void> => {
-      if (sell.isEmpty || buy.isEmpty) { return; }
-      try {
-        setIsPriceLoading(true);
-        const reefPrice = await retrieveReefCoingeckoPrice();
-        const basePool = await poolContract(sell, buy, signer, settings);
-        const baseRatio = poolRatio(basePool);
-
-        if (sell.name === 'REEF') {
-          setSell({ ...sell, price: reefPrice });
-          setBuy({ ...buy, price: reefPrice / baseRatio });
-        } else if (buy.name === 'REEF') {
-          setBuy({ ...buy, price: reefPrice });
-          setSell({ ...sell, price: reefPrice * baseRatio });
-        } else {
-          const sellPool = await poolContract(tokens[0], sell, signer, settings);
-          const sellRatio = poolRatio(sellPool);
-          setSell({ ...sell, price: reefPrice / sellRatio });
-          setBuy({ ...buy, price: reefPrice / sellRatio * baseRatio });
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsPriceLoading(false);
-      }
-    };
-    load();
-  }, [buy.address, sell.address]);
 
   // TODO both functions are alike, create a wrapper!
   const setBuyAmount = (amount: string): void => {

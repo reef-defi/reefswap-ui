@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { ButtonStatus } from '../../components/buttons/Button';
@@ -13,24 +13,30 @@ import { setPools } from '../../store/actions/pools';
 import { defaultGasLimit } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
-import { loadPools, poolContract } from '../../api/rpc/pools';
+import { loadPools } from '../../api/rpc/pools';
 import {
   TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token,
 } from '../../api/rpc/tokens';
-import { retrieveReefCoingeckoPrice } from '../../api/prices';
-import { poolRatio } from '../../utils/math';
+import { PoolHook } from '../../hooks/poolHook';
 
-const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
+const errorStatus = (text: string): ButtonStatus => ({
+  isValid: false,
+  text
+});
+
+const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
-    return { isValid: false, text: 'Bind account' };
+    return errorStatus("Bind account");
   } if (token1.isEmpty) {
-    return { isValid: false, text: 'Select first token' };
+    return errorStatus("Select first token");
   } if (token2.isEmpty) {
-    return { isValid: false, text: 'Select second token' };
+    return errorStatus('Select second token');
+  } if (poolError) {
+    return errorStatus(poolError);
   } if (token1.amount.length === 0) {
-    return { isValid: false, text: 'Missing first token amount' };
+    return errorStatus('Missing first token amount');
   } if (token2.amount.length === 0) {
-    return { isValid: false, text: 'Missing second token amount' };
+    return errorStatus('Missing second token amount');
   }
   return { isValid: true, text: 'Supply' };
 };
@@ -41,47 +47,25 @@ const AddLiquidity = (): JSX.Element => {
   const settings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
+  const { signer, isEvmClaimed } = accounts[selectedAccount];
 
   const [isLiquidityLoading, setIsLiquidityLoading] = useState(false);
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
 
-  const [isPriceLoading, setIsPriceLoading] = useState(false);
   const [token2, setToken2] = useState(createEmptyTokenWithAmount());
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
 
-  const isLoading = isLiquidityLoading || isPriceLoading;
-  const { signer, isEvmClaimed } = accounts[selectedAccount];
-  const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
+  const {poolError, isPoolLoading} = PoolHook({
+    token1,
+    token2,
+    signer,
+    settings,
+    setToken1,
+    setToken2,
+  });
 
-  useEffect(() => {
-    const load = async (): Promise<void> => {
-      if (token1.isEmpty || token2.isEmpty) { return; }
-      try {
-        setIsPriceLoading(true);
-        const reefPrice = await retrieveReefCoingeckoPrice();
-        const basePool = await poolContract(token1, token2, signer, settings);
-        const baseRatio = poolRatio(basePool);
-
-        if (token1.name === 'REEF') {
-          setToken1({ ...token1, price: reefPrice });
-          setToken2({ ...token2, price: reefPrice / baseRatio });
-        } else if (token2.name === 'REEF') {
-          setToken1({ ...token1, price: reefPrice * baseRatio });
-          setToken2({ ...token2, price: reefPrice });
-        } else {
-          const sellPool = await poolContract(tokens[0], token1, signer, settings);
-          const sellRatio = poolRatio(sellPool);
-          setToken1({ ...token1, price: reefPrice / sellRatio });
-          setToken2({ ...token2, price: reefPrice / sellRatio * baseRatio });
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsPriceLoading(false);
-      }
-    };
-    load();
-  }, [token1.address, token2.address]);
+  const isLoading = isLiquidityLoading || isPoolLoading;
+  const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed, poolError);
 
   const back = (): void => history.push(POOL_URL);
   const changeToken1 = (newToken: Token): void => setToken1({
