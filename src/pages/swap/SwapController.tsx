@@ -42,7 +42,7 @@ const toBalance = ({balance, decimals}: Token): number => {
 }
 
 const poolRatio = ({token1, token2}: ReefswapPool): number => 
-  toBalance(token1)/toBalance(token2);
+  toBalance(token2)/toBalance(token1);
 
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
