@@ -12,6 +12,7 @@ interface ValidatedToken {
   name: string;
   address: string;
   iconUrl: string;
+  coingeckoId?: string;
 }
 
 export interface Token extends ValidatedToken {

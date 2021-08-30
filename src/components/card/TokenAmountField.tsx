@@ -16,7 +16,7 @@ const TokenAmountField = ({
   id = 'exampleModal', token, onTokenSelect, onAmountChange, placeholder = '0,0',
 } : TokenAmountFieldProps): JSX.Element => {
   const {name, isEmpty, amount, price} = token;
-  // const amt = parseFloat(amount);
+  const amo = parseFloat(amount);
 
   return (
     <div className="field p-3 border-rad">
@@ -25,7 +25,7 @@ const TokenAmountField = ({
           id={id}
           isEmpty={isEmpty}
           onTokenSelect={onTokenSelect}
-          selectedTokenName={token?.name}
+          selectedTokenName={name}
         />
         <input
           type="number"
@@ -42,7 +42,7 @@ const TokenAmountField = ({
           {!isEmpty && `Balance: ${showBalance(token)}`} 
         </small>
         <small>
-          {/* {price !== 0 && amount !== '' && `~$ ${(1 * price).toFixed(4)}`} */}
+          {price !== 0 && amount !== '' && `~$ ${(amo * price).toFixed(4)}`}
         </small>
       </div>
     </div>
