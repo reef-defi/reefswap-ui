@@ -1,5 +1,6 @@
 import { Token } from '../api/rpc/tokens';
 import { BigNumber } from "ethers";
+import { ReefswapPool } from '../api/rpc/pools';
 
 const findDecimalPoint = (amount: string): number => {
   const { length } = amount;
@@ -43,3 +44,15 @@ export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 
   const tail = balanceStr.slice(headLength, tailLength);
   return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
 };
+
+export const toBalance = ({balance, decimals}: Token): number => {
+  const num = balance.toString();
+  const diff = num.length-decimals;
+  const fullNum = diff <= 0 
+    ? "0" 
+    : num.slice(0, diff);
+  return parseFloat(`${fullNum}.${num.slice(diff, num.length)}`);
+}
+
+export const poolRatio = ({token1, token2}: ReefswapPool): number => 
+  toBalance(token2)/toBalance(token1);

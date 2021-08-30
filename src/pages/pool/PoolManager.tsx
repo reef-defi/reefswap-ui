@@ -14,6 +14,7 @@ import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { ReefswapPool, removeLiquidity } from '../../api/rpc/pools';
+import { BigNumber } from "ethers";
 
 type PoolManagerState =
   | LoadingState
@@ -74,7 +75,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
           <div className="d-flex justify-content-between mt-3">
             <label htmlFor="token-liquidity-amo" className="lead-text">Your pool tokens:</label>
             <span className="sub-text" id="token-liquidity-amo">
-              {showBalance({ ...token1, balance: liquidity, decimals: 18 })}
+              {showBalance({ ...token1, balance: BigNumber.from(liquidity), decimals: 18 })}
             </span>
           </div>
           <div className="d-flex justify-content-between">
