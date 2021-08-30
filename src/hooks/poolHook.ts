@@ -32,13 +32,14 @@ export const PoolHook = ({
     const load = async (): Promise<void> => {
       if (token1.isEmpty || token2.isEmpty) { return; }
       try {
+        mounted.current = true;
         setError('');
         setIsLoading(true);
         const reefPrice = await retrieveReefCoingeckoPrice();
         const basePool = await poolContract(token1, token2, signer, settings);
         const baseRatio = poolRatio(basePool);
 
-        if (mounted) {
+        if (mounted.current) {
           if (token1.name === 'REEF') {
             setToken1({ ...token1, price: reefPrice });
             setToken2({ ...token2, price: reefPrice / baseRatio });
@@ -54,9 +55,13 @@ export const PoolHook = ({
         }
       } catch (e) {
         // TODO not totally appropriet error handling...
-        mounted.current && setError('Pool does not exist');
+        if (mounted.current) {
+          setError('Pool does not exist');
+        }
       } finally {
-        mounted.current && setIsLoading(false);
+        if (mounted.current) {
+          setIsLoading(false);
+        }
       }
     };
     load();
