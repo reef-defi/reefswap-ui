@@ -17,6 +17,7 @@ import {
   BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon,
 } from '../card/Icons';
 import { saveSignerPointer } from '../../store/localStore';
+import AccountModal from './AccountModal';
 
 interface ButtonProps {
   to: string;
@@ -35,28 +36,11 @@ const NavBar = (): JSX.Element => {
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
-  const selectAccount = (index: number): void => {
-    saveSignerPointer(index);
-    dispatch(utilsSetSelectedAccount(index));
-    dispatch(reloadTokensAction());
-    dispatch(reloadPool());
-  };
   const balance = tokens.length
     ? showBalance(tokens.find((token) => token.name === 'REEF')!, 0)
     : '';
 
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
-  const accountsView = accounts
-    .map(({ address, evmAddress, name }, index) => (
-      <li key={address}>
-        <AccountInfo
-          name={name}
-          address={address}
-          evmAddress={evmAddress}
-          onClick={() => selectAccount(index)}
-        />
-      </li>
-    ));
 
   return (
     <nav className="container-fluid m-1 mt-3 row w-auto">
@@ -80,14 +64,8 @@ const NavBar = (): JSX.Element => {
             <div className="my-auto mx-2 fs-6 fw-bold">
               {balance}
             </div>
-            <div className="dropdown">
-              <button className="btn btn-secondary dropdown-toggle no-shadow nav-acc-button border-rad hover-border" type="button" id="dropdownMenuReference" data-bs-toggle="dropdown" aria-expanded="false">
-                {trim(accName)}
-              </button>
-              <ul className="dropdown-menu dropdown-menu-end border-rad m-1" aria-labelledby="dropdownMenuReference">
-                {accountsView}
-              </ul>
-            </div>
+            
+            <AccountModal />
           </div>
           <div className="d-flex nav-acc border-rad">
             <div className="dropdown">
