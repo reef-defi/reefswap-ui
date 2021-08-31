@@ -28,3 +28,12 @@ export const LoadingComponent = ({ text }: LoadingWithText): JSX.Element => (
     <LoadingWithText text={text} />
   </div>
 );
+
+export const LoadingButtonIconWithText = ({ text }: LoadingWithText): JSX.Element => (
+  <>
+    <span className="m-auto mt-2 me-2">{text}</span>
+    <div className="spinner-border spinner-border-sm text-white m-auto" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </>
+);

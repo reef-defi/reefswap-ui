@@ -115,8 +115,8 @@ export const addLiquidity = async (token1: TokenWithAmount, token2: TokenWithAmo
     token2.address,
     calculateAmount(token1),
     calculateAmount(token2),
-    calculateAmount(token1, 5), // min amount token1
-    calculateAmount(token2, 5), // min amount token2
+    calculateAmount(token1), // min amount token1
+    calculateAmount(token2), // min amount token2
     signerAddress,
     10000000000,
     toGasLimitObj(gasLimit),

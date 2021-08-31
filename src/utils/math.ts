@@ -5,10 +5,10 @@ import { ReefswapPool } from '../api/rpc/pools';
 const findDecimalPoint = (amount: string): number => {
   const { length } = amount;
   let index = amount.indexOf(',');
-  if (index !== -1) { return length - index; }
+  if (index !== -1) { return length - index - 1; }
   index = amount.indexOf('.');
-  if (index !== -1) { return length - index; }
-  return 1;
+  if (index !== -1) { return length - index - 1; }
+  return 0;
 };
 
 const transformAmount = (decimals: number, amount: string): string => {
@@ -20,12 +20,16 @@ interface CalculateAmount {
   decimals: number;
   amount: string;
 }
-
-export const calculateAmount = ({ decimals, amount }: CalculateAmount, percentage = 0): string => BigNumber
+export const calculateAmount = ({ decimals, amount }: CalculateAmount): string => BigNumber
   .from(transformAmount(decimals, amount))
-  .mul(BigNumber.from(Math.round(100 - percentage)))
-  .div(BigNumber.from(100))
   .toString();
+
+export const calculateAmountWithPercentage = ({ amount: oldAmount, decimals }: CalculateAmount, percentage: number): string => {
+  const amount = parseFloat(oldAmount) * (1 - percentage / 100);
+  return calculateAmount({ amount: amount.toString(), decimals });
+};
+
+export const calculateDeadline = (minutes: number): number => Date.now() + minutes * 60 * 1000;
 
 export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance.toString());
 

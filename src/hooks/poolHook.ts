@@ -12,7 +12,6 @@ interface PoolHookInput {
   settings: ReefNetwork;
   token1: TokenWithAmount;
   token2: TokenWithAmount;
-  percentage: number;
   setToken1: (token: TokenWithAmount) => void;
   setToken2: (token: TokenWithAmount) => void;
 }
@@ -27,16 +26,16 @@ const ensureAndExecute = (condition: boolean) => <T, >(fun: (value: T) => void, 
   }
 };
 
-const calculateNewTokenAmount = (amount: string, tokenPrice1: number, tokenPrice2: number, percentage = 1): string => {
+const calculateNewTokenAmount = (amount: string, tokenPrice1: number, tokenPrice2: number): string => {
   if (!amount) {
     return amount;
   }
-  const newAmount = parseFloat(amount) * tokenPrice1 / tokenPrice2 * percentage;
+  const newAmount = parseFloat(amount) * tokenPrice1 / tokenPrice2;
   return newAmount.toFixed(4);
 };
 
 export const PoolHook = ({
-  token1, token2, signer, settings, percentage, setToken1, setToken2,
+  token1, token2, signer, settings, setToken1, setToken2,
 }: PoolHookInput): PoolHookOutput => {
   const mounted = useRef(true);
   const { tokens } = useAppSelector((state) => state.tokens);
@@ -52,14 +51,14 @@ export const PoolHook = ({
       ...token1,
       price: tokenPrice1,
       amount: token1.address !== prevAddress1
-        ? calculateNewTokenAmount(token2.amount, tokenPrice2, tokenPrice1, 2 - percentage)
+        ? calculateNewTokenAmount(token2.amount, tokenPrice2, tokenPrice1)
         : token1.amount,
     });
     ensureMount(setToken2, {
       ...token2,
       price: tokenPrice2,
       amount: token2.address !== prevAddress2
-        ? calculateNewTokenAmount(token1.amount, tokenPrice1, tokenPrice2, percentage)
+        ? calculateNewTokenAmount(token1.amount, tokenPrice1, tokenPrice2)
         : token2.amount,
     });
   };

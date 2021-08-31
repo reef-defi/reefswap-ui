@@ -8,7 +8,7 @@ html, body, #root {
 }
 
 .border-rad {
-  border-radius: 11px;
+  border-radius: 20px;
 }
 .btn:focus {
   box-shadow: none;
@@ -111,6 +111,10 @@ input {
   background-color: #46288b;
 }
 
+.title-text {
+  font-size: 1.1em;
+}
+
 .lead-text {
   font-size: 1em;
 }
@@ -124,4 +128,12 @@ input {
 
 .modal-footer {
   background-color: rgb(237, 238, 242)
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+.text-war {
+  color: #cc9c0e !important;
 }

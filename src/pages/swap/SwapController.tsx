@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { retrieveReefCoingeckoPrice } from '../../api/prices';
-import { poolContract } from '../../api/rpc/pools';
+import { getReefswapRouter } from '../../api/rpc/rpc';
 import {
-  swapTokens, loadTokens, TokenWithAmount, createEmptyTokenWithAmount, toTokenAmount, Token,
+  loadTokens, TokenWithAmount, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
 } from '../../api/rpc/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, {
-  CardHeader, CardHeaderBlank, CardSettings, CardTitle,
+  CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
+import CardSettings from '../../components/card/CardSettings';
 import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
-import { LoadingButtonIcon } from '../../components/loading/Loading';
+import { LoadingButtonIconWithText } from '../../components/loading/Loading';
 import { PoolHook } from '../../hooks/poolHook';
+import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { defaultGasLimit } from '../../store/internalStore';
+import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
-import { poolRatio } from '../../utils/math';
+import { calculateAmount, calculateAmountWithPercentage, calculateDeadline } from '../../utils/math';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -38,25 +39,25 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
 
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const settings = useAppSelector((state) => state.settings);
+  const networkSettings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
-  const { signer, isEvmClaimed } = accounts[selectedAccount];
+  const { signer, evmAddress, isEvmClaimed } = accounts[selectedAccount];
 
   const [buy, setBuy] = useState(createEmptyTokenWithAmount());
   const [sell, setSell] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
 
-  const [gasLimit, setGasLimit] = useState(defaultGasLimit());
+  const [status, setStatus] = useState('');
+  const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-  const percentage = 0.99;
+  const { percentage, deadline } = resolveSettings(settings);
 
   const { poolError, isPoolLoading } = PoolHook({
     token1: sell,
     token2: buy,
     signer,
-    settings,
-    percentage,
+    settings: networkSettings,
     setToken1: setSell,
     setToken2: setBuy,
   });
@@ -65,17 +66,8 @@ const SwapController = (): JSX.Element => {
   const isLoading = isSwapLoading || isPoolLoading;
 
   // Updating user token balance.. its a bit hecky
-  useEffect(() => {
-    tokens
-      .forEach((token) => {
-        if (token.address === buy.address) {
-          setBuy({ ...buy, ...token });
-        }
-        if (token.address === sell.address) {
-          setSell({ ...sell, ...token });
-        }
-      });
-  }, [tokens]);
+  UpdateBalanceHook(buy, setBuy);
+  UpdateBalanceHook(sell, setSell);
 
   // TODO both functions are alike, create a wrapper!
   const setBuyAmount = (amount: string): void => {
@@ -83,7 +75,7 @@ const SwapController = (): JSX.Element => {
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount });
     } else {
-      const amo = parseFloat(amount) * buy.price / sell.price * (2 - percentage);
+      const amo = parseFloat(amount) * buy.price / sell.price;
       setBuy({ ...buy, amount });
       setSell({ ...sell, amount: `${amo.toFixed(4)}` });
     }
@@ -93,7 +85,7 @@ const SwapController = (): JSX.Element => {
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount });
     } else {
-      const amo = parseFloat(amount) * sell.price / buy.price * percentage;
+      const amo = parseFloat(amount) * sell.price / buy.price;
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount: `${amo.toFixed(4)}` });
     }
@@ -109,14 +101,28 @@ const SwapController = (): JSX.Element => {
   const onSwitch = (): void => {
     if (buy.isEmpty || isLoading) { return; }
     const subSellState = { ...sell };
-    setSell({ ...buy, amount: `${(parseFloat(buy.amount) / percentage).toFixed(4)}` });
-    setBuy({ ...subSellState, amount: `${(parseFloat(sell.amount) / (2 - percentage)).toFixed(4)}` });
+    setSell({ ...buy });
+    setBuy({ ...subSellState });
   };
 
   const onSwap = async (): Promise<void> => {
+    if (!isValid) { return; }
     try {
       setIsSwapLoading(true);
-      await swapTokens(sell, buy, signer, settings, gasLimit);
+      setStatus('Approving sell token');
+      const sellAmount = calculateAmount(sell);
+      const minBuyAmount = calculateAmountWithPercentage(buy, percentage);
+      const reefswapRouter = getReefswapRouter(networkSettings, signer);
+      await approveTokenAmount(sell, networkSettings.routerAddress, signer);
+
+      setStatus('Executing swap');
+      await reefswapRouter.swapExactTokensForTokens(
+        sellAmount,
+        minBuyAmount,
+        [sell.address, buy.address],
+        evmAddress,
+        calculateDeadline(deadline),
+      );
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);
@@ -124,6 +130,7 @@ const SwapController = (): JSX.Element => {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
       setIsSwapLoading(false);
+      setStatus('');
     }
   };
 
@@ -132,7 +139,7 @@ const SwapController = (): JSX.Element => {
       <CardHeader>
         <CardHeaderBlank />
         <CardTitle title="Swap" />
-        <CardSettings settings={{ gasLimit, setGasLimit }} />
+        <CardSettings settings={settings} setSettings={setSettings} />
       </CardHeader>
 
       <TokenAmountField
@@ -161,7 +168,7 @@ const SwapController = (): JSX.Element => {
           onClick={onSwap}
           disabled={!isValid || isLoading}
         >
-          {isLoading ? <LoadingButtonIcon /> : text}
+          {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
         </button>
       </div>
     </Card>
