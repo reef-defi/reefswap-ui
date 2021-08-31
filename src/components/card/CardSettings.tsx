@@ -1,5 +1,5 @@
 import React from "react"
-import { DEFAULT_SLIPPAGE_TOLERANCE, MAX_SLIPPAGE_TOLERANCE, Settings } from "../../store/internalStore";
+import { DEFAULT_DEADLINE, DEFAULT_SLIPPAGE_TOLERANCE, MAX_SLIPPAGE_TOLERANCE, Settings } from "../../store/internalStore";
 import { GearIcon } from "./Icons";
 import ReactTooltip from 'react-tooltip';
 
@@ -26,8 +26,8 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
         </label>
         <div className="d-flex flex-row">
           <button
-            className={`btn ${settings.percentage === DEFAULT_SLIPPAGE_TOLERANCE ? "btn-reef" : "btn-secondary"} border-rad me-1`}
-            onClick={() => setSettings({...settings, percentage: DEFAULT_SLIPPAGE_TOLERANCE})}
+            className={`btn ${isNaN(settings.percentage) ? "btn-reef" : "btn-secondary"} border-rad me-1`}
+            onClick={() => setSettings({...settings, percentage: NaN})}
           >Auto</button>
           <div className="input-group">
             <input
@@ -36,9 +36,14 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
               step={0.1}
               type="number"
               id="slipping-tolerance"
-              value={settings.percentage}
+              value={isNaN(settings.percentage) ? "" : settings.percentage}
+              placeholder={`${DEFAULT_SLIPPAGE_TOLERANCE}`}
               className="form-control field-input text-end border-rad border-right-0"
-              onChange={(event) => setSettings({...settings, percentage: parseFloat(event.target.value)})}
+              onChange={(event) => setSettings({...settings, 
+                percentage: event.target.value 
+                  ? parseFloat(event.target.value)
+                  : NaN
+              })}
             />
             <span className="input-group-text field-input border-rad ps-1">%</span>
           </div>
@@ -61,11 +66,12 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
             step={1}
             type="number"
             id="deadline"
-            value={settings.deadline}
-            className="form-control field-input border-rad w-50 text-end"
+            placeholder={`${DEFAULT_DEADLINE}`}
+            value={isNaN(settings.deadline) ? "" : settings.deadline}
+            className="form-control field-input border-rad w-25 text-end"
             onChange={(event) => setSettings({...settings, deadline: parseInt(event.target.value)})}
           />
-          <span className="my-auto ms-1 text-muted sub-text">Minutes</span>
+          <span className="my-auto ms-2 text-muted sub-text">minutes</span>
         </div>
       </div>
     </div>
