@@ -1,6 +1,6 @@
 export const trim = (value: string, size = 19): string => (value.length < size
   ? value
-  : `${value.slice(0, size - 6)}...${value.slice(value.length - 3)}`);
+  : `${value.slice(0, size - 5)}...${value.slice(value.length - 4)}`);
 
 export const ensure = (condition: boolean, message: string): void => {
   if (!condition) {

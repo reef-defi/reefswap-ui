@@ -115,7 +115,7 @@ const SelectToken = ({
           <div className="modal-content border-rad">
             <div className="modal-body">
               <CardTitle title="Select token" />
-              <div className="w-75 mx-auto select-token-content overflow-auto mt-3">
+              <div className="mx-auto select-token-content overflow-auto mt-3">
 
                 <div className="border border-rad p-1 mx-3 field">
                   <div className="d-flex justify-content-between mx-2">
