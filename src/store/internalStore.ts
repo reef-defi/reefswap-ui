@@ -6,6 +6,12 @@ interface Content <Type> {
   content: Type;
 }
 
+export interface Settings {
+  gasLimit: string;
+  percentage: number;
+  deadline: number;
+}
+
 // It is kind of lame we need to pass the type inside...
 // TODO when new versions of typescript will come remove {_type}
 // and ensure state type by ckechking it.
@@ -37,6 +43,15 @@ export const defaultTokenState = (index = 0): TokenState => ({
   index,
   amount: '',
   price: 0,
+});
+
+export const MAX_SLIPPAGE_TOLERANCE = 1;
+export const DEFAULT_SLIPPAGE_TOLERANCE = 0.5;
+
+export const defaultSettings = (): Settings => ({
+  gasLimit: '300000000',
+  deadline: 1,
+  percentage: DEFAULT_SLIPPAGE_TOLERANCE,
 });
 
 export const defaultGasLimit = (): string => '300000000';
