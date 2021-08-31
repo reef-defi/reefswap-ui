@@ -64,7 +64,7 @@ const NavBar = (): JSX.Element => {
             <div className="my-auto mx-2 fs-6 fw-bold">
               {balance}
             </div>
-            
+
             <AccountModal />
           </div>
           <div className="d-flex nav-acc border-rad">

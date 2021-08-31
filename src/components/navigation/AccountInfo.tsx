@@ -11,7 +11,7 @@ interface AccountInfo {
 }
 
 const AccountInfo = ({
-  name, address, evmAddress, toggle="exampleModalToggle", onClick,
+  name, address, evmAddress, toggle = 'exampleModalToggle', onClick,
 } : AccountInfo): JSX.Element => (
   <div className="d-flex flex-row px-0">
     <div className="my-auto mx-2 rounded-circle bg-white">
