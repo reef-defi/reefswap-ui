@@ -61,7 +61,6 @@ const AddLiquidity = (): JSX.Element => {
     token2,
     signer,
     settings: networkSettings,
-    percentage: settings.percentage,
     setToken1,
     setToken2,
   });

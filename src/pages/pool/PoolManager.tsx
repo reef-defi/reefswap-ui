@@ -5,7 +5,7 @@ import { BigNumber } from 'ethers';
 import Card from '../../components/card/Card';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import {
-  defaultGasLimit,
+  DEFAULT_GAS_LIMIT,
   InitialState, LoadingState, toInit, toLoading,
 } from '../../store/internalStore';
 import { showBalance } from '../../utils/math';
@@ -30,7 +30,6 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const [state, setState] = useState<PoolManagerState>(toInit());
-  const [gasLimit] = useState(defaultGasLimit());
   const [isOpen, setIsOpen] = useState(false);
 
   const { token1, token2, liquidity } = pool;
@@ -41,7 +40,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
     try {
       setState(toLoading());
       const { signer } = accounts[selectedAccount];
-      await removeLiquidity(pool, signer, gasLimit, settings);
+      await removeLiquidity(pool, signer, DEFAULT_GAS_LIMIT, settings);
       toast.success('Liquidity removed successfully!');
       dispatch(reloadPool());
       dispatch(reloadTokensAction());
