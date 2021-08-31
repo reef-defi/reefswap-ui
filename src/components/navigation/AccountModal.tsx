@@ -6,7 +6,7 @@ import { reloadTokensAction } from "../../store/actions/tokens";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { saveSignerPointer } from "../../store/localStore";
 import { trim } from "../../utils/utils";
-import { BackIcon, CloseIcon } from "../card/Icons";
+import { BackIcon, CloseIcon, CopyIcon, ExploreIcon } from "../card/Icons";
 import AccountInlineInfo from "./AccountInlineInfo";
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import ReactTooltip from 'react-tooltip';
@@ -85,14 +85,16 @@ const AccountModal = (): JSX.Element => {
               <div className="mx-2 mt-2">
                 <CopyToClipboard text={evmAddress} onCopy={onCopy}>
                   <span className="form-text text-muted" data-tip data-for='evm-address' style={{ cursor: 'pointer' }}>
-                    Copy EVM Address
+                    <CopyIcon small />
+                    <small className="ms-1">Copy EVM Address</small>
                   </span>
                 </CopyToClipboard>
                 <ReactTooltip id="evm-address" place="top" effect="solid" backgroundColor="#46288b">
                   {toggle}
                 </ReactTooltip>
                 <a href={`${reefscanUrl}account/${address}`} target="_blank" className="form-text text-muted ms-3" style={{ textDecoration: "none" }}>
-                  View on Explorer
+                  <ExploreIcon small />
+                  <small className="ms-1">View on Explorer</small>
                 </a>
               </div>
             </div>
