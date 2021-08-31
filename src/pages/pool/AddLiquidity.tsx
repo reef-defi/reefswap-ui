@@ -3,14 +3,14 @@ import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, {
-  CardBack, CardHeader, CardSettings, CardTitle,
+  CardBack, CardHeader, CardTitle,
 } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
-import { defaultGasLimit, defaultSettings } from '../../store/internalStore';
+import { defaultSettings } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
@@ -18,6 +18,7 @@ import {
   TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token,
 } from '../../api/rpc/tokens';
 import { PoolHook } from '../../hooks/poolHook';
+import CardSettings from '../../components/card/CardSettings';
 
 const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,

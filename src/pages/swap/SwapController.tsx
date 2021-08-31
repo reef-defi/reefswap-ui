@@ -5,8 +5,9 @@ import {
 } from '../../api/rpc/tokens';
 import { ButtonStatus } from '../../components/buttons/Button';
 import Card, {
-  CardHeader, CardHeaderBlank, CardSettings, CardTitle,
+  CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
+import CardSettings from '../../components/card/CardSettings';
 import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
