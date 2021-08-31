@@ -27,7 +27,7 @@ const ensureAndExecute = (condition: boolean) => <T, >(fun: (value: T) => void, 
   }
 };
 
-const calculateNewTokenAmount = (amount: string, tokenPrice1: number, tokenPrice2: number, percentage=1): string => {
+const calculateNewTokenAmount = (amount: string, tokenPrice1: number, tokenPrice2: number, percentage = 1): string => {
   if (!amount) {
     return amount;
   }
@@ -52,7 +52,7 @@ export const PoolHook = ({
       ...token1,
       price: tokenPrice1,
       amount: token1.address !== prevAddress1
-        ? calculateNewTokenAmount(token2.amount, tokenPrice2, tokenPrice1, 2-percentage)
+        ? calculateNewTokenAmount(token2.amount, tokenPrice2, tokenPrice1, 2 - percentage)
         : token1.amount,
     });
     ensureMount(setToken2, {

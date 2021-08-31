@@ -83,7 +83,7 @@ const SwapController = (): JSX.Element => {
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount });
     } else {
-      const amo = parseFloat(amount) * buy.price / sell.price * (2-percentage);
+      const amo = parseFloat(amount) * buy.price / sell.price * (2 - percentage);
       setBuy({ ...buy, amount });
       setSell({ ...sell, amount: `${amo.toFixed(4)}` });
     }
@@ -109,8 +109,8 @@ const SwapController = (): JSX.Element => {
   const onSwitch = (): void => {
     if (buy.isEmpty || isLoading) { return; }
     const subSellState = { ...sell };
-    setSell({ ...buy, amount: `${(parseFloat(buy.amount)/percentage).toFixed(4)}` });
-    setBuy({ ...subSellState, amount: `${(parseFloat(sell.amount)/(2-percentage)).toFixed(4)}`});
+    setSell({ ...buy, amount: `${(parseFloat(buy.amount) / percentage).toFixed(4)}` });
+    setBuy({ ...subSellState, amount: `${(parseFloat(sell.amount) / (2 - percentage)).toFixed(4)}` });
   };
 
   const onSwap = async (): Promise<void> => {
