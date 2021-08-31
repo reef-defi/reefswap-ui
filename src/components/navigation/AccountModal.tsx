@@ -1,4 +1,5 @@
-import React from "react"
+import Identicon from "@polkadot/react-identicon";
+import React, { useState } from "react"
 import { utilsSetSelectedAccount } from "../../store/actions/accounts";
 import { reloadPool } from "../../store/actions/pools";
 import { reloadTokensAction } from "../../store/actions/tokens";
@@ -6,13 +7,20 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { saveSignerPointer } from "../../store/localStore";
 import { trim } from "../../utils/utils";
 import { BackIcon, CloseIcon } from "../card/Icons";
-import AccountInfo from "./AccountInfo";
+import AccountInlineInfo from "./AccountInlineInfo";
+import {CopyToClipboard} from "react-copy-to-clipboard";
+import ReactTooltip from 'react-tooltip';
 
 const AccountModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const {reefscanUrl} = useAppSelector((state) => state.settings);
   const {accounts, selectedAccount} = useAppSelector((state) => state.accounts);
 
+  const [toggle, setToggle] = useState("Copy address");
+
   const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
+  const address = selectedAccount !== -1 ? accounts[selectedAccount].address : '';
+  const evmAddress = selectedAccount !== -1 ? accounts[selectedAccount].evmAddress : '';
 
   const selectAccount = (index: number): void => {
     saveSignerPointer(index);
@@ -24,7 +32,7 @@ const AccountModal = (): JSX.Element => {
   const accountsView = accounts
     .map(({ address, evmAddress, name }, index) => (
       <li key={address} className="list-group-item list-group-item-action">
-        <AccountInfo
+        <AccountInlineInfo
           name={name}
           address={address}
           evmAddress={evmAddress}
@@ -33,6 +41,12 @@ const AccountModal = (): JSX.Element => {
       </li>
     ));
     
+  const onCopy = () => {
+    setToggle("Address copied!");
+    setTimeout(() => setToggle("Copy address"), 2000);
+  };
+
+
   return (
     <>
     <button type="button" className="btn btn-secondary no-shadow nav-acc-button border-rad hover-border" data-bs-toggle="modal" data-bs-target="#exampleModalToggle">
@@ -42,16 +56,48 @@ const AccountModal = (): JSX.Element => {
     <div className="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabIndex={-1}>
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title" id="exampleModalToggleLabel">Account info</h5>
-            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div className="modal-header border-0">
+            <h5 className="modal-title" id="exampleModalToggleLabel">Account</h5>
+            <button type="button" className="btn" data-bs-dismiss="modal">
+              <CloseIcon />
+            </button>
           </div>
-          <div className="modal-body">
-            Content
+          <div className="modal-body py-1">
+            <div className="border border-rad p-2">
+              <div className="d-flex justify-content-between">
+                <small className="form-text text-muted">Connected with polkadot-extension</small>
+                <button className="btn btn-reef border-rad btn-sm" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Switch account</button>
+              </div>
+              <div className="d-flex flex-row m-2 rounded-circle bg-white">
+                
+                <div data-tip data-for='address' onClick={onCopy}>
+                  <Identicon
+                    value={address}
+                    size={30}
+                    theme="substrate"
+                  />
+                </div>
+                <ReactTooltip id="address" place="top" effect="solid" backgroundColor="#46288b">
+                  {toggle}
+                </ReactTooltip>
+                <span className="lead-text fs-5 ms-1">{trim(evmAddress, 11)}</span>
+              </div>
+              <div className="mx-2 mt-2">
+                <CopyToClipboard text={evmAddress} onCopy={onCopy}>
+                  <span className="form-text text-muted" data-tip data-for='evm-address' style={{ cursor: 'pointer' }}>
+                    Copy EVM Address
+                  </span>
+                </CopyToClipboard>
+                <ReactTooltip id="evm-address" place="top" effect="solid" backgroundColor="#46288b">
+                  {toggle}
+                </ReactTooltip>
+                <a href={`${reefscanUrl}account/${address}`} target="_blank" className="form-text text-muted ms-3" style={{ textDecoration: "none" }}>
+                  View on Explorer
+                </a>
+              </div>
+            </div>
           </div>
-          <div className="modal-footer">
-            <button className="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Open second modal</button>
-          </div>
+          <div className="modal-footer border-0"/>
         </div>
       </div>
     </div>

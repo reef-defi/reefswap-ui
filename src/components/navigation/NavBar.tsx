@@ -12,7 +12,7 @@ import { trim } from '../../utils/utils';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import AccountInfo from './AccountInfo';
+import AccountInlineInfo from './AccountInlineInfo';
 import {
   BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon,
 } from '../card/Icons';
