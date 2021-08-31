@@ -24,13 +24,12 @@ export const calculateAmount = ({ decimals, amount }: CalculateAmount): string =
   .from(transformAmount(decimals, amount))
   .toString();
 
-export const calculateAmountWithPercentage = ({amount: oldAmount, decimals}: CalculateAmount, percentage: number): string => {
-  const amount = parseFloat(oldAmount) * (1-percentage/100);
-  return calculateAmount({amount: amount.toString(), decimals});
-}
+export const calculateAmountWithPercentage = ({ amount: oldAmount, decimals }: CalculateAmount, percentage: number): string => {
+  const amount = parseFloat(oldAmount) * (1 - percentage / 100);
+  return calculateAmount({ amount: amount.toString(), decimals });
+};
 
-export const calculateDeadline = (minutes: number): number =>
-  Date.now() + minutes * 60 * 1000;
+export const calculateDeadline = (minutes: number): number => Date.now() + minutes * 60 * 1000;
 
 export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance.toString());
 

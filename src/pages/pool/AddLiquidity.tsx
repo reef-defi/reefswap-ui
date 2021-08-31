@@ -53,7 +53,7 @@ const AddLiquidity = (): JSX.Element => {
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, evmAddress, isEvmClaimed } = accounts[selectedAccount];
 
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
   const [settings, setSettings] = useState(defaultSettings());
   const [isLiquidityLoading, setIsLiquidityLoading] = useState(false);
 
@@ -90,18 +90,14 @@ const AddLiquidity = (): JSX.Element => {
   const addLiquidityClick = async (): Promise<void> => {
     try {
       setIsLiquidityLoading(true);
-      setStatus("Approving first token")
+      setStatus('Approving first token');
       await approveTokenAmount(token1, networkSettings.routerAddress, signer);
-      setStatus("Approving second token")
+      setStatus('Approving second token');
       await approveTokenAmount(token2, networkSettings.routerAddress, signer);
-      
+
+      setStatus('Adding liquidity');
       const reefswapRouter = getReefswapRouter(networkSettings, signer);
-      
-      console.log(calculateAmount(token1))
-      console.log(calculateAmount(token2))
-      console.log(calculateAmountWithPercentage(token1, percentage))
-      console.log(calculateAmountWithPercentage(token2, percentage))
-      setStatus("Adding liquidity")
+
       await reefswapRouter.addLiquidity(
         token1.address,
         token2.address,
@@ -121,7 +117,7 @@ const AddLiquidity = (): JSX.Element => {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
       setIsLiquidityLoading(false);
-      setStatus("")
+      setStatus('');
     }
   };
 

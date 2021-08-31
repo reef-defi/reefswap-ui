@@ -52,14 +52,14 @@ export const DEFAULT_GAS_LIMIT = '300000000';
 
 export const defaultSettings = (): Settings => ({
   gasLimit: DEFAULT_GAS_LIMIT,
-  deadline: NaN,
-  percentage: NaN,
+  deadline: Number.NaN,
+  percentage: Number.NaN,
 });
 
-export const resolveSettings = ({deadline, gasLimit, percentage}: Settings): Settings => ({
-  deadline: isNaN(deadline) ? DEFAULT_DEADLINE : deadline,
+export const resolveSettings = ({ deadline, gasLimit, percentage }: Settings): Settings => ({
+  deadline: Number.isNaN(deadline) ? DEFAULT_DEADLINE : deadline,
   gasLimit: gasLimit === '' ? DEFAULT_GAS_LIMIT : gasLimit,
-  percentage: isNaN(percentage) ? DEFAULT_SLIPPAGE_TOLERANCE : percentage
+  percentage: Number.isNaN(percentage) ? DEFAULT_SLIPPAGE_TOLERANCE : percentage,
 });
 
 export const toGasLimitObj = (gasLimit: string): {gasLimit: string} => ({

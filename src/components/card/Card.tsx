@@ -2,7 +2,6 @@ import React from 'react';
 import './Card.css';
 import { BackIcon } from './Icons';
 
-
 const Card: React.FC = ({ children }): JSX.Element => (
   <div className="card border-rad">
     <div className="card-body">

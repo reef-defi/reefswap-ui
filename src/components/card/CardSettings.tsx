@@ -1,7 +1,9 @@
-import React from "react"
-import { DEFAULT_DEADLINE, DEFAULT_SLIPPAGE_TOLERANCE, MAX_SLIPPAGE_TOLERANCE, Settings } from "../../store/internalStore";
-import { GearIcon } from "./Icons";
+import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import {
+  DEFAULT_DEADLINE, DEFAULT_SLIPPAGE_TOLERANCE, MAX_SLIPPAGE_TOLERANCE, Settings,
+} from '../../store/internalStore';
+import { GearIcon } from './Icons';
 
 interface CardSettings {
   id?: string;
@@ -21,14 +23,25 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
           Slippage tolerance
           <b className="ms-1" data-tip data-for="slipping-tolerance-tooltip">?</b>
           <ReactTooltip id="slipping-tolerance-tooltip" place="bottom" effect="solid" backgroundColor="#46288b">
-            Your transaction will revert if <br/> the price changes<br/>unfacorably by more than<br/>this percentage.
+            Your transaction will revert if
+            {' '}
+            <br />
+            {' '}
+            the price changes
+            <br />
+            unfacorably by more than
+            <br />
+            this percentage.
           </ReactTooltip>
         </label>
         <div className="d-flex flex-row">
           <button
-            className={`btn ${isNaN(settings.percentage) ? "btn-reef" : "btn-secondary"} border-rad me-1`}
-            onClick={() => setSettings({...settings, percentage: NaN})}
-          >Auto</button>
+            type="button"
+            className={`btn ${Number.isNaN(settings.percentage) ? 'btn-reef' : 'btn-secondary'} border-rad me-1`}
+            onClick={() => setSettings({ ...settings, percentage: NaN })}
+          >
+            Auto
+          </button>
           <div className="input-group">
             <input
               min={0}
@@ -36,13 +49,14 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
               step={0.1}
               type="number"
               id="slipping-tolerance"
-              value={isNaN(settings.percentage) ? "" : settings.percentage}
+              value={Number.isNaN(settings.percentage) ? '' : settings.percentage}
               placeholder={`${DEFAULT_SLIPPAGE_TOLERANCE}`}
               className="form-control field-input text-end border-rad border-right-0"
-              onChange={(event) => setSettings({...settings, 
-                percentage: event.target.value 
+              onChange={(event) => setSettings({
+                ...settings,
+                percentage: event.target.value
                   ? parseFloat(event.target.value)
-                  : NaN
+                  : Number.NaN,
               })}
             />
             <span className="input-group-text field-input border-rad ps-1">%</span>
@@ -56,7 +70,11 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
           Deadline
           <b className="ms-1" data-tip data-for="deadline-tooltip">?</b>
           <ReactTooltip id="deadline-tooltip" place="bottom" effect="solid" backgroundColor="#46288b">
-            Your transaction will revert if<br/>it is pending for more than<br/>this period or time.
+            Your transaction will revert if
+            <br />
+            it is pending for more than
+            <br />
+            this period or time.
           </ReactTooltip>
         </label>
         <div className="d-flex flex-row">
@@ -67,9 +85,14 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
             type="number"
             id="deadline"
             placeholder={`${DEFAULT_DEADLINE}`}
-            value={isNaN(settings.deadline) ? "" : settings.deadline}
+            value={Number.isNaN(settings.deadline) ? '' : settings.deadline}
             className="form-control field-input border-rad w-25 text-end"
-            onChange={(event) => setSettings({...settings, deadline: parseInt(event.target.value)})}
+            onChange={(event) => setSettings({
+              ...settings,
+              deadline: event.target.value
+                ? parseInt(event.target.value, 10)
+                : Number.NaN,
+            })}
           />
           <span className="my-auto ms-2 text-muted sub-text">minutes</span>
         </div>

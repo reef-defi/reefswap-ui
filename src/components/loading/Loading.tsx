@@ -29,7 +29,7 @@ export const LoadingComponent = ({ text }: LoadingWithText): JSX.Element => (
   </div>
 );
 
-export const LoadingButtonIconWithText = ({text}: LoadingWithText): JSX.Element => (
+export const LoadingButtonIconWithText = ({ text }: LoadingWithText): JSX.Element => (
   <>
     <span className="m-auto mt-2 me-2">{text}</span>
     <div className="spinner-border spinner-border-sm text-white m-auto" role="status">

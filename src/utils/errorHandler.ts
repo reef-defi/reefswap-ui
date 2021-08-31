@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 
 const chainErrors: {[key: string]: string} = {
   INVALID_TO: 'Invalid to address',
-  EXPIRED: "Transaction time expired",
+  EXPIRED: 'Transaction time expired',
   PAIR_EXISTS: 'Pool pair already exist',
   ZERO_ADDRESS: 'Zero address  was passed',
   IDENTICAL_ADDRESSES: 'Equal addresses picked',

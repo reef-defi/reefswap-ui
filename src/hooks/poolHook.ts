@@ -72,7 +72,6 @@ export const PoolHook = ({
         setIsLoading(true);
         const reefPrice = await retrieveReefCoingeckoPrice();
         const basePool = await poolContract(token1, token2, signer, settings);
-        console.log(basePool);
         const baseRatio = poolRatio(basePool);
 
         if (token1.name === 'REEF') {

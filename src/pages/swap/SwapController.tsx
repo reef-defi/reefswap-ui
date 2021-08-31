@@ -47,11 +47,11 @@ const SwapController = (): JSX.Element => {
   const [buy, setBuy] = useState(createEmptyTokenWithAmount());
   const [sell, setSell] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
 
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
-  
-  const {percentage, deadline} = resolveSettings(settings);
+
+  const { percentage, deadline } = resolveSettings(settings);
 
   const { poolError, isPoolLoading } = PoolHook({
     token1: sell,
@@ -101,21 +101,21 @@ const SwapController = (): JSX.Element => {
   const onSwitch = (): void => {
     if (buy.isEmpty || isLoading) { return; }
     const subSellState = { ...sell };
-    setSell({ ...buy});
-    setBuy({ ...subSellState});
+    setSell({ ...buy });
+    setBuy({ ...subSellState });
   };
 
   const onSwap = async (): Promise<void> => {
     if (!isValid) { return; }
     try {
       setIsSwapLoading(true);
-      setStatus("Approving sell token");
+      setStatus('Approving sell token');
       const sellAmount = calculateAmount(sell);
       const minBuyAmount = calculateAmountWithPercentage(buy, percentage);
       const reefswapRouter = getReefswapRouter(networkSettings, signer);
       await approveTokenAmount(sell, networkSettings.routerAddress, signer);
 
-      setStatus("Executing swap")
+      setStatus('Executing swap');
       await reefswapRouter.swapExactTokensForTokens(
         sellAmount,
         minBuyAmount,
@@ -130,7 +130,7 @@ const SwapController = (): JSX.Element => {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
       setIsSwapLoading(false);
-      setStatus("");
+      setStatus('');
     }
   };
 
