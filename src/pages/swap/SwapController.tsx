@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { retrieveReefCoingeckoPrice } from '../../api/prices';
-import { poolContract } from '../../api/rpc/pools';
 import {
   swapTokens, loadTokens, TokenWithAmount, createEmptyTokenWithAmount, toTokenAmount, Token,
 } from '../../api/rpc/tokens';
@@ -15,9 +13,8 @@ import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { PoolHook } from '../../hooks/poolHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { defaultGasLimit } from '../../store/internalStore';
+import { defaultGasLimit, defaultSettings } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
-import { poolRatio } from '../../utils/math';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -38,7 +35,7 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
 
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const settings = useAppSelector((state) => state.settings);
+  const networkSettings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
@@ -46,6 +43,7 @@ const SwapController = (): JSX.Element => {
   const [buy, setBuy] = useState(createEmptyTokenWithAmount());
   const [sell, setSell] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
 
+  const [settings, setSettings] = useState(defaultSettings());
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
@@ -55,7 +53,7 @@ const SwapController = (): JSX.Element => {
     token1: sell,
     token2: buy,
     signer,
-    settings,
+    settings: networkSettings,
     percentage,
     setToken1: setSell,
     setToken2: setBuy,
@@ -116,7 +114,7 @@ const SwapController = (): JSX.Element => {
   const onSwap = async (): Promise<void> => {
     try {
       setIsSwapLoading(true);
-      await swapTokens(sell, buy, signer, settings, gasLimit);
+      await swapTokens(sell, buy, signer, networkSettings, gasLimit);
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);
@@ -132,7 +130,7 @@ const SwapController = (): JSX.Element => {
       <CardHeader>
         <CardHeaderBlank />
         <CardTitle title="Swap" />
-        <CardSettings settings={{ gasLimit, setGasLimit }} />
+        <CardSettings settings={settings} setSettings={setSettings} />
       </CardHeader>
 
       <TokenAmountField

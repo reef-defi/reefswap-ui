@@ -10,7 +10,7 @@ import { LoadingButtonIcon } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
-import { defaultGasLimit } from '../../store/internalStore';
+import { defaultGasLimit, defaultSettings } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
@@ -44,25 +44,23 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmCla
 const AddLiquidity = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const settings = useAppSelector((state) => state.settings);
+  const networkSettings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, isEvmClaimed } = accounts[selectedAccount];
 
   const [isLiquidityLoading, setIsLiquidityLoading] = useState(false);
-  const [gasLimit, setGasLimit] = useState(defaultGasLimit());
+  const [settings, setSettings] = useState(defaultSettings());
 
   const [token2, setToken2] = useState(createEmptyTokenWithAmount());
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
-
-  const percentage = 0.99;
 
   const { poolError, isPoolLoading } = PoolHook({
     token1,
     token2,
     signer,
-    settings,
-    percentage,
+    settings: networkSettings,
+    percentage: settings.percentage,
     setToken1,
     setToken2,
   });
@@ -84,8 +82,8 @@ const AddLiquidity = (): JSX.Element => {
   const addLiquidityClick = async (): Promise<void> => {
     try {
       setIsLiquidityLoading(true);
-      await addLiquidity(token1, token2, signer, settings, gasLimit);
-      const pools = await loadPools(tokens, signer, settings);
+      await addLiquidity(token1, token2, signer, networkSettings, settings.gasLimit);
+      const pools = await loadPools(tokens, signer, networkSettings);
       dispatch(setPools(pools));
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
     } catch (error) {
@@ -102,7 +100,7 @@ const AddLiquidity = (): JSX.Element => {
       <CardHeader>
         <CardBack onBack={back} />
         <CardTitle title="Add liquidity" />
-        <CardSettings settings={{ gasLimit, setGasLimit }} />
+        <CardSettings settings={settings} setSettings={setSettings} />
       </CardHeader>
 
       <div className="alert alert-danger mt-2 border-rad" role="alert">
