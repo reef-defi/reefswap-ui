@@ -6,19 +6,22 @@ import Card, {
   CardBack, CardHeader, CardTitle,
 } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
-import { LoadingButtonIcon } from '../../components/loading/Loading';
+import { LoadingButtonIcon, LoadingButtonIconWithText } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
-import { defaultSettings } from '../../store/internalStore';
+import { defaultSettings, resolveSettings, toGasLimitObj } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
 import {
-  TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token,
+  TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
 } from '../../api/rpc/tokens';
 import { PoolHook } from '../../hooks/poolHook';
 import CardSettings from '../../components/card/CardSettings';
+import { getReefswapRouter } from '../../api/rpc/rpc';
+import { calculateAmount, calculateAmountWithPercentage, calculateDeadline } from '../../utils/math';
+import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
 
 const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,
@@ -48,13 +51,18 @@ const AddLiquidity = (): JSX.Element => {
   const networkSettings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
-  const { signer, isEvmClaimed } = accounts[selectedAccount];
+  const { signer, evmAddress, isEvmClaimed } = accounts[selectedAccount];
 
-  const [isLiquidityLoading, setIsLiquidityLoading] = useState(false);
+  const [status, setStatus] = useState("");
   const [settings, setSettings] = useState(defaultSettings());
+  const [isLiquidityLoading, setIsLiquidityLoading] = useState(false);
 
   const [token2, setToken2] = useState(createEmptyTokenWithAmount());
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
+
+  UpdateBalanceHook(token1, setToken1);
+  UpdateBalanceHook(token2, setToken2);
+  const { deadline, percentage } = resolveSettings(settings);
 
   const { poolError, isPoolLoading } = PoolHook({
     token1,
@@ -82,7 +90,28 @@ const AddLiquidity = (): JSX.Element => {
   const addLiquidityClick = async (): Promise<void> => {
     try {
       setIsLiquidityLoading(true);
-      await addLiquidity(token1, token2, signer, networkSettings, settings.gasLimit);
+      setStatus("Approving first token")
+      await approveTokenAmount(token1, networkSettings.routerAddress, signer);
+      setStatus("Approving second token")
+      await approveTokenAmount(token2, networkSettings.routerAddress, signer);
+      
+      const reefswapRouter = getReefswapRouter(networkSettings, signer);
+      
+      console.log(calculateAmount(token1))
+      console.log(calculateAmount(token2))
+      console.log(calculateAmountWithPercentage(token1, percentage))
+      console.log(calculateAmountWithPercentage(token2, percentage))
+      setStatus("Adding liquidity")
+      await reefswapRouter.addLiquidity(
+        token1.address,
+        token2.address,
+        calculateAmount(token1),
+        calculateAmount(token2),
+        calculateAmountWithPercentage(token1, percentage), // min amount token1
+        calculateAmountWithPercentage(token2, percentage), // min amount token2
+        evmAddress,
+        calculateDeadline(deadline),
+      );
       const pools = await loadPools(tokens, signer, networkSettings);
       dispatch(setPools(pools));
       toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
@@ -92,6 +121,7 @@ const AddLiquidity = (): JSX.Element => {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
       setIsLiquidityLoading(false);
+      setStatus("")
     }
   };
 
@@ -137,7 +167,7 @@ const AddLiquidity = (): JSX.Element => {
         disabled={!isValid || isLoading}
         onClick={addLiquidityClick}
       >
-        {isLoading ? <LoadingButtonIcon /> : text}
+        {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
       </button>
     </Card>
   );
