@@ -80,7 +80,7 @@ const SwapController = (): JSX.Element => {
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount });
     } else {
-      const amo = parseFloat(amount) * buy.price / sell.price;
+      const amo = parseFloat(amount) * buy.price / sell.price * 1.01;
       setBuy({ ...buy, amount });
       setSell({ ...sell, amount: `${amo.toFixed(4)}` });
     }
@@ -90,7 +90,7 @@ const SwapController = (): JSX.Element => {
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount });
     } else {
-      const amo = parseFloat(amount) * sell.price / buy.price;
+      const amo = parseFloat(amount) * sell.price / buy.price * .99;
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount: `${amo.toFixed(4)}` });
     }
