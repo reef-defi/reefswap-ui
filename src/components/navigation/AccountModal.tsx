@@ -55,7 +55,7 @@ const AccountModal = (): JSX.Element => {
 
     <div className="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabIndex={-1}>
       <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
+        <div className="modal-content border-rad">
           <div className="modal-header border-0">
             <h5 className="modal-title" id="exampleModalToggleLabel">Account</h5>
             <button type="button" className="btn" data-bs-dismiss="modal">
@@ -99,14 +99,16 @@ const AccountModal = (): JSX.Element => {
               </div>
             </div>
           </div>
-          <div className="modal-footer border-0"/>
+          <div className="d-flex justify-content-center modal-footer border-0 border-rad mt-2">
+            <small className="ms-0 form-text text-muted">Your transactions will appear here...</small>
+          </div>
         </div>
       </div>
     </div>
     <div className="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabIndex={-1}>
       <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header justify-content-between">
+        <div className="modal-content border-rad">
+          <div className="modal-header justify-content-between border-0">
             <button type="button" className="btn ms-0 me-auto py-0"  data-bs-target="#exampleModalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">
               <BackIcon />
             </button>

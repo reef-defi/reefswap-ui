@@ -121,3 +121,7 @@ input {
 .modal-dialog {
   width: 450px;
 }
+
+.modal-footer {
+  background-color: rgb(237, 238, 242)
+}
