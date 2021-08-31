@@ -94,7 +94,10 @@ input {
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
-
+.list-group-item-action:hover {
+  background-color: #5531a9 !important;
+  color: whitesmoke !important;
+}
 .dropdown-menu {
   background-color: rgb(237 238 242);
 }
@@ -109,11 +112,16 @@ input {
 }
 
 .lead-text {
-  color: #333;
   font-size: 1em;
 }
 
 .sub-text {
-  color: #4e4e4e;
   font-size: 0.9em;
+}
+.modal-dialog {
+  width: 450px;
+}
+
+.modal-footer {
+  background-color: rgb(237, 238, 242)
 }

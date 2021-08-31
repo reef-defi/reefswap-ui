@@ -33,7 +33,7 @@ const TokenAmountField = ({
           type="number"
           min={0}
           disabled={isEmpty}
-          value={amount}
+          value={isEmpty ? '' : amount}
           placeholder={isEmpty ? '' : placeholder}
           className="field-input ms-2 flex-grow-1 text-end"
           onChange={(event) => onAmountChange(event.target.value)}
@@ -44,7 +44,7 @@ const TokenAmountField = ({
           {!isEmpty && `Balance: ${showBalance(token)}`}
         </small>
         <small>
-          {price !== 0 && amount !== '' && `~$ ${(amo * price).toFixed(4)}`}
+          {!isEmpty && price !== 0 && amount !== '' && `~$ ${(amo * price).toFixed(4)}`}
         </small>
       </div>
     </div>

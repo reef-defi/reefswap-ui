@@ -49,11 +49,14 @@ const SwapController = (): JSX.Element => {
   const [gasLimit, setGasLimit] = useState(defaultGasLimit());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
+  const percentage = 0.99;
+
   const { poolError, isPoolLoading } = PoolHook({
     token1: sell,
     token2: buy,
     signer,
     settings,
+    percentage,
     setToken1: setSell,
     setToken2: setBuy,
   });
@@ -80,7 +83,7 @@ const SwapController = (): JSX.Element => {
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount });
     } else {
-      const amo = parseFloat(amount) * buy.price / sell.price;
+      const amo = parseFloat(amount) * buy.price / sell.price * (2 - percentage);
       setBuy({ ...buy, amount });
       setSell({ ...sell, amount: `${amo.toFixed(4)}` });
     }
@@ -90,7 +93,7 @@ const SwapController = (): JSX.Element => {
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount });
     } else {
-      const amo = parseFloat(amount) * sell.price / buy.price;
+      const amo = parseFloat(amount) * sell.price / buy.price * percentage;
       setSell({ ...sell, amount });
       setBuy({ ...buy, amount: `${amo.toFixed(4)}` });
     }
@@ -104,16 +107,16 @@ const SwapController = (): JSX.Element => {
   });
 
   const onSwitch = (): void => {
-    if (buy.isEmpty) { return; }
-    const subBuyState = { ...buy };
-    setBuy({ ...sell });
-    setSell({ ...subBuyState });
+    if (buy.isEmpty || isLoading) { return; }
+    const subSellState = { ...sell };
+    setSell({ ...buy, amount: `${(parseFloat(buy.amount) / percentage).toFixed(4)}` });
+    setBuy({ ...subSellState, amount: `${(parseFloat(sell.amount) / (2 - percentage)).toFixed(4)}` });
   };
 
   const onSwap = async (): Promise<void> => {
     try {
       setIsSwapLoading(true);
-      await swapTokens(sell!, buy!, signer, settings, gasLimit);
+      await swapTokens(sell, buy, signer, settings, gasLimit);
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);

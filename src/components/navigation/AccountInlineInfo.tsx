@@ -2,7 +2,7 @@ import React from 'react';
 import Identicon from '@polkadot/react-identicon';
 import { trim } from '../../utils/utils';
 
-interface AccountInfo {
+interface AccountInlineInfo {
   name: string;
   address: string;
   evmAddress: string;
@@ -10,9 +10,9 @@ interface AccountInfo {
   onClick: () => void;
 }
 
-const AccountInfo = ({
+const AccountInlineInfo = ({
   name, address, evmAddress, toggle = 'exampleModalToggle', onClick,
-} : AccountInfo): JSX.Element => (
+} : AccountInlineInfo): JSX.Element => (
   <div className="d-flex flex-row px-0">
     <div className="my-auto mx-2 rounded-circle bg-white">
       <Identicon
@@ -28,4 +28,4 @@ const AccountInfo = ({
   </div>
 );
 
-export default AccountInfo;
+export default AccountInlineInfo;
