@@ -48,7 +48,7 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
             <span className="input-group-text field-input border-rad ps-1">%</span>
           </div>
         </div>
-        <div className="d-flex">
+        <div className="d-flex pt-2">
           {settings.percentage < DEFAULT_SLIPPAGE_TOLERANCE && <span className="text-war sub-text mx-auto">Your transaction may fail</span>}
           {settings.percentage > MAX_SLIPPAGE_TOLERANCE && <span className="text-war sub-text mx-auto">Your transaction may be frontrun</span>}
         </div>

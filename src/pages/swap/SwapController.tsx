@@ -13,6 +13,7 @@ import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIconWithText } from '../../components/loading/Loading';
 import { PoolHook } from '../../hooks/poolHook';
+import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
@@ -49,7 +50,6 @@ const SwapController = (): JSX.Element => {
   const [status, setStatus] = useState("");
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
-
   
   const {percentage, deadline} = resolveSettings(settings);
 
@@ -66,17 +66,8 @@ const SwapController = (): JSX.Element => {
   const isLoading = isSwapLoading || isPoolLoading;
 
   // Updating user token balance.. its a bit hecky
-  useEffect(() => {
-    tokens
-      .forEach((token) => {
-        if (token.address === buy.address) {
-          setBuy({ ...buy, ...token });
-        }
-        if (token.address === sell.address) {
-          setSell({ ...sell, ...token });
-        }
-      });
-  }, [tokens]);
+  UpdateBalanceHook(buy, setBuy);
+  UpdateBalanceHook(sell, setSell);
 
   // TODO both functions are alike, create a wrapper!
   const setBuyAmount = (amount: string): void => {
