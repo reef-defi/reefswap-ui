@@ -45,16 +45,23 @@ export const defaultTokenState = (index = 0): TokenState => ({
   price: 0,
 });
 
-export const MAX_SLIPPAGE_TOLERANCE = 1;
-export const DEFAULT_SLIPPAGE_TOLERANCE = 0.5;
+export const DEFAULT_SLIPPAGE_TOLERANCE = 0.8;
+export const MAX_SLIPPAGE_TOLERANCE = DEFAULT_SLIPPAGE_TOLERANCE + 0.5;
+export const DEFAULT_DEADLINE = 1;
+export const DEFAULT_GAS_LIMIT = '300000000';
 
 export const defaultSettings = (): Settings => ({
-  gasLimit: '300000000',
-  deadline: 1,
-  percentage: DEFAULT_SLIPPAGE_TOLERANCE,
+  gasLimit: DEFAULT_GAS_LIMIT,
+  deadline: NaN,
+  percentage: NaN,
 });
 
-export const defaultGasLimit = (): string => '300000000';
+export const resolveSettings = ({deadline, gasLimit, percentage}: Settings): Settings => ({
+  deadline: isNaN(deadline) ? DEFAULT_DEADLINE : deadline,
+  gasLimit: gasLimit === '' ? DEFAULT_GAS_LIMIT : gasLimit,
+  percentage: isNaN(percentage) ? DEFAULT_SLIPPAGE_TOLERANCE : percentage
+});
+
 export const toGasLimitObj = (gasLimit: string): {gasLimit: string} => ({
   gasLimit,
 });
