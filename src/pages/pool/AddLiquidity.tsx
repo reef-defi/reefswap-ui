@@ -55,11 +55,14 @@ const AddLiquidity = (): JSX.Element => {
   const [token2, setToken2] = useState(createEmptyTokenWithAmount());
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
 
+  const percentage = 0.99;
+
   const { poolError, isPoolLoading } = PoolHook({
     token1,
     token2,
     signer,
     settings,
+    percentage,
     setToken1,
     setToken2,
   });
