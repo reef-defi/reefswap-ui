@@ -32,7 +32,7 @@ const AppInitialization = (): JSX.Element => {
   const { reloadPool } = useAppSelector((state) => state.pools);
   const { tokens, reloadTokens } = useAppSelector((state) => state.tokens);
   const { selectedAccount, accounts } = useAppSelector((state) => state.accounts);
-
+  
   const [state, setState] = useState<State>(toLoadingMessage(''));
 
   const message = (msg: string): void => setState(toLoadingMessage(msg));
