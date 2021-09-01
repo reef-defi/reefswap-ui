@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { poolContract, ReefswapPool } from "../api/rpc/pools";
-import { TokenWithAmount } from "../api/rpc/tokens";
-import { useAppSelector } from "../store/hooks";
+import { useEffect, useRef, useState } from 'react';
+import { poolContract, ReefswapPool } from '../api/rpc/pools';
+import { TokenWithAmount } from '../api/rpc/tokens';
+import { useAppSelector } from '../store/hooks';
 
 interface LoadPoolHookOutput {
   pool?: ReefswapPool;
@@ -12,20 +12,20 @@ export const LoadPoolHook = (token1: TokenWithAmount, token2: TokenWithAmount): 
   const mounted = useRef(true);
 
   const networkSettings = useAppSelector((state) => state.settings);
-  const {accounts, selectedAccount} = useAppSelector((state) => state.accounts);
-  
+  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
+
   const [pool, setPool] = useState<ReefswapPool>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const {signer} = accounts[selectedAccount];
+  const { signer } = accounts[selectedAccount];
 
-  const ensureMounted = <T,>(fun: (obj: T) => void, obj: T) => 
+  const ensureMounted = <T, >(fun: (obj: T) => void, obj: T): void => {
     mounted.current && fun(obj);
+  };
 
   useEffect(() => {
-    if (token1.isEmpty || token2.isEmpty) { return; }
-
-    const load = async () => {
+    const load = async (): Promise<void> => {
+      if (token1.isEmpty || token2.isEmpty) { return; }
       try {
         mounted.current = true;
         setIsLoading(true);
@@ -40,10 +40,10 @@ export const LoadPoolHook = (token1: TokenWithAmount, token2: TokenWithAmount): 
 
     load();
 
-    return () => {
+    return (): void => {
       mounted.current = false;
-    }
+    };
   }, [token1.address, token2.address]);
 
-  return {pool, isLoading};
-}
+  return { pool, isLoading };
+};

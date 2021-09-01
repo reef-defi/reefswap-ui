@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react';
 
 interface TokenAmountView {
   name: string;
@@ -7,7 +7,9 @@ interface TokenAmountView {
   placeholder: string;
 }
 
-const TokenAmountView = ({placeholder, name, amount, usdAmount } : TokenAmountView): JSX.Element =>(
+const TokenAmountView = ({
+  placeholder, name, amount, usdAmount,
+} : TokenAmountView): JSX.Element => (
   <div className="field p-3 border-rad">
     <div className="d-flex justify-content-between">
       <span className="text-muted sub-text">{placeholder}</span>

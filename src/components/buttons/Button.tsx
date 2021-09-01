@@ -1,5 +1,5 @@
-import React from "react";
-import { DownArrowIcon, PlusIcon } from "../card/Icons";
+import React from 'react';
+import { DownArrowIcon, PlusIcon } from '../card/Icons';
 
 export interface ButtonStatus {
   text: string;
@@ -14,7 +14,7 @@ interface SwitchTokenButton {
   onClick?: () => void;
 }
 
-export const SwitchTokenButton = ({addIcon, disabled, onClick}: SwitchTokenButton) => (
+export const SwitchTokenButton = ({ addIcon, disabled, onClick }: SwitchTokenButton): JSX.Element => (
   <div className="d-flex justify-content-center">
     <div className="btn-content-field border-rad">
       <button type="button" className="btn btn-field border-rad hover-border" onClick={onClick} disabled={disabled}>

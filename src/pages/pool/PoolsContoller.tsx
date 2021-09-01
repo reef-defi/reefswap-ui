@@ -14,7 +14,7 @@ const PoolsContoller = (): JSX.Element => {
 
   const poolsView = pools
     .map(({
-      token1, token2, userPoolBalance: liquidity, poolAddress, contract, totalSupply, reserve1, reserve2, decimals, minimumLiquidity
+      token1, token2, userPoolBalance: liquidity, poolAddress, contract, totalSupply, reserve1, reserve2, decimals, minimumLiquidity,
     }) => (
       <li key={poolAddress} className="list-item mt-2">
         <PoolManager

@@ -32,7 +32,9 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
   const [state, setState] = useState<PoolManagerState>(toInit());
   const [isOpen, setIsOpen] = useState(false);
 
-  const { token1, token2, userPoolBalance: liquidity, totalSupply } = pool;
+  const {
+    token1, token2, userPoolBalance: liquidity, totalSupply,
+  } = pool;
 
   const addLiquidity = (): void => history.push(ADD_LIQUIDITY_URL);
 

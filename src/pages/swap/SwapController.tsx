@@ -20,7 +20,9 @@ import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
-import { assertAmount, calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, minimumRecieveAmount } from '../../utils/math';
+import {
+  assertAmount, calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, minimumRecieveAmount,
+} from '../../utils/math';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -110,7 +112,7 @@ const SwapController = (): JSX.Element => {
     if (!isValid) { return; }
     try {
       setIsSwapLoading(true);
-      setStatus('Approving sell token');
+      setStatus(`Approving ${sell.name} token`);
 
       const sellAmount = calculateAmount(sell);
       const minBuyAmount = calculateAmountWithPercentage(buy, percentage);
@@ -163,7 +165,7 @@ const SwapController = (): JSX.Element => {
           className="btn btn-reef border-rad w-100"
           // onClick={onSwap}
           disabled={!isValid || isLoading}
-          data-bs-toggle="modal" 
+          data-bs-toggle="modal"
           data-bs-target="#swapModalToggle"
         >
           {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
@@ -171,10 +173,10 @@ const SwapController = (): JSX.Element => {
       </div>
       <ConfirmationModal id="swapModalToggle" title="Confirm Swap" confirmFun={onSwap}>
         <TokenAmountView name={sell.name} amount={sell.amount} usdAmount={calculateUsdAmount(sell)} placeholder="From" />
-        <SwitchTokenButton onClick={() => {}} disabled />
+        <SwitchTokenButton disabled />
         <TokenAmountView name={buy.name} amount={buy.amount} usdAmount={calculateUsdAmount(buy)} placeholder="To" />
         <div className="m-3">
-          <ConfirmLabel title="Price" value={`1 ${buy.name} = ${(buy.price/sell.price).toFixed(4)} ${sell.name}`} />
+          <ConfirmLabel title="Price" value={`1 ${buy.name} = ${(buy.price / sell.price).toFixed(4)} ${sell.name}`} />
         </div>
         <div className="field p-2 border-rad">
           <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" size="mini-text" />
@@ -182,9 +184,14 @@ const SwapController = (): JSX.Element => {
           <ConfirmLabel title="Minimum recieved" value={`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`} size="mini-text" />
           <ConfirmLabel title="Slippage tolerance" value={`${percentage.toFixed(2)}%`} size="mini-text" />
         </div>
-        
+
         <div className="mx-3 mt-3">
-          <span className="mini-text text-muted d-inline-block">Output is estimated. You will receive at least <b>{`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`}</b> or the transaction will revert.</span>
+          <span className="mini-text text-muted d-inline-block">
+            Output is estimated. You will receive at least
+            <b>{`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`}</b>
+            {' '}
+            or the transaction will revert.
+          </span>
         </div>
       </ConfirmationModal>
     </Card>

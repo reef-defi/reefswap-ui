@@ -47,7 +47,7 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
   return {
     contract,
     poolAddress: address,
-    decimals: parseInt(decimals),
+    decimals: parseInt(decimals, 10),
     reserve1: reserves[0].toString(),
     reserve2: reserves[1].toString(),
     totalSupply: totalSupply.toString(),
