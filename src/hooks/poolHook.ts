@@ -1,5 +1,5 @@
-import { Signer } from '@reef-defi/evm-provider';
 import React, { useEffect, useRef, useState } from 'react';
+import { Signer } from '@reef-defi/evm-provider';
 import { retrieveReefCoingeckoPrice } from '../api/prices';
 import { poolContract } from '../api/rpc/pools';
 import { ReefNetwork } from '../api/rpc/rpc';

@@ -6,12 +6,12 @@ import { utilsSetSelectedAccount } from '../../store/actions/accounts';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { saveSignerPointer } from '../../store/localStore';
+import { saveSignerLocalPointer } from '../../store/localStore';
 import { trim } from '../../utils/utils';
 import {
   BackIcon, CloseIcon, CopyIcon, ExploreIcon,
 } from '../card/Icons';
-import AccountInlineInfo from './AccountInlineInfo';
+import AccountInlineInfo from '../navigation/AccountInlineInfo';
 
 const AccountModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ const AccountModal = (): JSX.Element => {
   const evmAddr = selectedAccount !== -1 ? accounts[selectedAccount].evmAddress : '';
 
   const selectAccount = (index: number): void => {
-    saveSignerPointer(index);
+    saveSignerLocalPointer(index);
     dispatch(utilsSetSelectedAccount(index));
     dispatch(reloadTokensAction());
     dispatch(reloadPool());

@@ -14,9 +14,14 @@ const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 export interface ReefswapPool {
   token1: Token;
   token2: Token;
-  liquidity: string;
+  decimals: number;
+  reserve1: string;
+  reserve2: string;
   contract: Contract;
+  totalSupply: string;
   poolAddress: string;
+  userPoolBalance: string;
+  minimumLiquidity: string;
 }
 
 const findPoolTokenAddress = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<string> => {
@@ -29,17 +34,27 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
   const address = await findPoolTokenAddress(token1, token2, signer, network);
   ensure(address !== EMPTY_ADDRESS, 'Pool does not exist!');
   const contract = new Contract(address, ReefswapPair, signer);
+
+  const decimals = await contract.decimals();
+  const reserves = await contract.getReserves();
+  const totalSupply = await contract.totalSupply();
+  const minimumLiquidity = await contract.MINIMUM_LIQUIDITY();
   const liquidity = await contract.balanceOf(await signer.getAddress());
 
   const tokenBalance1 = await balanceOf(token1.address, address, signer);
   const tokenBalance2 = await balanceOf(token2.address, address, signer);
 
   return {
-    poolAddress: address,
     contract,
+    poolAddress: address,
+    decimals: parseInt(decimals, 10),
+    reserve1: reserves[0].toString(),
+    reserve2: reserves[1].toString(),
+    totalSupply: totalSupply.toString(),
+    userPoolBalance: liquidity.toString(),
+    minimumLiquidity: minimumLiquidity.toString(),
     token1: { ...token1, balance: tokenBalance1 },
     token2: { ...token2, balance: tokenBalance2 },
-    liquidity: liquidity.toString(),
   };
 };
 
@@ -91,7 +106,7 @@ const createPoolToken = (address: string, amount: string): TokenWithAmount => ({
 });
 
 export const removeLiquidity = async ({
-  token1, token2, liquidity, poolAddress,
+  token1, token2, userPoolBalance: liquidity, poolAddress,
 }: ReefswapPool, signer: Signer, gasLimit: string, network: ReefNetwork): Promise<void> => {
   const reefswapRouter = getReefswapRouter(network, signer);
   const signerAddress = await signer.getAddress();

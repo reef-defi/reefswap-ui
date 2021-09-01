@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { accountsToSigners } from '../api/rpc/accounts';
 import { loadPools } from '../api/rpc/pools';
 import { loadVerifiedERC20Tokens, loadTokens } from '../api/rpc/tokens';
-import { getSignerPointer } from '../store/localStore';
+import { getSignerLocalPointer } from '../store/localStore';
 
 type State =
   | ErrorState
@@ -70,8 +70,8 @@ const AppInitialization = (): JSX.Element => {
         inj[0].signer,
       );
 
-      const signerPointer = getSignerPointer();
-      const selectedSigner = signers.length > signerPointer ? signerPointer : 0;
+      const signerPointer = getSignerLocalPointer();
+      const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
       message('Loading tokens...');
       const verifiedTokens = await loadVerifiedERC20Tokens(settings);
       const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);

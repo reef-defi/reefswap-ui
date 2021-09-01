@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
+import { minimumRecieveAmount } from '../../utils/math';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
 import PoolManager from './PoolManager';
 
@@ -13,15 +14,20 @@ const PoolsContoller = (): JSX.Element => {
 
   const poolsView = pools
     .map(({
-      token1, token2, liquidity, poolAddress, contract,
+      token1, token2, userPoolBalance: liquidity, poolAddress, contract, totalSupply, reserve1, reserve2, decimals, minimumLiquidity,
     }) => (
       <li key={poolAddress} className="list-item mt-2">
         <PoolManager
           token1={token1}
           token2={token2}
+          decimals={decimals}
           contract={contract}
-          liquidity={liquidity}
+          reserve1={reserve1}
+          reserve2={reserve2}
+          totalSupply={totalSupply}
           poolAddress={poolAddress}
+          userPoolBalance={liquidity}
+          minimumLiquidity={minimumLiquidity}
         />
       </li>
     ));

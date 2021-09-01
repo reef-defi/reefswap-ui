@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { ButtonStatus } from '../../components/buttons/Button';
+import { ButtonStatus, SwitchTokenButton } from '../../components/buttons/Button';
 import Card, {
   CardBack, CardHeader, CardTitle,
 } from '../../components/card/Card';
@@ -20,23 +20,25 @@ import {
 import { PoolHook } from '../../hooks/poolHook';
 import CardSettings from '../../components/card/CardSettings';
 import { getReefswapRouter } from '../../api/rpc/rpc';
-import { calculateAmount, calculateAmountWithPercentage, calculateDeadline } from '../../utils/math';
+import {
+  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculatePoolShare, calculatePoolSupply, calculateUsdAmount, minimumRecieveAmount,
+} from '../../utils/math';
 import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
+import TokenAmountView from '../../components/card/TokenAmountView';
+import { ConfirmLabel } from '../../components/label/Labels';
+import ConfirmationModal from '../../components/modal/ConfirmationModal';
+import { LoadPoolHook } from '../../hooks/loadPoolHook';
 
 const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,
   text,
 });
 
-const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
+const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmClaimed: boolean): ButtonStatus => {
   if (!isEvmClaimed) {
     return errorStatus('Bind account');
-  } if (token1.isEmpty) {
-    return errorStatus('Select first token');
-  } if (token2.isEmpty) {
-    return errorStatus('Select second token');
-  } if (poolError) {
-    return errorStatus(poolError);
+  } if (token1.isEmpty || token2.isEmpty) {
+    return errorStatus('Invalid pair');
   } if (token1.amount.length === 0) {
     return errorStatus('Missing first token amount');
   } if (token2.amount.length === 0) {
@@ -59,12 +61,15 @@ const AddLiquidity = (): JSX.Element => {
 
   const [token2, setToken2] = useState(createEmptyTokenWithAmount());
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
+  const { deadline, percentage } = resolveSettings(settings);
+
+  const { pool, isLoading: isPool2Loading } = LoadPoolHook(token1, token2);
+  const newPoolSupply = calculatePoolSupply(token1, token2, pool);
 
   UpdateBalanceHook(token1, setToken1);
   UpdateBalanceHook(token2, setToken2);
-  const { deadline, percentage } = resolveSettings(settings);
 
-  const { poolError, isPoolLoading } = PoolHook({
+  const { isPoolLoading } = PoolHook({
     token1,
     token2,
     signer,
@@ -74,7 +79,7 @@ const AddLiquidity = (): JSX.Element => {
   });
 
   const isLoading = isLiquidityLoading || isPoolLoading;
-  const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed, poolError);
+  const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
 
   const back = (): void => history.push(POOL_URL);
   const changeToken1 = (newToken: Token): void => setToken1({
@@ -90,12 +95,12 @@ const AddLiquidity = (): JSX.Element => {
   const addLiquidityClick = async (): Promise<void> => {
     try {
       setIsLiquidityLoading(true);
-      setStatus('Approving first token');
+      setStatus(`Approving ${token1.name} token`);
       await approveTokenAmount(token1, networkSettings.routerAddress, signer);
-      setStatus('Approving second token');
+      setStatus(`Approving ${token2.name} token`);
       await approveTokenAmount(token2, networkSettings.routerAddress, signer);
 
-      setStatus('Adding liquidity');
+      setStatus('Adding supply');
       const reefswapRouter = getReefswapRouter(networkSettings, signer);
 
       await reefswapRouter.addLiquidity(
@@ -110,7 +115,7 @@ const AddLiquidity = (): JSX.Element => {
       );
       const pools = await loadPools(tokens, signer, networkSettings);
       dispatch(setPools(pools));
-      toast.success(`${token1.name}/${token2.name} liquidity added successfully!`);
+      toast.success(`${token1.name}/${token2.name} supply added successfully!`);
     } catch (error) {
       errorToast(error.message);
     } finally {
@@ -140,16 +145,7 @@ const AddLiquidity = (): JSX.Element => {
         onTokenSelect={changeToken1}
         onAmountChange={setAmount1}
       />
-      <div className="d-flex justify-content-center">
-        <div className="btn-content-field border-rad">
-          <button type="button" disabled className="btn btn-field">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
-              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
+      <SwitchTokenButton disabled addIcon />
       <TokenAmountField
         token={token2}
         id="add-liquidity-token-2"
@@ -161,10 +157,41 @@ const AddLiquidity = (): JSX.Element => {
         type="button"
         className="btn btn-reef border-rad w-100 mt-2"
         disabled={!isValid || isLoading}
-        onClick={addLiquidityClick}
+        data-bs-toggle="modal"
+        data-bs-target="#supplyModalToggle"
       >
         {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
       </button>
+
+      <ConfirmationModal id="supplyModalToggle" title="Confirm Supply" confirmFun={addLiquidityClick}>
+        <div className="mx-2">
+          <label className="text-muted">You will recieve</label>
+          <h1><b>{newPoolSupply.toFixed(8)}</b></h1>
+          <h4 className="h-6 text-muted">
+            {token1.name}
+            /
+            {token2.name}
+            {' '}
+            Pool tokens
+          </h4>
+        </div>
+        <div className="m-3">
+          <span className="mini-text text-muted d-inline-block">
+            Output is estimated. If the price changes by more than
+            {percentage}
+            % your transaction will revert.
+          </span>
+        </div>
+        <div className="field p-2 border-rad">
+          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" size="mini-text" />
+          <ConfirmLabel title={`${token1.name} Deposited`} value={`${token1.amount}`} size="mini-text" />
+          <ConfirmLabel title={`${token2.name} Deposited`} value={`${token2.amount}`} size="mini-text" />
+          <ConfirmLabel title="Rates" value={`1 ${token1.name} = ${(token1.price / token2.price).toFixed(8)} ${token2.name}`} size="mini-text" />
+          <ConfirmLabel title="" value={`1 ${token2.name} = ${(token2.price / token1.price).toFixed(8)} ${token1.name}`} size="mini-text" />
+          <ConfirmLabel title="Share of Pool" value={`${(calculatePoolShare(pool) * 100).toFixed(8)} %`} size="mini-text" />
+        </div>
+
+      </ConfirmationModal>
     </Card>
   );
 };
