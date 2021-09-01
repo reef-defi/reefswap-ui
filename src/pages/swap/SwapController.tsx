@@ -9,7 +9,6 @@ import Card, {
   CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
 import CardSettings from '../../components/card/CardSettings';
-import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
 import TokenAmountView from '../../components/card/TokenAmountView';
 import { ConfirmLabel } from '../../components/label/Labels';
@@ -21,7 +20,7 @@ import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
-import { calculateAmount, calculateAmountWithPercentage, calculateDeadline } from '../../utils/math';
+import { assertAmount, calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, minimumRecieveAmount } from '../../utils/math';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -42,14 +41,13 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
 
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const networkSettings = useAppSelector((state) => state.settings);
   const { tokens } = useAppSelector((state) => state.tokens);
+  const networkSettings = useAppSelector((state) => state.settings);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
   const { signer, evmAddress, isEvmClaimed } = accounts[selectedAccount];
 
   const [buy, setBuy] = useState(createEmptyTokenWithAmount());
   const [sell, setSell] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
-
   const [status, setStatus] = useState('');
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
@@ -113,6 +111,7 @@ const SwapController = (): JSX.Element => {
     try {
       setIsSwapLoading(true);
       setStatus('Approving sell token');
+
       const sellAmount = calculateAmount(sell);
       const minBuyAmount = calculateAmountWithPercentage(buy, percentage);
       const reefswapRouter = getReefswapRouter(networkSettings, signer);
@@ -171,21 +170,21 @@ const SwapController = (): JSX.Element => {
         </button>
       </div>
       <ConfirmationModal id="swapModalToggle" title="Confirm Swap" confirmFun={onSwap}>
-        <TokenAmountView name={sell.name} amount={sell.amount} usdAmount={0} placeholder="From" />
+        <TokenAmountView name={sell.name} amount={sell.amount} usdAmount={calculateUsdAmount(sell)} placeholder="From" />
         <SwitchTokenButton onClick={() => {}} disabled />
-        <TokenAmountView name={buy.name} amount={buy.amount} usdAmount={0} placeholder="To" />
+        <TokenAmountView name={buy.name} amount={buy.amount} usdAmount={calculateUsdAmount(buy)} placeholder="To" />
         <div className="m-3">
-          <ConfirmLabel title="Price" value={`1 ${buy.name} = n ${sell.name}`} />
+          <ConfirmLabel title="Price" value={`1 ${buy.name} = ${(buy.price/sell.price).toFixed(4)} ${sell.name}`} />
         </div>
         <div className="field p-2 border-rad">
           <ConfirmLabel title="Liquidity Provider Fee" value="5 REEF" size="mini-text" />
           <ConfirmLabel title="Route" value={`${sell.name} > ${buy.name}`} size="mini-text" />
-          <ConfirmLabel title="Minimum recieved" value={`TODO ${buy.name}`} size="mini-text" />
+          <ConfirmLabel title="Minimum recieved" value={`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`} size="mini-text" />
           <ConfirmLabel title="Slippage tolerance" value={`${percentage.toFixed(2)}%`} size="mini-text" />
         </div>
         
         <div className="mx-3 mt-3">
-          <span className="mini-text text-muted inline-block" style={{ lineHeight: "100%" }}>Output is estimated. You will receive at least <b>{`12312 ${buy.name}`}</b> or the transaction will revert.</span>
+          <span className="mini-text text-muted d-inline-block">Output is estimated. You will receive at least <b>{`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`}</b> or the transaction will revert.</span>
         </div>
       </ConfirmationModal>
     </Card>
