@@ -16,18 +16,35 @@ const transformAmount = (decimals: number, amount: string): string => {
   const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
   return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
 };
+
 interface CalculateAmount {
   decimals: number;
   amount: string;
 }
-export const calculateAmount = ({ decimals, amount }: CalculateAmount): string => BigNumber
-  .from(transformAmount(decimals, amount))
-  .toString();
+
+export const assertAmount = (amount: string) => !amount ? "0" : amount;
+
+export const calculateAmount = ({ decimals, amount }: CalculateAmount): string =>
+  BigNumber
+    .from(transformAmount(decimals, assertAmount(amount)))
+    .toString();
 
 export const calculateAmountWithPercentage = ({ amount: oldAmount, decimals }: CalculateAmount, percentage: number): string => {
-  const amount = parseFloat(oldAmount) * (1 - percentage / 100);
+  if (!oldAmount) { return "0"; }
+  const amount = parseFloat(assertAmount(oldAmount)) * (1 - percentage / 100);
   return calculateAmount({ amount: amount.toString(), decimals });
 };
+
+
+export const minimumRecieveAmount = ({amount}: CalculateAmount, percentage: number): number =>
+  parseFloat(assertAmount(amount)) * (100-percentage) / 100;
+
+interface CalculateUsdAmount extends CalculateAmount {
+  price: number;
+}
+export const calculateUsdAmount = ({amount, price}: CalculateUsdAmount): number =>
+  parseFloat(assertAmount(amount)) * price;
+
 
 export const calculateDeadline = (minutes: number): number => Date.now() + minutes * 60 * 1000;
 
