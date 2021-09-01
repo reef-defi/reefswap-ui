@@ -4,14 +4,17 @@ import { getReefswapRouter } from '../../api/rpc/rpc';
 import {
   loadTokens, TokenWithAmount, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
 } from '../../api/rpc/tokens';
-import { ButtonStatus } from '../../components/buttons/Button';
+import { ButtonStatus, SwitchTokenButton } from '../../components/buttons/Button';
 import Card, {
   CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
 import CardSettings from '../../components/card/CardSettings';
 import { DownArrowIcon } from '../../components/card/Icons';
 import TokenAmountField from '../../components/card/TokenAmountField';
+import TokenAmountView from '../../components/card/TokenAmountView';
+import { ConfirmLabel } from '../../components/label/Labels';
 import { LoadingButtonIconWithText } from '../../components/loading/Loading';
+import ConfirmationModal from '../../components/modal/ConfirmationModal';
 import { PoolHook } from '../../hooks/poolHook';
 import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
@@ -148,13 +151,7 @@ const SwapController = (): JSX.Element => {
         onAmountChange={setSellAmount}
         onTokenSelect={changeSellToken}
       />
-      <div className="d-flex justify-content-center">
-        <div className="btn-content-field border-rad">
-          <button type="button" className="btn btn-field border-rad hover-border" onClick={onSwitch}>
-            <DownArrowIcon />
-          </button>
-        </div>
-      </div>
+      <SwitchTokenButton onClick={onSwitch} />
       <TokenAmountField
         token={buy}
         id="buy-token-field"
@@ -165,12 +162,32 @@ const SwapController = (): JSX.Element => {
         <button
           type="button"
           className="btn btn-reef border-rad w-100"
-          onClick={onSwap}
+          // onClick={onSwap}
           disabled={!isValid || isLoading}
+          data-bs-toggle="modal" 
+          data-bs-target="#swapModalToggle"
         >
           {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
         </button>
       </div>
+      <ConfirmationModal id="swapModalToggle" title="Confirm Swap" confirmFun={onSwap}>
+        <TokenAmountView name={sell.name} amount={sell.amount} usdAmount={0} placeholder="From" />
+        <SwitchTokenButton onClick={() => {}} disabled />
+        <TokenAmountView name={buy.name} amount={buy.amount} usdAmount={0} placeholder="To" />
+        <div className="m-3">
+          <ConfirmLabel title="Price" value={`1 ${buy.name} = n ${sell.name}`} />
+        </div>
+        <div className="field p-2 border-rad">
+          <ConfirmLabel title="Liquidity Provider Fee" value="5 REEF" size="mini-text" />
+          <ConfirmLabel title="Route" value={`${sell.name} > ${buy.name}`} size="mini-text" />
+          <ConfirmLabel title="Minimum recieved" value={`TODO ${buy.name}`} size="mini-text" />
+          <ConfirmLabel title="Slippage tolerance" value={`${percentage.toFixed(2)}%`} size="mini-text" />
+        </div>
+        
+        <div className="mx-3 mt-3">
+          <span className="mini-text text-muted inline-block" style={{ lineHeight: "100%" }}>Output is estimated. You will receive at least <b>{`12312 ${buy.name}`}</b> or the transaction will revert.</span>
+        </div>
+      </ConfirmationModal>
     </Card>
   );
 };

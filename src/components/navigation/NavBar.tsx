@@ -11,7 +11,7 @@ import { useAppSelector } from '../../store/hooks';
 import {
   BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon,
 } from '../card/Icons';
-import AccountModal from './AccountModal';
+import AccountModal from '../modal/AccountModal';
 
 interface ButtonProps {
   to: string;
@@ -25,15 +25,11 @@ const Button = ({ to, name, selected = false }: ButtonProps): JSX.Element => (
 
 const NavBar = (): JSX.Element => {
   const { pathname } = useLocation();
-
   const { tokens } = useAppSelector((state) => state.tokens);
-  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const balance = tokens.length
     ? showBalance(tokens.find((token) => token.name === 'REEF')!, 0)
     : '';
-
-  const accName = selectedAccount !== -1 ? accounts[selectedAccount].name : '';
 
   return (
     <nav className="container-fluid m-1 mt-3 row w-auto">
