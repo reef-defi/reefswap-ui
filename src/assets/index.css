@@ -8,7 +8,7 @@ html, body, #root {
 }
 
 .border-rad {
-  border-radius: 20px;
+  border-radius: 16px;
 }
 .btn:focus {
   box-shadow: none;
@@ -122,8 +122,12 @@ input {
 .sub-text {
   font-size: 0.9em;
 }
+.mini-text {
+  font-size: 0.7em;
+}
+
 .modal-dialog {
-  width: 450px;
+  width: 430px;
 }
 
 .modal-footer {
