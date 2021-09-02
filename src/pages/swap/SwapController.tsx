@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { BigNumber } from 'ethers';
 import { getReefswapRouter } from '../../api/rpc/rpc';
 import {
   loadTokens, TokenWithAmount, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
@@ -14,29 +15,34 @@ import TokenAmountView from '../../components/card/TokenAmountView';
 import { ConfirmLabel } from '../../components/label/Labels';
 import { LoadingButtonIconWithText } from '../../components/loading/Loading';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
-import { PoolHook } from '../../hooks/poolHook';
+import { LoadPoolHook } from '../../hooks/loadPoolHook';
 import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
 import {
-  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, minimumRecieveAmount,
+  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, ensureAmount, minimumRecieveAmount,
 } from '../../utils/math';
+import { ensure, errorStatus } from '../../utils/utils';
+import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
+import { ReefswapPool } from '../../api/rpc/pools';
 
-const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
+const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
   if (!isEvmClaimed) {
-    return { isValid: false, text: 'Bind account' };
+    return errorStatus('Bind account');
   } if (sell.isEmpty) {
-    return { isValid: false, text: 'Select sell token' };
+    return errorStatus('Select sell token');
   } if (buy.isEmpty) {
-    return { isValid: false, text: 'Select buy token' };
-  } if (poolError) {
-    return { isValid: false, text: poolError };
+    return errorStatus('Select buy token');
+  } if (!pool) {
+    return errorStatus('Invalid pair');
   } if (sell.amount.length === 0) {
-    return { isValid: false, text: 'Missing sell amount' };
+    return errorStatus(`Missing ${sell.name} amount`);
   } if (buy.amount.length === 0) {
-    return { isValid: false, text: 'Missing buy amount' };
+    return errorStatus(`Missing ${buy.name} amount`);
+  } if (BigNumber.from(calculateAmount(sell)).gt(sell.balance)) {
+    return errorStatus(`Insufficient ${sell.name} token balance`);
   }
   return { isValid: true, text: 'Swap' };
 };
@@ -54,43 +60,31 @@ const SwapController = (): JSX.Element => {
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-  const { percentage, deadline } = resolveSettings(settings);
+  const { pool, isPoolLoading } = LoadPoolHook(sell, buy);
 
-  const { poolError, isPoolLoading } = PoolHook({
-    token1: sell,
-    token2: buy,
-    signer,
-    settings: networkSettings,
-    setToken1: setSell,
-    setToken2: setBuy,
-  });
-
-  const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, poolError);
+  const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, pool);
   const isLoading = isSwapLoading || isPoolLoading;
+  const { percentage, deadline } = resolveSettings(settings);
 
   // Updating user token balance.. its a bit hecky
   UpdateBalanceHook(buy, setBuy);
   UpdateBalanceHook(sell, setSell);
+  UpdateTokensPriceHook({
+    pool,
+    token1: sell,
+    token2: buy,
+    setToken1: setSell,
+    setToken2: setBuy,
+  });
 
-  // TODO both functions are alike, create a wrapper!
-  const setBuyAmount = (amount: string): void => {
+  const setAmount = (token1: TokenWithAmount, token2: TokenWithAmount, setToken1: (obj: TokenWithAmount) => void, setToken2: (obj: TokenWithAmount) => void) => (amount: string) => {
     if (amount === '') {
-      setSell({ ...sell, amount });
-      setBuy({ ...buy, amount });
+      setToken1({ ...token1, amount });
+      setToken2({ ...token2, amount });
     } else {
-      const amo = parseFloat(amount) * buy.price / sell.price;
-      setBuy({ ...buy, amount });
-      setSell({ ...sell, amount: `${amo.toFixed(4)}` });
-    }
-  };
-  const setSellAmount = (amount: string): void => {
-    if (amount === '') {
-      setSell({ ...sell, amount });
-      setBuy({ ...buy, amount });
-    } else {
-      const amo = parseFloat(amount) * sell.price / buy.price;
-      setSell({ ...sell, amount });
-      setBuy({ ...buy, amount: `${amo.toFixed(4)}` });
+      const amo = parseFloat(amount) * token1.price / token2.price;
+      setToken1({ ...token1, amount });
+      setToken2({ ...token2, amount: amo.toFixed(4) });
     }
   };
 
@@ -112,8 +106,9 @@ const SwapController = (): JSX.Element => {
     if (!isValid) { return; }
     try {
       setIsSwapLoading(true);
-      setStatus(`Approving ${sell.name} token`);
+      ensureAmount(sell);
 
+      setStatus(`Approving ${sell.name} token`);
       const sellAmount = calculateAmount(sell);
       const minBuyAmount = calculateAmountWithPercentage(buy, percentage);
       const reefswapRouter = getReefswapRouter(networkSettings, signer);
@@ -149,24 +144,23 @@ const SwapController = (): JSX.Element => {
       <TokenAmountField
         token={sell}
         id="sell-token-field"
-        onAmountChange={setSellAmount}
+        onAmountChange={setAmount(sell, buy, setSell, setBuy)}
         onTokenSelect={changeSellToken}
       />
       <SwitchTokenButton onClick={onSwitch} />
       <TokenAmountField
         token={buy}
         id="buy-token-field"
-        onAmountChange={setBuyAmount}
+        onAmountChange={setAmount(buy, sell, setBuy, setSell)}
         onTokenSelect={changeBuyToken}
       />
       <div className="d-flex justify-content-center mt-2">
         <button
           type="button"
-          className="btn btn-reef btn-lg border-rad w-100"
-          // onClick={onSwap}
-          disabled={!isValid || isLoading}
           data-bs-toggle="modal"
+          disabled={!isValid || isLoading}
           data-bs-target="#swapModalToggle"
+          className="btn btn-reef btn-lg border-rad w-100"
         >
           {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
         </button>
