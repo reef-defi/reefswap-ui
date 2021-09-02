@@ -212,7 +212,7 @@ const RemoveLiquidity = (): JSX.Element => {
             <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" titleSize="mini-text" valueSize="mini-text" />
             <ConfirmLabel title="Rates" value={`1 ${nameCorrector(token1.name)} = ${calculatePoolRatio(pool).toFixed(8)} ${nameCorrector(token2.name)}`} titleSize="mini-text" valueSize="mini-text" />
             <ConfirmLabel title="" value={`1 ${nameCorrector(token2.name)} = ${calculatePoolRatio(pool, false).toFixed(8)} ${nameCorrector(token1.name)}`} titleSize="mini-text" valueSize="mini-text" />
-            <ConfirmLabel title="Share of Pool" value={`${(calculatePoolShare(pool) * 100).toFixed(8)} %`} titleSize="mini-text" valueSize="mini-text" />
+            <ConfirmLabel title="Share of Pool" value={`${calculatePoolShare(pool).toFixed(8)} %`} titleSize="mini-text" valueSize="mini-text" />
           </div>
 
         </div>
