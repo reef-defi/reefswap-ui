@@ -165,16 +165,14 @@ const AddLiquidity = (): JSX.Element => {
       </button>
 
       <ConfirmationModal id="supplyModalToggle" title="Confirm Supply" confirmFun={addLiquidityClick}>
-        <div className="mx-2">
-          <label className="text-muted">You will recieve</label>
-          <div className="field border-rad p-3">
-            <ConfirmLabel
-              titleSize="h4"
-              valueSize="h6"
-              title={newPoolSupply.toFixed(8)}
-              value={`${token1.name}/${token2.name}`}
-            />
-          </div>
+        <label className="text-muted ms-2">You will recieve</label>
+        <div className="field border-rad p-3">
+          <ConfirmLabel
+            titleSize="h4"
+            valueSize="h6"
+            title={newPoolSupply.toFixed(8)}
+            value={`${token1.name}/${token2.name}`}
+          />
         </div>
         <div className="m-3">
           <span className="mini-text text-muted d-inline-block">
