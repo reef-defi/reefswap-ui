@@ -1,7 +1,6 @@
 import React from 'react';
 
 interface BaseIcon {
-  /* eslint-disable react/prop-types */
   small?: boolean;
 }
 
@@ -9,7 +8,7 @@ interface Icon extends BaseIcon {
   className?: string;
 }
 
-const Icon: React.FC<Icon> = ({ small, className = '', children }): JSX.Element => {
+const Icon: React.FC<Icon> = ({ small = false, className = '', children }): JSX.Element => {
   const size = small ? '16' : '20';
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" className={`bi my-auto ${className}`} viewBox="0 0 16 16">

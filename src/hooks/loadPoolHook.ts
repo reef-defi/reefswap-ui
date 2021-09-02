@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { poolContract, ReefswapPool } from '../api/rpc/pools';
-import { TokenWithAmount } from '../api/rpc/tokens';
+import { Token } from '../api/rpc/tokens';
 import { useAppSelector } from '../store/hooks';
 
 interface LoadPoolHookOutput {
   pool?: ReefswapPool;
-  isLoading: boolean;
+  isPoolLoading: boolean;
 }
 
-export const LoadPoolHook = (token1: TokenWithAmount, token2: TokenWithAmount): LoadPoolHookOutput => {
+export const LoadPoolHook = (token1: Token, token2: Token): LoadPoolHookOutput => {
   const mounted = useRef(true);
 
   const networkSettings = useAppSelector((state) => state.settings);
@@ -25,7 +25,7 @@ export const LoadPoolHook = (token1: TokenWithAmount, token2: TokenWithAmount): 
 
   useEffect(() => {
     const load = async (): Promise<void> => {
-      if (token1.isEmpty || token2.isEmpty) { return; }
+      if (!token1.address || !token2.address) { return; }
       try {
         mounted.current = true;
         setIsLoading(true);
@@ -45,5 +45,5 @@ export const LoadPoolHook = (token1: TokenWithAmount, token2: TokenWithAmount): 
     };
   }, [token1.address, token2.address]);
 
-  return { pool, isLoading };
+  return { pool, isPoolLoading: isLoading };
 };

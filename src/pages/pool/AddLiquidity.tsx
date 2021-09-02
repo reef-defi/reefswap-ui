@@ -6,16 +6,16 @@ import Card, {
   CardBack, CardHeader, CardTitle,
 } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
-import { LoadingButtonIcon, LoadingButtonIconWithText } from '../../components/loading/Loading';
+import { LoadingButtonIconWithText } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
-import { defaultSettings, resolveSettings, toGasLimitObj } from '../../store/internalStore';
+import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
 import {
-  TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
+  TokenWithAmount, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
 } from '../../api/rpc/tokens';
 import { PoolHook } from '../../hooks/poolHook';
 import CardSettings from '../../components/card/CardSettings';
@@ -63,7 +63,8 @@ const AddLiquidity = (): JSX.Element => {
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
   const { deadline, percentage } = resolveSettings(settings);
 
-  const { pool, isLoading: isPool2Loading } = LoadPoolHook(token1, token2);
+  // TODO pool overhaed
+  const { pool } = LoadPoolHook(token1, token2);
   const newPoolSupply = calculatePoolSupply(token1, token2, pool);
 
   UpdateBalanceHook(token1, setToken1);
@@ -155,7 +156,7 @@ const AddLiquidity = (): JSX.Element => {
 
       <button
         type="button"
-        className="btn btn-reef border-rad w-100 mt-2"
+        className="btn btn-reef btn-lg border-rad w-100 mt-2"
         disabled={!isValid || isLoading}
         data-bs-toggle="modal"
         data-bs-target="#supplyModalToggle"
@@ -166,29 +167,30 @@ const AddLiquidity = (): JSX.Element => {
       <ConfirmationModal id="supplyModalToggle" title="Confirm Supply" confirmFun={addLiquidityClick}>
         <div className="mx-2">
           <label className="text-muted">You will recieve</label>
-          <h1><b>{newPoolSupply.toFixed(8)}</b></h1>
-          <h4 className="h-6 text-muted">
-            {token1.name}
-            /
-            {token2.name}
-            {' '}
-            Pool tokens
-          </h4>
+          <div className="field border-rad p-3">
+            <ConfirmLabel
+              titleSize="h4"
+              valueSize="h6"
+              title={newPoolSupply.toFixed(8)}
+              value={`${token1.name}/${token2.name}`}
+            />
+          </div>
         </div>
         <div className="m-3">
           <span className="mini-text text-muted d-inline-block">
             Output is estimated. If the price changes by more than
+            {' '}
             {percentage}
             % your transaction will revert.
           </span>
         </div>
         <div className="field p-2 border-rad">
-          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" size="mini-text" />
-          <ConfirmLabel title={`${token1.name} Deposited`} value={`${token1.amount}`} size="mini-text" />
-          <ConfirmLabel title={`${token2.name} Deposited`} value={`${token2.amount}`} size="mini-text" />
-          <ConfirmLabel title="Rates" value={`1 ${token1.name} = ${(token1.price / token2.price).toFixed(8)} ${token2.name}`} size="mini-text" />
-          <ConfirmLabel title="" value={`1 ${token2.name} = ${(token2.price / token1.price).toFixed(8)} ${token1.name}`} size="mini-text" />
-          <ConfirmLabel title="Share of Pool" value={`${(calculatePoolShare(pool) * 100).toFixed(8)} %`} size="mini-text" />
+          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title={`${token1.name} Deposited`} value={`${token1.amount}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title={`${token2.name} Deposited`} value={`${token2.amount}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Rates" value={`1 ${token1.name} = ${(token1.price / token2.price).toFixed(8)} ${token2.name}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="" value={`1 ${token2.name} = ${(token2.price / token1.price).toFixed(8)} ${token1.name}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Share of Pool" value={`${(calculatePoolShare(pool) * 100).toFixed(8)} %`} titleSize="mini-text" valueSize="mini-text" />
         </div>
 
       </ConfirmationModal>

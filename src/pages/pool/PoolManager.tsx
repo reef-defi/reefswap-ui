@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { BigNumber } from 'ethers';
 import Card from '../../components/card/Card';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
 import {
-  DEFAULT_GAS_LIMIT,
-  InitialState, LoadingState, toInit, toLoading,
+  InitialState, LoadingState, toInit,
 } from '../../store/internalStore';
 import { showBalance } from '../../utils/math';
-import { ADD_LIQUIDITY_URL } from '../../utils/urls';
-import { reloadPool } from '../../store/actions/pools';
-import { reloadTokensAction } from '../../store/actions/tokens';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { errorToast } from '../../utils/errorHandler';
-import { ReefswapPool, removeLiquidity } from '../../api/rpc/pools';
+import { ADD_LIQUIDITY_URL, REMOVE_LIQUIDITY_URL } from '../../utils/urls';
+import { ReefswapPool } from '../../api/rpc/pools';
 
 type PoolManagerState =
   | LoadingState
@@ -24,33 +18,21 @@ type PoolManager = ReefswapPool
 
 const PoolManager = (pool : PoolManager): JSX.Element => {
   const history = useHistory();
-  const dispatch = useAppDispatch();
-
-  const settings = useAppSelector((state) => state.settings);
-  const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 
   const [state, setState] = useState<PoolManagerState>(toInit());
   const [isOpen, setIsOpen] = useState(false);
 
   const {
-    token1, token2, userPoolBalance: liquidity, totalSupply,
+    token1, token2, userPoolBalance: liquidity,
   } = pool;
 
   const addLiquidity = (): void => history.push(ADD_LIQUIDITY_URL);
 
-  const onLiquidityRemove = async (): Promise<void> => {
-    try {
-      setState(toLoading());
-      const { signer } = accounts[selectedAccount];
-      await removeLiquidity(pool, signer, DEFAULT_GAS_LIMIT, settings);
-      toast.success('Liquidity removed successfully!');
-      dispatch(reloadPool());
-      dispatch(reloadTokensAction());
-    } catch (error) {
-      errorToast(error.message);
-      setState(toInit());
-    }
-  };
+  const onLiquidityRemove = (): void => history.push(
+    REMOVE_LIQUIDITY_URL
+      .replace(':address1', token1.address)
+      .replace(':address2', token2.address),
+  );
 
   return (
     <Card>
@@ -95,7 +77,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
             <div className="w-50 px-1">
               <button
                 type="button"
-                className="btn btn-reef w-100"
+                className="btn btn-reef border-rad w-100"
                 disabled={state._type === 'LoadingState'}
                 onClick={addLiquidity}
               >
@@ -107,7 +89,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
             <div className="w-50 px-1">
               <button
                 type="button"
-                className="btn btn-reef w-100"
+                className="btn btn-reef border-rad w-100"
                 disabled={state._type === 'LoadingState'}
                 onClick={onLiquidityRemove}
               >

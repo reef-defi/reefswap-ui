@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { getReefswapRouter } from '../../api/rpc/rpc';
 import {
@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
 import {
-  assertAmount, calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, minimumRecieveAmount,
+  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, minimumRecieveAmount,
 } from '../../utils/math';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {
@@ -162,7 +162,7 @@ const SwapController = (): JSX.Element => {
       <div className="d-flex justify-content-center mt-2">
         <button
           type="button"
-          className="btn btn-reef border-rad w-100"
+          className="btn btn-reef btn-lg border-rad w-100"
           // onClick={onSwap}
           disabled={!isValid || isLoading}
           data-bs-toggle="modal"
@@ -179,10 +179,10 @@ const SwapController = (): JSX.Element => {
           <ConfirmLabel title="Price" value={`1 ${buy.name} = ${(buy.price / sell.price).toFixed(4)} ${sell.name}`} />
         </div>
         <div className="field p-2 border-rad">
-          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" size="mini-text" />
-          <ConfirmLabel title="Route" value={`${sell.name} > ${buy.name}`} size="mini-text" />
-          <ConfirmLabel title="Minimum recieved" value={`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`} size="mini-text" />
-          <ConfirmLabel title="Slippage tolerance" value={`${percentage.toFixed(2)}%`} size="mini-text" />
+          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Route" value={`${sell.name} > ${buy.name}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Minimum recieved" value={`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Slippage tolerance" value={`${percentage.toFixed(2)}%`} titleSize="mini-text" valueSize="mini-text" />
         </div>
 
         <div className="mx-3 mt-3">

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
-import { minimumRecieveAmount } from '../../utils/math';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
 import PoolManager from './PoolManager';
 

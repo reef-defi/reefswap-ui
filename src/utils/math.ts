@@ -11,7 +11,7 @@ const findDecimalPoint = (amount: string): number => {
   return 0;
 };
 
-const transformAmount = (decimals: number, amount: string): string => {
+export const transformAmount = (decimals: number, amount: string): string => {
   if (!amount) { return '0'; }
   const addZeros = findDecimalPoint(amount);
   const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
@@ -70,6 +70,23 @@ export const calculatePoolSupply = (token1: TokenWithAmount, token2: TokenWithAm
     amount1 * totalSupply / reserve1,
     amount2 * totalSupply / reserve2,
   );
+};
+
+export const removeSupply = (percentage: number, supply?: string, decimals?: number): number => (supply && decimals
+  ? convert2Normal(decimals, supply) * percentage / 100
+  : 0);
+
+export const removePoolTokenShare = (percentage: number, token?: Token): number => removeSupply(percentage, token?.balance.toString(), token?.decimals);
+
+export const removeUserPoolSupply = (percentage: number, pool?: ReefswapPool): number => removeSupply(percentage, pool?.userPoolBalance, 18);
+
+export const calculatePoolRatio = (pool?: ReefswapPool, first = true): number => {
+  if (!pool) { return 0; }
+  const amount1 = convert2Normal(pool.token1.decimals, pool.token1.balance.toString());
+  const amount2 = convert2Normal(pool.token2.decimals, pool.token2.balance.toString());
+  return first
+    ? amount1 / amount2
+    : amount2 / amount1;
 };
 
 export const calculatePoolShare = (pool?: ReefswapPool): number => {

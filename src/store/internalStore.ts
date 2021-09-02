@@ -46,7 +46,7 @@ export const defaultTokenState = (index = 0): TokenState => ({
 });
 
 export const DEFAULT_SLIPPAGE_TOLERANCE = 0.8;
-export const MAX_SLIPPAGE_TOLERANCE = DEFAULT_SLIPPAGE_TOLERANCE + 0.5;
+export const MAX_SLIPPAGE_TOLERANCE = 0.5;
 export const DEFAULT_DEADLINE = 1;
 export const DEFAULT_GAS_LIMIT = '300000000';
 
@@ -56,10 +56,10 @@ export const defaultSettings = (): Settings => ({
   percentage: Number.NaN,
 });
 
-export const resolveSettings = ({ deadline, gasLimit, percentage }: Settings): Settings => ({
+export const resolveSettings = ({ deadline, gasLimit, percentage }: Settings, defaultPercentage = DEFAULT_SLIPPAGE_TOLERANCE): Settings => ({
   deadline: Number.isNaN(deadline) ? DEFAULT_DEADLINE : deadline,
   gasLimit: gasLimit === '' ? DEFAULT_GAS_LIMIT : gasLimit,
-  percentage: Number.isNaN(percentage) ? DEFAULT_SLIPPAGE_TOLERANCE : percentage,
+  percentage: Number.isNaN(percentage) ? defaultPercentage : percentage,
 });
 
 export const toGasLimitObj = (gasLimit: string): {gasLimit: string} => ({

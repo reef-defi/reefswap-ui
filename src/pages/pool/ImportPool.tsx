@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { createEmptyToken, createEmptyTokenWithAmount } from '../../api/rpc/tokens';
+import { createEmptyToken } from '../../api/rpc/tokens';
 import SelectToken from '../../components/buttons/SelectToken';
 import Card, {
   CardBack, CardHeader, CardHeaderBlank, CardTitle,
