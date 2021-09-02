@@ -63,7 +63,8 @@ const AddLiquidity = (): JSX.Element => {
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
   const { deadline, percentage } = resolveSettings(settings);
 
-  const { pool, isLoading: isPool2Loading } = LoadPoolHook(token1, token2);
+  // TODO pool overhaed
+  const { pool } = LoadPoolHook(token1, token2);
   const newPoolSupply = calculatePoolSupply(token1, token2, pool);
 
   UpdateBalanceHook(token1, setToken1);
@@ -177,8 +178,7 @@ const AddLiquidity = (): JSX.Element => {
         </div>
         <div className="m-3">
           <span className="mini-text text-muted d-inline-block">
-            Output is estimated. If the price changes by more than
-            {percentage}
+            Output is estimated. If the price changes by more than {percentage}
             % your transaction will revert.
           </span>
         </div>
