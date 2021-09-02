@@ -8,10 +8,11 @@ import { GearIcon } from './Icons';
 interface CardSettings {
   id?: string;
   settings: Settings;
+  defaultSlippageTolerance?: number;
   setSettings: (value: Settings) => void;
 }
 
-export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id = 'settings' }) => (
+export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id = 'settings', defaultSlippageTolerance=DEFAULT_SLIPPAGE_TOLERANCE }) => (
   <div className="btn-group">
     <button className="btn" type="button" id={id} data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
       <GearIcon />
@@ -50,7 +51,7 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
               type="number"
               id="slipping-tolerance"
               value={Number.isNaN(settings.percentage) ? '' : settings.percentage}
-              placeholder={`${DEFAULT_SLIPPAGE_TOLERANCE}`}
+              placeholder={`${defaultSlippageTolerance}`}
               className="form-control field-input text-end border-rad border-right-0"
               onChange={(event) => setSettings({
                 ...settings,
@@ -63,8 +64,8 @@ export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id
           </div>
         </div>
         <div className="d-flex pt-2">
-          {settings.percentage < DEFAULT_SLIPPAGE_TOLERANCE && <span className="text-war sub-text mx-auto">Your transaction may fail</span>}
-          {settings.percentage > MAX_SLIPPAGE_TOLERANCE && <span className="text-war sub-text mx-auto">Your transaction may be frontrun</span>}
+          {settings.percentage < defaultSlippageTolerance && <span className="text-war sub-text mx-auto">Your transaction may fail</span>}
+          {settings.percentage > defaultSlippageTolerance + MAX_SLIPPAGE_TOLERANCE && <span className="text-war sub-text mx-auto">Your transaction may be frontrun</span>}
         </div>
         <label className="form-label text-muted sub-text mt-2" htmlFor="deadline">
           Deadline
