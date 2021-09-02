@@ -12,21 +12,23 @@ import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { errorToast } from '../../utils/errorHandler';
+import errorHandler, { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
 import {
   TokenWithAmount, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
 } from '../../api/rpc/tokens';
-import { PoolHook } from '../../hooks/poolHook';
 import CardSettings from '../../components/card/CardSettings';
 import { getReefswapRouter } from '../../api/rpc/rpc';
 import {
-  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculatePoolShare, calculatePoolSupply,
+  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculatePoolShare, calculatePoolSupply, ensureAmount,
 } from '../../utils/math';
 import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
 import { ConfirmLabel } from '../../components/label/Labels';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
 import { LoadPoolHook } from '../../hooks/loadPoolHook';
+import { BigNumber } from "ethers";
+import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
+import { ensure } from '../../utils/utils';
 
 const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,
@@ -42,6 +44,10 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmCla
     return errorStatus('Missing first token amount');
   } if (token2.amount.length === 0) {
     return errorStatus('Missing second token amount');
+  } if (BigNumber.from(calculateAmount(token1)).gt(token1.balance)) {
+    return errorStatus(`Insufficient ${token1.name} balance`)
+  } if (BigNumber.from(calculateAmount(token2)).gt(token2.balance)) {
+    return errorStatus(`Insufficient ${token2.name} balance`)
   }
   return { isValid: true, text: 'Supply' };
 };
@@ -63,17 +69,15 @@ const AddLiquidity = (): JSX.Element => {
   const { deadline, percentage } = resolveSettings(settings);
 
   // TODO pool overhaed
-  const { pool } = LoadPoolHook(token1, token2);
+  const { pool, isPoolLoading } = LoadPoolHook(token1, token2);
   const newPoolSupply = calculatePoolSupply(token1, token2, pool);
 
   UpdateBalanceHook(token1, setToken1);
   UpdateBalanceHook(token2, setToken2);
-
-  const { isPoolLoading } = PoolHook({
+  UpdateTokensPriceHook({
+    pool, 
     token1,
     token2,
-    signer,
-    settings: networkSettings,
     setToken1,
     setToken2,
   });
@@ -95,6 +99,9 @@ const AddLiquidity = (): JSX.Element => {
   const addLiquidityClick = async (): Promise<void> => {
     try {
       setIsLiquidityLoading(true);
+      ensureAmount(token1);
+      ensureAmount(token2);
+
       setStatus(`Approving ${token1.name} token`);
       await approveTokenAmount(token1, networkSettings.routerAddress, signer);
       setStatus(`Approving ${token2.name} token`);
@@ -117,7 +124,10 @@ const AddLiquidity = (): JSX.Element => {
       dispatch(setPools(pools));
       toast.success(`${token1.name}/${token2.name} supply added successfully!`);
     } catch (error) {
-      errorToast(error.message);
+      const message = errorHandler(error.message)
+        .replace("first", token1.name)
+        .replace("second", token2.name);
+      toast.error(errorHandler(message))
     } finally {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
