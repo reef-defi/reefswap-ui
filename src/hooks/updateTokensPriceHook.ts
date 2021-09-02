@@ -69,11 +69,10 @@ export const UpdateTokensPriceHook = ({
         }
       } catch (error) {
         updateTokens(0, 0);
-      } finally {
-        setPrevAddress1(token1.address);
-        setPrevAddress2(token2.address);
       }
     };
+    setPrevAddress1(token1.address);
+    setPrevAddress2(token2.address);
     load();
   }, [pool]);
 };
