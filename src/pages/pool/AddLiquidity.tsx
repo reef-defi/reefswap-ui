@@ -21,10 +21,9 @@ import { PoolHook } from '../../hooks/poolHook';
 import CardSettings from '../../components/card/CardSettings';
 import { getReefswapRouter } from '../../api/rpc/rpc';
 import {
-  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculatePoolShare, calculatePoolSupply, calculateUsdAmount, minimumRecieveAmount,
+  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculatePoolShare, calculatePoolSupply,
 } from '../../utils/math';
 import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
-import TokenAmountView from '../../components/card/TokenAmountView';
 import { ConfirmLabel } from '../../components/label/Labels';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
 import { LoadPoolHook } from '../../hooks/loadPoolHook';

@@ -14,12 +14,17 @@ const chainErrors: {[key: string]: string} = {
   INSUFFICIENT_LIQUIDITY_MINTED: 'Insufficient liquidity minted',
   INSUFFICIENT_LIQUIDITY_BURNED: 'Insufficient liquidity burned',
   InsufficientBalance: 'Account Reef token balance is too low',
+  LiquidityRestrictions: 'Insufficient pool liquidity',
 };
 
 const errorHandler = (message: string): string => {
   const errorKey = Object
     .keys(chainErrors)
     .find((key) => message.includes(key));
+
+  if (message.includes('execution revert: ReefswapV2: K: ')) {
+    return 'Insufficient pool liquidity';
+  }
 
   if (!errorKey) {
     return message;
