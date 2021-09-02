@@ -6,9 +6,10 @@ import { LoadingButtonIcon } from '../../components/loading/Loading';
 import {
   InitialState, LoadingState, toInit,
 } from '../../store/internalStore';
-import { showBalance } from '../../utils/math';
+import { calculatePoolShare, showBalance } from '../../utils/math';
 import { ADD_LIQUIDITY_URL, REMOVE_LIQUIDITY_URL } from '../../utils/urls';
 import { ReefswapPool } from '../../api/rpc/pools';
+import { ConfirmLabel } from '../../components/label/Labels';
 
 type PoolManagerState =
   | LoadingState
@@ -54,25 +55,14 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
       </div>
       {isOpen
         && (
-        <div>
-          <div className="d-flex justify-content-between mt-3">
-            <label htmlFor="token-liquidity-amo" className="lead-text">Your pool tokens:</label>
-            <span className="sub-text" id="token-liquidity-amo">
-              {showBalance({ ...token1, balance: BigNumber.from(liquidity), decimals: 18 })}
-            </span>
+        <div className="mt-2">
+          <div className="field border-rad px-3 py-1">
+            <ConfirmLabel title="Your poold tokens" value={showBalance({ ...token1, balance: BigNumber.from(liquidity), decimals: 18 })} />
+            <ConfirmLabel title={`Pooled ${token1.name}`} value={showBalance(token1)} />
+            <ConfirmLabel title={`Pooled ${token2.name}`} value={showBalance(token2)} />
+            <ConfirmLabel title={`Pool share`} value={`${calculatePoolShare(pool).toFixed(8)} %`} />
           </div>
-          <div className="d-flex justify-content-between">
-            <label htmlFor="token-balance-1" className="lead-text">
-              {`Pooled ${token1.name}:`}
-            </label>
-            <span className="sub-text" id="token-balance-1">{showBalance(token1)}</span>
-          </div>
-          <div className="d-flex justify-content-between">
-            <label htmlFor="token-balance-2" className="lead-text">
-              {`Pooled ${token2.name}:`}
-            </label>
-            <span className="sub-text" id="token-balance-2">{showBalance(token2)}</span>
-          </div>
+
           <div className="d-flex mt-3">
             <div className="w-50 px-1">
               <button
