@@ -7,6 +7,8 @@ import { ensure } from '../../utils/utils';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { bindSigner } from '../../api/rpc/accounts';
+import { reloadTokensAction } from '../../store/actions/tokens';
+import { reloadPool } from '../../store/actions/pools';
 
 const BindController = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -23,6 +25,8 @@ const BindController = (): JSX.Element => {
       // Forcing token balance update
       dispatch(utilsSetSelectedAccount(0));
       dispatch(utilsSetSelectedAccount(selectedAccount));
+      dispatch(reloadTokensAction());
+      dispatch(reloadPool());
       toast.success('Account binded successfully');
     } catch (error) {
       errorToast(error.message);
