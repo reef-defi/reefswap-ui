@@ -141,3 +141,7 @@ input {
 .text-war {
   color: #cc9c0e !important;
 }
+
+input[type=range]::-webkit-slider-thumb {
+  background-color: #46288b;
+}
