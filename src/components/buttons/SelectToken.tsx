@@ -13,7 +13,6 @@ import './Buttons.css';
 interface SelectTokenProps {
   id?: string;
   iconUrl: string;
-  isEmpty?: boolean;
   fullWidth?: boolean;
   selectedTokenName: string;
   onTokenSelect: (newToken: Token) => void;
@@ -22,7 +21,7 @@ interface SelectTokenProps {
 const doesAddressAlreadyExist = (address: string, tokens: Token[]): boolean => tokens.find((token) => token.address === address) !== undefined;
 
 const SelectToken = ({
-  id = 'exampleModal', selectedTokenName, onTokenSelect, fullWidth = false, isEmpty, iconUrl,
+  id = 'exampleModal', selectedTokenName, onTokenSelect, fullWidth = false, iconUrl,
 } : SelectTokenProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { tokens } = useAppSelector((state) => state.tokens);
@@ -30,6 +29,8 @@ const SelectToken = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [tokenAddressOrName, setTokenAddressOrName] = useState('');
+
+  const isEmpty = selectedTokenName === "Select token";
 
   useEffect(() => {
     if (tokenAddressOrName.length !== 42 || selectedAccount === -1) { return; }

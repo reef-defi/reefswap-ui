@@ -9,6 +9,7 @@ export const ensure = (condition: boolean, message: string): void => {
     throw new Error(message);
   }
 };
+
 export const uniqueCombinations = <T, >(array: T[]): [T, T][] => {
   const result: [T, T][] = [];
   for (let i = 0; i < array.length; i += 1) {
@@ -23,3 +24,9 @@ export const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,
   text,
 });
+
+export const ensureVoidRun = (canRun: boolean) => <I, >(fun: (obj: I) => void, obj: I) => {
+  if (canRun) {
+    fun(obj)
+  }
+};

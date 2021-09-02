@@ -25,7 +25,6 @@ const TokenAmountField = ({
       <div className="d-flex mb-2">
         <SelectToken
           id={id}
-          isEmpty={isEmpty}
           selectedTokenName={name}
           iconUrl={iconUrl}
           onTokenSelect={onTokenSelect}

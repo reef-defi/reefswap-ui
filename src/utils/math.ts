@@ -1,6 +1,7 @@
 import { BigNumber } from 'ethers';
 import { Token, TokenWithAmount } from '../api/rpc/tokens';
 import { ReefswapPool } from '../api/rpc/pools';
+import { ensure } from './utils';
 
 const findDecimalPoint = (amount: string): number => {
   const { length } = amount;
@@ -80,6 +81,9 @@ export const removePoolTokenShare = (percentage: number, token?: Token): number 
 
 export const removeUserPoolSupply = (percentage: number, pool?: ReefswapPool): number => removeSupply(percentage, pool?.userPoolBalance, 18);
 
+export const convertAmount = (amount: string, fromPrice: number, toPrice: number): number => 
+  parseFloat(assertAmount(amount)) / fromPrice * toPrice;
+
 export const calculatePoolRatio = (pool?: ReefswapPool, first = true): number => {
   if (!pool) { return 0; }
   const amount1 = convert2Normal(pool.token1.decimals, pool.token1.balance.toString());
@@ -116,3 +120,7 @@ export const toBalance = ({ balance, decimals }: Token): number => {
 };
 
 export const poolRatio = ({ token1, token2 }: ReefswapPool): number => toBalance(token2) / toBalance(token1);
+
+
+export const ensureAmount = (token: TokenWithAmount): void =>
+  ensure(BigNumber.from(calculateAmount(token)).lte(token.balance), `Insufficient ${token.name} balance`);
