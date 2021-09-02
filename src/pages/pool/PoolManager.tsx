@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { BigNumber } from 'ethers';
 import Card from '../../components/card/Card';
-import { LoadingButtonIcon } from '../../components/loading/Loading';
 import {
   InitialState, LoadingState, toInit,
 } from '../../store/internalStore';
@@ -71,9 +70,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
                 disabled={state._type === 'LoadingState'}
                 onClick={addLiquidity}
               >
-                {state._type === 'LoadingState'
-                  ? <LoadingButtonIcon />
-                  : 'Add liquidity'}
+                Add liquidity
               </button>
             </div>
             <div className="w-50 px-1">
@@ -83,9 +80,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
                 disabled={state._type === 'LoadingState'}
                 onClick={onLiquidityRemove}
               >
-                {state._type === 'LoadingState'
-                  ? <LoadingButtonIcon />
-                  : 'Remove liquidity'}
+                Remove liquidity
               </button>
             </div>
           </div>
