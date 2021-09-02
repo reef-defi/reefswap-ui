@@ -93,6 +93,7 @@ const SelectToken = ({
             <div className="modal-body py-0">
               <input
                 value={tokenAddressOrName}
+                maxLength={42}
                 placeholder="Search name or paste address"
                 className="form-control form-control-lg border-rad"
                 onChange={(event) => setTokenAddressOrName(event.target.value)}
