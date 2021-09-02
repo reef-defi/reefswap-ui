@@ -8,7 +8,7 @@ html, body, #root {
 }
 
 .border-rad {
-  border-radius: 16px;
+  border-radius: 13px;
 }
 .btn:focus {
   box-shadow: none;
@@ -38,17 +38,22 @@ input {
   background-color: inherit;
 }
 
+.btn-select {
+  border-color: #bfbfbf;
+  display: flex;
+  flex-direction: row;
+}
+
 .btn-reef {
   background-color: #5531a9;
   border-color: #5531a9;
   color: white;
 }
-.btn-reef:hover {
+.btn-select:hover, .btn-reef:hover {
   background-color: #46288b;
   border-color: #46288b;
   color: white;
 }
-
 .field {
   background-color: rgb(247, 248, 250);
   border: 1px solid rgb(237, 238, 242);
@@ -136,7 +141,7 @@ input {
 
 .form-control:focus {
   box-shadow: none;
-  border-color: #ced4da;
+  border-color: #46288b;
 }
 .text-war {
   color: #cc9c0e !important;
@@ -146,6 +151,6 @@ input[type=range]::-webkit-slider-thumb {
   background-color: #46288b;
 }
 .select-token-icon-size {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
 }
