@@ -44,20 +44,16 @@ export const calculateAmountWithPercentage = ({ amount: oldAmount, decimals }: C
   return calculateAmount({ amount: amount.toString(), decimals });
 };
 
-export const minimumRecieveAmount = ({ amount }: CalculateAmount, percentage: number): number =>
-  parseFloat(assertAmount(amount)) * (100 - percentage) / 100;
+export const minimumRecieveAmount = ({ amount }: CalculateAmount, percentage: number): number => parseFloat(assertAmount(amount)) * (100 - percentage) / 100;
 
 interface CalculateUsdAmount extends CalculateAmount {
   price: number;
 }
-export const calculateUsdAmount = ({ amount, price }: CalculateUsdAmount): number =>
-  parseFloat(assertAmount(amount)) * price;
+export const calculateUsdAmount = ({ amount, price }: CalculateUsdAmount): number => parseFloat(assertAmount(amount)) * price;
 
-export const calculateDeadline = (minutes: number): number => 
-  Date.now() + minutes * 60 * 1000;
+export const calculateDeadline = (minutes: number): number => Date.now() + minutes * 60 * 1000;
 
-export const calculateBalance = ({ balance, decimals }: Token): string =>
-  transformAmount(decimals, balance.toString());
+export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance.toString());
 
 export const calculatePoolSupply = (token1: TokenWithAmount, token2: TokenWithAmount, pool?: ReefswapPool): number => {
   const amount1 = parseFloat(assertAmount(token1.amount));
@@ -76,24 +72,22 @@ export const calculatePoolSupply = (token1: TokenWithAmount, token2: TokenWithAm
   );
 };
 
-export const removeSupply = (percentage: number, supply?: string, decimals?: number): number => supply && decimals
+export const removeSupply = (percentage: number, supply?: string, decimals?: number): number => (supply && decimals
   ? convert2Normal(decimals, supply) * percentage / 100
-  : 0;
+  : 0);
 
-export const removePoolTokenShare = (percentage: number, token?: Token): number => 
-  removeSupply(percentage, token?.balance.toString(), token?.decimals);
+export const removePoolTokenShare = (percentage: number, token?: Token): number => removeSupply(percentage, token?.balance.toString(), token?.decimals);
 
-export const removeUserPoolSupply = (percentage: number, pool?: ReefswapPool) => 
-  removeSupply(percentage, pool?.userPoolBalance, 18);
+export const removeUserPoolSupply = (percentage: number, pool?: ReefswapPool): number => removeSupply(percentage, pool?.userPoolBalance, 18);
 
-export const calculatePoolRatio = (pool?: ReefswapPool, first=true): number => {
+export const calculatePoolRatio = (pool?: ReefswapPool, first = true): number => {
   if (!pool) { return 0; }
   const amount1 = convert2Normal(pool.token1.decimals, pool.token1.balance.toString());
   const amount2 = convert2Normal(pool.token2.decimals, pool.token2.balance.toString());
   return first
     ? amount1 / amount2
     : amount2 / amount1;
-}
+};
 
 export const calculatePoolShare = (pool?: ReefswapPool): number => {
   if (!pool) { return 0; }

@@ -7,7 +7,9 @@ interface ConfirmLabel {
   valueSize?: string;
 }
 
-export const ConfirmLabel = ({ title, value, titleSize = 'sub-text', valueSize="sub-text" } : ConfirmLabel): JSX.Element => (
+export const ConfirmLabel = ({
+  title, value, titleSize = 'sub-text', valueSize = 'sub-text',
+} : ConfirmLabel): JSX.Element => (
   <div className="d-flex justify-content-between my-1">
     <span className={`text-muted my-auto ${titleSize}`}>{title}</span>
     <span className={`${valueSize} my-auto`}>{value}</span>

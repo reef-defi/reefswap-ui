@@ -1,4 +1,4 @@
-import { ButtonStatus } from "../components/buttons/Button";
+import { ButtonStatus } from '../components/buttons/Button';
 
 export const trim = (value: string, size = 19): string => (value.length < size
   ? value

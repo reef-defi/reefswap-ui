@@ -12,7 +12,9 @@ interface CardSettings {
   setSettings: (value: Settings) => void;
 }
 
-export const CardSettings: React.FC<CardSettings> = ({ settings, setSettings, id = 'settings', defaultSlippageTolerance=DEFAULT_SLIPPAGE_TOLERANCE }) => (
+export const CardSettings: React.FC<CardSettings> = ({
+  settings, setSettings, id = 'settings', defaultSlippageTolerance = DEFAULT_SLIPPAGE_TOLERANCE,
+}) => (
   <div className="btn-group">
     <button className="btn" type="button" id={id} data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
       <GearIcon />

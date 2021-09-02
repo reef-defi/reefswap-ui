@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Signer } from '@reef-defi/evm-provider';
 import { retrieveReefCoingeckoPrice } from '../api/prices';
 import { poolContract } from '../api/rpc/pools';

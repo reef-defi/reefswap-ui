@@ -56,7 +56,7 @@ export const defaultSettings = (): Settings => ({
   percentage: Number.NaN,
 });
 
-export const resolveSettings = ({ deadline, gasLimit, percentage }: Settings, defaultPercentage=DEFAULT_SLIPPAGE_TOLERANCE): Settings => ({
+export const resolveSettings = ({ deadline, gasLimit, percentage }: Settings, defaultPercentage = DEFAULT_SLIPPAGE_TOLERANCE): Settings => ({
   deadline: Number.isNaN(deadline) ? DEFAULT_DEADLINE : deadline,
   gasLimit: gasLimit === '' ? DEFAULT_GAS_LIMIT : gasLimit,
   percentage: Number.isNaN(percentage) ? defaultPercentage : percentage,

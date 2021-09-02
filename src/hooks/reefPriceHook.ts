@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { retrieveReefCoingeckoPrice } from '../api/prices';
 
 type ReefPriceOutput = [number, boolean]
