@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { BigNumber } from 'ethers';
 import { getReefswapRouter } from '../../api/rpc/rpc';
 import {
   loadTokens, TokenWithAmount, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
@@ -23,7 +24,6 @@ import { errorToast } from '../../utils/errorHandler';
 import {
   calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, ensureAmount, minimumRecieveAmount,
 } from '../../utils/math';
-import {BigNumber} from "ethers";
 import { ensure, errorStatus } from '../../utils/utils';
 import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
 import { ReefswapPool } from '../../api/rpc/pools';
@@ -36,7 +36,7 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
   } if (buy.isEmpty) {
     return errorStatus('Select buy token');
   } if (!pool) {
-    return errorStatus("Invalid pair");
+    return errorStatus('Invalid pair');
   } if (sell.amount.length === 0) {
     return errorStatus(`Missing ${sell.name} amount`);
   } if (buy.amount.length === 0) {
@@ -60,8 +60,8 @@ const SwapController = (): JSX.Element => {
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-  const {pool, isPoolLoading} = LoadPoolHook(sell, buy);
-  
+  const { pool, isPoolLoading } = LoadPoolHook(sell, buy);
+
   const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, pool);
   const isLoading = isSwapLoading || isPoolLoading;
   const { percentage, deadline } = resolveSettings(settings);
@@ -69,21 +69,22 @@ const SwapController = (): JSX.Element => {
   // Updating user token balance.. its a bit hecky
   UpdateBalanceHook(buy, setBuy);
   UpdateBalanceHook(sell, setSell);
-  UpdateTokensPriceHook({pool, 
+  UpdateTokensPriceHook({
+    pool,
     token1: sell,
     token2: buy,
     setToken1: setSell,
-    setToken2: setBuy
+    setToken2: setBuy,
   });
 
   const setAmount = (token1: TokenWithAmount, token2: TokenWithAmount, setToken1: (obj: TokenWithAmount) => void, setToken2: (obj: TokenWithAmount) => void) => (amount: string) => {
-    if (amount === "") {
-      setToken1({...token1, amount});
-      setToken2({...token2, amount});
+    if (amount === '') {
+      setToken1({ ...token1, amount });
+      setToken2({ ...token2, amount });
     } else {
       const amo = parseFloat(amount) * token1.price / token2.price;
-      setToken1({...token1, amount});
-      setToken2({...token2, amount: amo.toFixed(4)});
+      setToken1({ ...token1, amount });
+      setToken2({ ...token2, amount: amo.toFixed(4) });
     }
   };
 

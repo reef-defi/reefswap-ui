@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
+import { BigNumber } from 'ethers';
 import { ButtonStatus, SwitchTokenButton } from '../../components/buttons/Button';
 import Card, {
   CardBack, CardHeader, CardTitle,
@@ -26,7 +27,6 @@ import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
 import { ConfirmLabel } from '../../components/label/Labels';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
 import { LoadPoolHook } from '../../hooks/loadPoolHook';
-import { BigNumber } from "ethers";
 import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
 import { ensure } from '../../utils/utils';
 
@@ -45,9 +45,9 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmCla
   } if (token2.amount.length === 0) {
     return errorStatus('Missing second token amount');
   } if (BigNumber.from(calculateAmount(token1)).gt(token1.balance)) {
-    return errorStatus(`Insufficient ${token1.name} balance`)
+    return errorStatus(`Insufficient ${token1.name} balance`);
   } if (BigNumber.from(calculateAmount(token2)).gt(token2.balance)) {
-    return errorStatus(`Insufficient ${token2.name} balance`)
+    return errorStatus(`Insufficient ${token2.name} balance`);
   }
   return { isValid: true, text: 'Supply' };
 };
@@ -75,7 +75,7 @@ const AddLiquidity = (): JSX.Element => {
   UpdateBalanceHook(token1, setToken1);
   UpdateBalanceHook(token2, setToken2);
   UpdateTokensPriceHook({
-    pool, 
+    pool,
     token1,
     token2,
     setToken1,
@@ -125,9 +125,9 @@ const AddLiquidity = (): JSX.Element => {
       toast.success(`${token1.name}/${token2.name} supply added successfully!`);
     } catch (error) {
       const message = errorHandler(error.message)
-        .replace("first", token1.name)
-        .replace("second", token2.name);
-      toast.error(errorHandler(message))
+        .replace('first', token1.name)
+        .replace('second', token2.name);
+      toast.error(errorHandler(message));
     } finally {
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));

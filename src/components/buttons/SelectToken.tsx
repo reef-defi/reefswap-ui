@@ -30,7 +30,7 @@ const SelectToken = ({
   const [isLoading, setIsLoading] = useState(false);
   const [tokenAddressOrName, setTokenAddressOrName] = useState('');
 
-  const isEmpty = selectedTokenName === "Select token";
+  const isEmpty = selectedTokenName === 'Select token';
 
   useEffect(() => {
     if (tokenAddressOrName.length !== 42 || selectedAccount === -1) { return; }

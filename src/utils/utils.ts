@@ -27,6 +27,6 @@ export const errorStatus = (text: string): ButtonStatus => ({
 
 export const ensureVoidRun = (canRun: boolean) => <I, >(fun: (obj: I) => void, obj: I) => {
   if (canRun) {
-    fun(obj)
+    fun(obj);
   }
 };
