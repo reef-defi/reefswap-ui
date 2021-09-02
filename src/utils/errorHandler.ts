@@ -13,6 +13,7 @@ const chainErrors: {[key: string]: string} = {
   INSUFFICIENT_OUTPUT_AMOUNT: 'Insufficient buy amount',
   INSUFFICIENT_LIQUIDITY_MINTED: 'Insufficient liquidity minted',
   INSUFFICIENT_LIQUIDITY_BURNED: 'Insufficient liquidity burned',
+  InsufficientBalance: 'Account Reef token balance is too low'
 };
 
 const errorHandler = (message: string): string => {
