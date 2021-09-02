@@ -28,8 +28,8 @@ interface IconButton {
   onClick?: () => void;
 }
 
-export const IconButton: React.FC<IconButton> = ({onClick, children}): JSX.Element => (
-  <button className="btn btn-select border-rad px-2 py-1" onClick={onClick} data-bs-dismiss="modal">
+export const IconButton: React.FC<IconButton> = ({ onClick, children }): JSX.Element => (
+  <button type="button" className="btn btn-select border-rad px-2 py-1" onClick={onClick} data-bs-dismiss="modal">
     {children}
   </button>
 );

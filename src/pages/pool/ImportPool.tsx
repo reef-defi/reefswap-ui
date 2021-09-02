@@ -47,7 +47,7 @@ const ImportPool = (): JSX.Element => {
             iconUrl={token1.iconUrl}
             onTokenSelect={setToken1}
             selectedTokenName={token1.name}
-            />
+          />
         </div>
 
         <div className="col-6">

@@ -59,7 +59,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
             <ConfirmLabel title="Your poold tokens" value={showBalance({ ...token1, balance: BigNumber.from(liquidity), decimals: 18 })} />
             <ConfirmLabel title={`Pooled ${token1.name}`} value={showBalance(token1)} />
             <ConfirmLabel title={`Pooled ${token2.name}`} value={showBalance(token2)} />
-            <ConfirmLabel title={`Pool share`} value={`${calculatePoolShare(pool).toFixed(8)} %`} />
+            <ConfirmLabel title="Pool share" value={`${calculatePoolShare(pool).toFixed(8)} %`} />
           </div>
 
           <div className="d-flex mt-3">
