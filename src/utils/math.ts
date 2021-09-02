@@ -80,6 +80,10 @@ export const removePoolTokenShare = (percentage: number, token?: Token) => token
   ? convert2Normal(token.decimals, token.balance.toString()) * percentage / 100
   : 0
 
+export const removePoolSupply = (percentage: number, pool?: ReefswapPool) => pool
+  ? convert2Normal(18, pool.userPoolBalance) * percentage / 100
+  : 0;
+
 export const calculatePoolRatio = (pool?: ReefswapPool, first=true): number => {
   if (!pool) { return 0; }
   const amount1 = convert2Normal(pool.token1.decimals, pool.token1.balance.toString());
