@@ -24,14 +24,14 @@ export interface ReefswapPool {
   minimumLiquidity: string;
 }
 
-const findPoolTokenAddress = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<string> => {
+const findPoolTokenAddress = async (address1: string, address2: string, signer: Signer, network: ReefNetwork): Promise<string> => {
   const reefswapFactory = getReefswapFactory(network, signer);
-  const address = await reefswapFactory.getPair(token1.address, token2.address);
+  const address = await reefswapFactory.getPair(address1, address2);
   return address;
 };
 
 export const poolContract = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<ReefswapPool> => {
-  const address = await findPoolTokenAddress(token1, token2, signer, network);
+  const address = await findPoolTokenAddress(token1.address, token2.address, signer, network);
   ensure(address !== EMPTY_ADDRESS, 'Pool does not exist!');
   const contract = new Contract(address, ReefswapPair, signer);
 

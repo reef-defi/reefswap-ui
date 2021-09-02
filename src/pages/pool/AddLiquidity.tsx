@@ -6,16 +6,16 @@ import Card, {
   CardBack, CardHeader, CardTitle,
 } from '../../components/card/Card';
 import TokenAmountField from '../../components/card/TokenAmountField';
-import { LoadingButtonIcon, LoadingButtonIconWithText } from '../../components/loading/Loading';
+import { LoadingButtonIconWithText } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
-import { defaultSettings, resolveSettings, toGasLimitObj } from '../../store/internalStore';
+import { defaultSettings, resolveSettings} from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
 import {
-  TokenWithAmount, addLiquidity, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
+  TokenWithAmount, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
 } from '../../api/rpc/tokens';
 import { PoolHook } from '../../hooks/poolHook';
 import CardSettings from '../../components/card/CardSettings';

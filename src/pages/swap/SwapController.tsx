@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
 import {
-  assertAmount, calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, minimumRecieveAmount,
+  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, minimumRecieveAmount,
 } from '../../utils/math';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, poolError?: string): ButtonStatus => {

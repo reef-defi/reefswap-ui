@@ -9,7 +9,7 @@ import {
   InitialState, LoadingState, toInit, toLoading,
 } from '../../store/internalStore';
 import { showBalance } from '../../utils/math';
-import { ADD_LIQUIDITY_URL } from '../../utils/urls';
+import { ADD_LIQUIDITY_URL, REMOVE_LIQUIDITY_URL } from '../../utils/urls';
 import { reloadPool } from '../../store/actions/pools';
 import { reloadTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -38,19 +38,24 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
 
   const addLiquidity = (): void => history.push(ADD_LIQUIDITY_URL);
 
-  const onLiquidityRemove = async (): Promise<void> => {
-    try {
-      setState(toLoading());
-      const { signer } = accounts[selectedAccount];
-      await removeLiquidity(pool, signer, DEFAULT_GAS_LIMIT, settings);
-      toast.success('Liquidity removed successfully!');
-      dispatch(reloadPool());
-      dispatch(reloadTokensAction());
-    } catch (error) {
-      errorToast(error.message);
-      setState(toInit());
-    }
-  };
+  const onLiquidityRemove = (): void => history.push(
+    REMOVE_LIQUIDITY_URL
+      .replace(":address1", token1.address)
+      .replace(":address2", token2.address)
+  );
+  // {
+    // try {
+    //   setState(toLoading());
+    //   const { signer } = accounts[selectedAccount];
+    //   await removeLiquidity(pool, signer, DEFAULT_GAS_LIMIT, settings);
+    //   toast.success('Liquidity removed successfully!');
+    //   dispatch(reloadPool());
+    //   dispatch(reloadTokensAction());
+    // } catch (error) {
+    //   errorToast(error.message);
+    //   setState(toInit());
+    // }
+  // };
 
   return (
     <Card>
