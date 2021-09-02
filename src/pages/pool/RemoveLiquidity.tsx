@@ -1,16 +1,21 @@
 import React from "react"
 import { useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
+import { ReefswapPool } from "../../api/rpc/pools";
 import { createEmptyTokenWithAmount } from "../../api/rpc/tokens";
+import { ButtonStatus } from "../../components/buttons/Button";
 import Card, { CardBack, CardHeader, CardTitle } from "../../components/card/Card"
 import { CardSettings } from "../../components/card/CardSettings"
-import { DownIcon } from "../../components/card/Icons";
+import { DownIcon, PlusIcon } from "../../components/card/Icons";
 import { ConfirmLabel } from "../../components/label/Labels";
+import { LoadingButtonIconWithText } from "../../components/loading/Loading";
+import ConfirmationModal from "../../components/modal/ConfirmationModal";
 import { FindOrLoadTokenHook } from "../../hooks/findOrLoadTokenHook";
 import { LoadPoolHook } from "../../hooks/loadPoolHook";
-import { defaultSettings } from "../../store/internalStore";
-import { calculatePoolRatio, removePoolTokenShare } from "../../utils/math";
+import { defaultSettings, resolveSettings } from "../../store/internalStore";
+import { calculatePoolRatio, calculatePoolShare, removePoolSupply, removePoolTokenShare } from "../../utils/math";
 import { POOL_URL } from "../../utils/urls";
+import { errorStatus } from "../../utils/utils";
 
 interface UrlParams {
   address1: string;
@@ -20,19 +25,42 @@ interface UrlParams {
 const nameCorrector = (name: string) =>
   name === "Select token" ? "-" : name;
 
+const status = (percentageAmount: number, pool?: ReefswapPool): ButtonStatus => {
+
+  if (!pool) {
+    return errorStatus("Invalid Pair");
+  } else if (pool.userPoolBalance === "0") {
+    return errorStatus("Insufficient pool balance");
+  } else if (percentageAmount === 0) {
+    return errorStatus("Enter an amount")
+  }
+
+  return { isValid: true, text: "Confirm remove" }
+}
+
 const RemoveLiquidity = (): JSX.Element => {
   const history = useHistory();
   const {address1, address2} = useParams<UrlParams>();
 
-  const [token1, isToken1Loading] = FindOrLoadTokenHook(address1);
-  const [token2, isToken2Loading] = FindOrLoadTokenHook(address2);
-
-  const {pool, isPoolLoading } = LoadPoolHook(token1, token2);
-
-  const back = () => history.push(POOL_URL);
-
+  const [loadingStatus, setLoadingStatus] = useState("");
+  const [isRemoving, setIsRemoving] = useState(false);
   const [settings, setSettings] = useState(defaultSettings());
   const [percentageAmount, setPercentageAmount] = useState(0);
+
+  const [token1, isToken1Loading] = FindOrLoadTokenHook(address1);
+  const [token2, isToken2Loading] = FindOrLoadTokenHook(address2);
+  const {pool, isPoolLoading } = LoadPoolHook(token1, token2);
+  
+  const isLoading = isRemoving 
+  || isToken1Loading 
+  || isToken2Loading
+  || isPoolLoading;
+  
+  const {isValid, text} = status(percentageAmount, pool);
+  const {percentage} = resolveSettings(settings);
+  
+  const back = () => history.push(POOL_URL);
+
 
   return (
     <Card>
@@ -68,10 +96,10 @@ const RemoveLiquidity = (): JSX.Element => {
         <DownIcon />
       </div>
       <div className="field border-rad p-3">
-        <ConfirmLabel title={removePoolTokenShare(percentageAmount, pool?.token1).toFixed(8)} value={nameCorrector(token1.name)} size="title-text" />
-        <ConfirmLabel title={removePoolTokenShare(percentageAmount, pool?.token2).toFixed(8)} value={nameCorrector(token2.name)} size="title-text" />
+        <ConfirmLabel title={removePoolTokenShare(percentageAmount, pool?.token1).toFixed(8)} value={nameCorrector(token1.name)} titleSize="title-text" valueSize="title-text" />
+        <ConfirmLabel title={removePoolTokenShare(percentageAmount, pool?.token2).toFixed(8)} value={nameCorrector(token2.name)} titleSize="title-text" valueSize="title-text" />
       </div>
-      <div className="my-2 mx-4">
+      <div className="my-3 mx-4">
         <ConfirmLabel title="Price" value={`1 ${nameCorrector(token1.name)} = ${calculatePoolRatio(pool).toFixed(8)} ${nameCorrector(token2.name)}`} />
         <ConfirmLabel title="" value={`1 ${nameCorrector(token2.name)} = ${calculatePoolRatio(pool, false).toFixed(8)} ${nameCorrector(token1.name)}`} />
       </div>
@@ -79,13 +107,57 @@ const RemoveLiquidity = (): JSX.Element => {
       <button
         type="button"
         className="btn btn-lg btn-reef border-rad w-100 mt-2"
-        // disabled={!isValid || isLoading}
+        disabled={!isValid || isLoading}
         data-bs-toggle="modal"
-        data-bs-target="#supplyModalToggle"
+        data-bs-target="#removeModalToggle"
       >
-        Confirm remove
-        {/* {isLoading ? <LoadingButtonIconWithText text={status} /> : text} */}
+        {isLoading ? <LoadingButtonIconWithText text={loadingStatus} /> : text}
       </button>
+
+      <ConfirmationModal id="removeModalToggle" title="Remove liquidity" confirmFun={() => {}}>
+        <div className="mx-2">
+          <label className="text-muted">You will recieve</label>
+          <div className="field border-rad p-3">
+            <ConfirmLabel 
+              titleSize="h4"
+              valueSize="h6"
+              title={removePoolTokenShare(percentageAmount, pool?.token1).toFixed(8)}
+              value={nameCorrector(token1.name)} 
+            />
+            <PlusIcon />
+            <ConfirmLabel 
+              titleSize="h4"
+              valueSize="h6"
+              title={removePoolTokenShare(percentageAmount, pool?.token2).toFixed(8)}
+              value={nameCorrector(token2.name)} 
+            />
+          </div>
+
+          <label className="text-muted mt-3">Burned tokens</label>
+          <div className="field border-rad p-3">
+            <ConfirmLabel 
+              titleSize="h4"
+              valueSize="h6"
+              title={removePoolSupply(percentageAmount, pool).toFixed(8)}
+              value={`${nameCorrector(token1.name)}/${nameCorrector(token2.name)}`} 
+            />
+          </div>
+          <div className="m-3">
+            <span className="mini-text text-muted d-inline-block">
+              Output is estimated. If the price changes by more than {percentage}
+              % your transaction will revert.
+            </span>
+          </div>
+          
+          <div className="field border-rad p-3">
+            <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" titleSize="mini-text" valueSize="mini-text" />
+            <ConfirmLabel title="Rates" value={`1 ${nameCorrector(token1.name)} = ${calculatePoolRatio(pool).toFixed(8)} ${nameCorrector(token2.name)}`} titleSize="mini-text" valueSize="mini-text" />
+            <ConfirmLabel title="" value={`1 ${nameCorrector(token2.name)} = ${calculatePoolRatio(pool, false).toFixed(8)} ${nameCorrector(token1.name)}`} titleSize="mini-text" valueSize="mini-text" />
+            <ConfirmLabel title="Share of Pool" value={`${(calculatePoolShare(pool) * 100).toFixed(8)} %`} titleSize="mini-text" valueSize="mini-text" />
+          </div>
+
+        </div>
+      </ConfirmationModal>
     </Card>
   );
 }
