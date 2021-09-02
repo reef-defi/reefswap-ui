@@ -23,3 +23,13 @@ export const SwitchTokenButton = ({ addIcon, disabled, onClick }: SwitchTokenBut
     </div>
   </div>
 );
+
+interface IconButton {
+  onClick?: () => void;
+}
+
+export const IconButton: React.FC<IconButton> = ({onClick, children}): JSX.Element => (
+  <button className="btn btn-select border-rad px-2 py-1" onClick={onClick} data-bs-dismiss="modal">
+    {children}
+  </button>
+);

@@ -106,11 +106,11 @@ interface TokenIcon extends BaseIcon {
   src: string;
 }
 
-export const TokenIcon = ({src, small}: TokenIcon): JSX.Element => {
-  if (src === "") {
-    return (<DefaultTokenIcon small={small} />);
-  }
-  return (
-    <img src={src} className="select-token-icon-size rounded-circle" alt="..." />
-  )
-};
+export const TokenIcon = ({src, small}: TokenIcon): JSX.Element => (
+  <div className="d-flex my-auto">
+    {src === ""
+      ? <DefaultTokenIcon small={small} />
+      : <img src={src} className="select-token-icon-size rounded-circle" alt="..." />
+    }
+  </div>
+);
