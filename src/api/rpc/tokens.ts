@@ -83,3 +83,8 @@ export const approveTokenAmount = async (token: TokenWithAmount, routerAddress: 
   const bnAmount = calculateAmount(token);
   await contract.approve(routerAddress, bnAmount);
 };
+
+export const approveAmount = async (from: string, to: string, amount: string, signer: Signer): Promise<void> => {
+  const contract = await getContract(from, signer);
+  await contract.approve(to, amount);
+}
