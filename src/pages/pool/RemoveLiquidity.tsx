@@ -1,8 +1,10 @@
-import React from "react"
+import React, { useEffect, useRef } from "react"
 import { useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { ReefswapPool } from "../../api/rpc/pools";
-import { createEmptyTokenWithAmount } from "../../api/rpc/tokens";
+import { getReefswapRouter } from "../../api/rpc/rpc";
+import { approveAmount } from "../../api/rpc/tokens";
 import { ButtonStatus } from "../../components/buttons/Button";
 import Card, { CardBack, CardHeader, CardTitle } from "../../components/card/Card"
 import { CardSettings } from "../../components/card/CardSettings"
@@ -12,8 +14,10 @@ import { LoadingButtonIconWithText } from "../../components/loading/Loading";
 import ConfirmationModal from "../../components/modal/ConfirmationModal";
 import { FindOrLoadTokenHook } from "../../hooks/findOrLoadTokenHook";
 import { LoadPoolHook } from "../../hooks/loadPoolHook";
+import { useAppSelector } from "../../store/hooks";
 import { defaultSettings, resolveSettings } from "../../store/internalStore";
-import { calculatePoolRatio, calculatePoolShare, removePoolSupply, removePoolTokenShare } from "../../utils/math";
+import errorHandler, { errorToast } from "../../utils/errorHandler";
+import { calculatePoolRatio, calculatePoolShare, removeUserPoolSupply, removePoolTokenShare, removeSupply, transformAmount, calculateDeadline } from "../../utils/math";
 import { POOL_URL } from "../../utils/urls";
 import { errorStatus } from "../../utils/utils";
 
@@ -22,7 +26,7 @@ interface UrlParams {
   address2: string;
 }
 
-const nameCorrector = (name: string) =>
+const nameCorrector = (name: string): string =>
   name === "Select token" ? "-" : name;
 
 const status = (percentageAmount: number, pool?: ReefswapPool): ButtonStatus => {
@@ -41,9 +45,12 @@ const status = (percentageAmount: number, pool?: ReefswapPool): ButtonStatus => 
 const RemoveLiquidity = (): JSX.Element => {
   const history = useHistory();
   const {address1, address2} = useParams<UrlParams>();
+  const networkSettings = useAppSelector((state) => state.settings);
+  const {accounts, selectedAccount} = useAppSelector((state) => state.accounts);
 
-  const [loadingStatus, setLoadingStatus] = useState("");
+  const mounted = useRef(true);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState("");
   const [settings, setSettings] = useState(defaultSettings());
   const [percentageAmount, setPercentageAmount] = useState(0);
 
@@ -57,10 +64,56 @@ const RemoveLiquidity = (): JSX.Element => {
   || isPoolLoading;
   
   const {isValid, text} = status(percentageAmount, pool);
-  const {percentage} = resolveSettings(settings);
+  const {percentage, deadline} = resolveSettings(settings);
   
-  const back = () => history.push(POOL_URL);
+  const back = (): void => history.push(POOL_URL);
 
+  useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, [])
+
+  const ensureMount = <T,> (fun: (obj: T) => void, obj: T): void => {
+    mounted.current && fun(obj);
+  }
+    
+  const onRemove = async (): Promise<void> => {
+    if (!pool || percentageAmount === 0 || selectedAccount === -1) { return; }
+    const {signer, evmAddress} = accounts[selectedAccount];
+      
+    const reefswapRouter = getReefswapRouter(networkSettings, signer);
+    const normalRemovedSupply = removeSupply(percentageAmount, pool.userPoolBalance, 18);
+    const removedLiquidity = transformAmount(18, normalRemovedSupply+"");
+
+    const minimumTokenAmount1 = removePoolTokenShare(Math.max(percentageAmount-percentage, 0), pool.token1)
+    const minimumTokenAmount2 = removePoolTokenShare(Math.max(percentageAmount-percentage, 0), pool.token2)
+
+    Promise.resolve()
+      .then(() => mounted.current=true)
+      .then(() => setIsRemoving(true))
+      .then(() => setLoadingStatus("Approving remove"))
+      .then(() => approveAmount(pool.poolAddress, networkSettings.routerAddress, removedLiquidity, signer))
+      .then(() => setLoadingStatus("Removing supply"))
+      .then(() => reefswapRouter.removeLiquidity(
+        pool.token1.address,
+        pool.token2.address,
+        removedLiquidity,
+        transformAmount(token1.decimals, minimumTokenAmount1+""),
+        transformAmount(token2.decimals, minimumTokenAmount2+""),
+        evmAddress,
+        calculateDeadline(deadline)
+      ))
+      .then(() => toast.success(`Liquidity successfully removed`))
+      .then(() => mounted.current && back())
+      .catch((e) => {
+        errorToast(errorHandler(e.message));
+      })
+      .finally(() => {
+        ensureMount(setIsRemoving, false);
+        ensureMount(setLoadingStatus, "");
+      })
+  };
 
   return (
     <Card>
@@ -114,7 +167,7 @@ const RemoveLiquidity = (): JSX.Element => {
         {isLoading ? <LoadingButtonIconWithText text={loadingStatus} /> : text}
       </button>
 
-      <ConfirmationModal id="removeModalToggle" title="Remove liquidity" confirmFun={() => {}}>
+      <ConfirmationModal id="removeModalToggle" title="Remove liquidity" confirmFun={onRemove}>
         <div className="mx-2">
           <label className="text-muted">You will recieve</label>
           <div className="field border-rad p-3">
@@ -138,7 +191,7 @@ const RemoveLiquidity = (): JSX.Element => {
             <ConfirmLabel 
               titleSize="h4"
               valueSize="h6"
-              title={removePoolSupply(percentageAmount, pool).toFixed(8)}
+              title={removeUserPoolSupply(percentageAmount, pool).toFixed(8)}
               value={`${nameCorrector(token1.name)}/${nameCorrector(token2.name)}`} 
             />
           </div>
