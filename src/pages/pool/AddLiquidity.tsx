@@ -156,7 +156,7 @@ const AddLiquidity = (): JSX.Element => {
 
       <button
         type="button"
-        className="btn btn-reef border-rad w-100 mt-2"
+        className="btn btn-reef btn-lg border-rad w-100 mt-2"
         disabled={!isValid || isLoading}
         data-bs-toggle="modal"
         data-bs-target="#supplyModalToggle"

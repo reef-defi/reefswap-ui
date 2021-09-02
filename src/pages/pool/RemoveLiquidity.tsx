@@ -42,6 +42,8 @@ const status = (percentageAmount: number, pool?: ReefswapPool): ButtonStatus => 
   return { isValid: true, text: "Confirm remove" }
 }
 
+const REMOVE_DEFAULT_SLIPPAGE_TOLERANCE = 5;
+
 const RemoveLiquidity = (): JSX.Element => {
   const history = useHistory();
   const {address1, address2} = useParams<UrlParams>();
@@ -64,7 +66,7 @@ const RemoveLiquidity = (): JSX.Element => {
   || isPoolLoading;
   
   const {isValid, text} = status(percentageAmount, pool);
-  const {percentage, deadline} = resolveSettings(settings);
+  const {percentage, deadline} = resolveSettings(settings, REMOVE_DEFAULT_SLIPPAGE_TOLERANCE);
   
   const back = (): void => history.push(POOL_URL);
 
@@ -120,7 +122,7 @@ const RemoveLiquidity = (): JSX.Element => {
       <CardHeader>
         <CardBack onBack={back} />
         <CardTitle title="Remove Liquidity" />
-        <CardSettings settings={settings} setSettings={setSettings} />
+        <CardSettings settings={settings} setSettings={setSettings} defaultSlippageTolerance={REMOVE_DEFAULT_SLIPPAGE_TOLERANCE} />
       </CardHeader>
       <div className="alert alert-danger mt-2 border-rad user-select-none" role="alert">
         <b>Tip: </b>

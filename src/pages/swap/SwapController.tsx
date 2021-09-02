@@ -162,7 +162,7 @@ const SwapController = (): JSX.Element => {
       <div className="d-flex justify-content-center mt-2">
         <button
           type="button"
-          className="btn btn-reef border-rad w-100"
+          className="btn btn-reef btn-lg border-rad w-100"
           // onClick={onSwap}
           disabled={!isValid || isLoading}
           data-bs-toggle="modal"
