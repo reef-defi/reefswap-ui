@@ -44,6 +44,7 @@ const ImportPool = (): JSX.Element => {
           <SelectToken
             fullWidth
             id="token1"
+            iconUrl={token1.iconUrl}
             onTokenSelect={setToken1}
             selectedTokenName={token1.name}
           />
@@ -53,6 +54,7 @@ const ImportPool = (): JSX.Element => {
           <SelectToken
             fullWidth
             id="token2"
+            iconUrl={token2.iconUrl}
             onTokenSelect={setToken2}
             selectedTokenName={token2.name}
           />
@@ -60,7 +62,7 @@ const ImportPool = (): JSX.Element => {
       </div>
       <button
         type="button"
-        className="btn btn-reef border-rad w-100 mt-2"
+        className="btn btn-reef btn-lg border-rad w-100 mt-3"
         onClick={importPool}
       >
         Import

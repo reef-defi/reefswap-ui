@@ -16,7 +16,7 @@ const TokenAmountField = ({
   id = 'exampleModal', token, onTokenSelect, onAmountChange, placeholder = '0,0',
 } : TokenAmountFieldProps): JSX.Element => {
   const {
-    name, isEmpty, amount, price,
+    name, isEmpty, amount, price, iconUrl,
   } = token;
   const amo = parseFloat(amount);
 
@@ -26,8 +26,9 @@ const TokenAmountField = ({
         <SelectToken
           id={id}
           isEmpty={isEmpty}
-          onTokenSelect={onTokenSelect}
           selectedTokenName={name}
+          iconUrl={iconUrl}
+          onTokenSelect={onTokenSelect}
         />
         <input
           type="number"

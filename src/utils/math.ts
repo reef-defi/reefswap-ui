@@ -93,7 +93,7 @@ export const calculatePoolShare = (pool?: ReefswapPool): number => {
   if (!pool) { return 0; }
   const totalSupply = convert2Normal(18, pool.totalSupply);
   const userSupply = convert2Normal(18, pool.userPoolBalance);
-  return (userSupply) / totalSupply;
+  return (userSupply) / totalSupply * 100;
 };
 
 export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 4): string => {
