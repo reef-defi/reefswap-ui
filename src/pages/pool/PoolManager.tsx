@@ -100,7 +100,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
             <div className="w-50 px-1">
               <button
                 type="button"
-                className="btn btn-reef w-100"
+                className="btn btn-reef border-rad w-100"
                 disabled={state._type === 'LoadingState'}
                 onClick={addLiquidity}
               >
@@ -112,7 +112,7 @@ const PoolManager = (pool : PoolManager): JSX.Element => {
             <div className="w-50 px-1">
               <button
                 type="button"
-                className="btn btn-reef w-100"
+                className="btn btn-reef border-rad w-100"
                 disabled={state._type === 'LoadingState'}
                 onClick={onLiquidityRemove}
               >

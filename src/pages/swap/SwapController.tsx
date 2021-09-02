@@ -179,10 +179,10 @@ const SwapController = (): JSX.Element => {
           <ConfirmLabel title="Price" value={`1 ${buy.name} = ${(buy.price / sell.price).toFixed(4)} ${sell.name}`} />
         </div>
         <div className="field p-2 border-rad">
-          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" size="mini-text" />
-          <ConfirmLabel title="Route" value={`${sell.name} > ${buy.name}`} size="mini-text" />
-          <ConfirmLabel title="Minimum recieved" value={`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`} size="mini-text" />
-          <ConfirmLabel title="Slippage tolerance" value={`${percentage.toFixed(2)}%`} size="mini-text" />
+          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Route" value={`${sell.name} > ${buy.name}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Minimum recieved" value={`${minimumRecieveAmount(buy, percentage).toFixed(4)} ${buy.name}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Slippage tolerance" value={`${percentage.toFixed(2)}%`} titleSize="mini-text" valueSize="mini-text" />
         </div>
 
         <div className="mx-3 mt-3">

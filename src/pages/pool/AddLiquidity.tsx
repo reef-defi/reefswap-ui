@@ -167,14 +167,14 @@ const AddLiquidity = (): JSX.Element => {
       <ConfirmationModal id="supplyModalToggle" title="Confirm Supply" confirmFun={addLiquidityClick}>
         <div className="mx-2">
           <label className="text-muted">You will recieve</label>
-          <h1><b>{newPoolSupply.toFixed(8)}</b></h1>
-          <h4 className="h-6 text-muted">
-            {token1.name}
-            /
-            {token2.name}
-            {' '}
-            Pool tokens
-          </h4>
+          <div className="field border-rad p-3">
+            <ConfirmLabel
+              titleSize="h4"
+              valueSize="h6"
+              title={newPoolSupply.toFixed(8)}
+              value={`${token1.name}/${token2.name}`}
+            />
+          </div>
         </div>
         <div className="m-3">
           <span className="mini-text text-muted d-inline-block">
@@ -183,12 +183,12 @@ const AddLiquidity = (): JSX.Element => {
           </span>
         </div>
         <div className="field p-2 border-rad">
-          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" size="mini-text" />
-          <ConfirmLabel title={`${token1.name} Deposited`} value={`${token1.amount}`} size="mini-text" />
-          <ConfirmLabel title={`${token2.name} Deposited`} value={`${token2.amount}`} size="mini-text" />
-          <ConfirmLabel title="Rates" value={`1 ${token1.name} = ${(token1.price / token2.price).toFixed(8)} ${token2.name}`} size="mini-text" />
-          <ConfirmLabel title="" value={`1 ${token2.name} = ${(token2.price / token1.price).toFixed(8)} ${token1.name}`} size="mini-text" />
-          <ConfirmLabel title="Share of Pool" value={`${(calculatePoolShare(pool) * 100).toFixed(8)} %`} size="mini-text" />
+          <ConfirmLabel title="Liquidity Provider Fee" value="1.5 REEF" titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title={`${token1.name} Deposited`} value={`${token1.amount}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title={`${token2.name} Deposited`} value={`${token2.amount}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Rates" value={`1 ${token1.name} = ${(token1.price / token2.price).toFixed(8)} ${token2.name}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="" value={`1 ${token2.name} = ${(token2.price / token1.price).toFixed(8)} ${token1.name}`} titleSize="mini-text" valueSize="mini-text" />
+          <ConfirmLabel title="Share of Pool" value={`${(calculatePoolShare(pool) * 100).toFixed(8)} %`} titleSize="mini-text" valueSize="mini-text" />
         </div>
 
       </ConfirmationModal>
