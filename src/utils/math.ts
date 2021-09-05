@@ -21,7 +21,7 @@ export const transformAmount = (decimals: number, amount: string): string => {
 
 export const assertAmount = (amount?: string): string => (!amount ? '0' : amount);
 
-const convert2Normal = (decimals: number, inputAmount: string): number => {
+export const convert2Normal = (decimals: number, inputAmount: string): number => {
   const amount = '0'.repeat(decimals + 4) + assertAmount(inputAmount);
   const pointer = amount.length - decimals;
   const decimalPointer = `${amount.slice(0, pointer)
@@ -126,8 +126,8 @@ export const getOutputAmount = (inputAmount: number, pool: ReefswapPool): number
   const reserve1 = convert2Normal(pool.token1.decimals, pool.reserve1);
   const reserve2 = convert2Normal(pool.token2.decimals, pool.reserve2);
 
-  const numerator = inputAmount * reserve2 * 997;
-  const denominator = reserve1 * 1000 + inputAmount;
+  const numerator = inputAmount * reserve2;
+  const denominator = reserve1 + inputAmount;
 
   return numerator/denominator;
 };
@@ -136,8 +136,8 @@ export const getInputAmount = (outputAmount: number, pool: ReefswapPool): number
   const reserve1 = convert2Normal(pool.token1.decimals, pool.reserve1);
   const reserve2 = convert2Normal(pool.token2.decimals, pool.reserve2);
 
-  const numerator = reserve1 * outputAmount * 1000;
-  const denominator = (reserve2 - outputAmount) * 997;
+  const numerator = reserve1 * outputAmount;
+  const denominator = (reserve2 - outputAmount);
 
   return numerator/denominator;
 }
