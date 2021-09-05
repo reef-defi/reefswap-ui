@@ -26,13 +26,13 @@ const TokenAmountFieldBase: React.FC<TokenAmountFieldProps> = ({
       <div className="d-flex mb-2">
         <SelectToken
           id={id}
-          selectedTokenName={name}
           iconUrl={iconUrl}
+          selectedTokenName={name}
           onTokenSelect={onTokenSelect}
         />
         <InputAmount
-          disabled={isEmpty}
           amount={amount}
+          disabled={isEmpty}
           placeholder={placeholder}
           onAmountChange={onAmountChange}
         />
@@ -99,10 +99,10 @@ interface TokenAmountFieldImpactPriceProps extends TokenAmountFieldProps {
 const PercentageView = ({percentage}: {percentage: number}): JSX.Element => {
   var color = "";
   if (percentage > 0) { color = "text-success"; }
-  else if (percentage < 5) { color = "text-warning"; }
-  else { color = "text-danger"; }
+  else if (percentage < -0.05) { color = "text-danger"; }
+  else { color = "text-warning"; }
   return (
-    <span className={color}>({`${(percentage*100).toFixed(3)} %`})</span>
+    <span className={color}>({`${(percentage*100).toFixed(2)} %`})</span>
   )
 }
 

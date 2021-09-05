@@ -22,9 +22,9 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { errorToast } from '../../utils/errorHandler';
 import {
-  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateUsdAmount, ensureAmount, minimumRecieveAmount,
+  calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateImpactPercentage, calculateUsdAmount, convert2Normal, ensureAmount, getInputAmount, getOutputAmount, minimumRecieveAmount, transformAmount,
 } from '../../utils/math';
-import { ensure, errorStatus } from '../../utils/utils';
+import { errorStatus } from '../../utils/utils';
 import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
 import { ReefswapPool } from '../../api/rpc/pools';
 
@@ -41,7 +41,7 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
     return errorStatus(`Missing ${sell.name} amount`);
   } if (buy.amount.length === 0) {
     return errorStatus(`Missing ${buy.name} amount`);
-  } if (BigNumber.from(calculateAmount(sell)).gt(sell.balance)) {
+  } if (parseFloat(sell.amount) > convert2Normal(sell.decimals, sell.balance.toString())) {
     return errorStatus(`Insufficient ${sell.name} token balance`);
   }
   return { isValid: true, text: 'Swap' };
@@ -77,16 +77,22 @@ const SwapController = (): JSX.Element => {
     setToken2: setBuy,
   });
 
-  const setAmount = (token1: TokenWithAmount, token2: TokenWithAmount, setToken1: (obj: TokenWithAmount) => void, setToken2: (obj: TokenWithAmount) => void) => (amount: string) => {
-    if (amount === '') {
-      setToken1({ ...token1, amount });
-      setToken2({ ...token2, amount });
-    } else {
-      const amo = parseFloat(amount) * token1.price / token2.price;
-      setToken1({ ...token1, amount });
-      setToken2({ ...token2, amount: amo.toFixed(4) });
-    }
+  const setSellAmount = (amount: string) => {
+    const amo = pool && amount !== ""
+      ? getOutputAmount(parseFloat(amount), pool).toFixed(4)
+      : "";
+
+    setSell({ ...sell, amount });
+    setBuy({ ...buy, amount: amo });
   };
+  const setBuyAmount = (amount: string) => {
+    const amo = pool && amount !== ""
+      ? getInputAmount(parseFloat(amount), pool).toFixed(4)
+      : "";
+    
+    setBuy({...buy, amount});
+    setSell({...sell, amount: amo});
+  }
 
   const changeBuyToken = (newToken: Token): void => setBuy({
     ...newToken, amount: '', price: 0, isEmpty: false,
@@ -144,15 +150,15 @@ const SwapController = (): JSX.Element => {
       <TokenAmountFieldMax
         token={sell}
         id="sell-token-field"
-        onAmountChange={setAmount(sell, buy, setSell, setBuy)}
+        onAmountChange={setSellAmount}
         onTokenSelect={changeSellToken}
       />
       <SwitchTokenButton onClick={onSwitch} />
       <TokenAmountFieldImpactPrice
         token={buy}
         id="buy-token-field"
-        percentage={0.03214}
-        onAmountChange={setAmount(buy, sell, setBuy, setSell)}
+        percentage={calculateImpactPercentage(sell, buy)}
+        onAmountChange={setBuyAmount}
         onTokenSelect={changeBuyToken}
       />
       <div className="d-flex justify-content-center mt-2">
