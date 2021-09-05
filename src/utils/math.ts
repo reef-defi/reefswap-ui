@@ -19,7 +19,7 @@ export const transformAmount = (decimals: number, amount: string): string => {
   return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
 };
 
-export const assertAmount = (amount: string): string => (!amount ? '0' : amount);
+export const assertAmount = (amount?: string): string => (!amount ? '0' : amount);
 
 const convert2Normal = (decimals: number, inputAmount: string): number => {
   const amount = '0'.repeat(decimals + 4) + assertAmount(inputAmount);
@@ -140,4 +140,13 @@ export const getInputAmount = (outputAmount: number, pool: ReefswapPool): number
   const denominator = (reserve2 - outputAmount) * 997;
 
   return numerator/denominator;
+}
+
+export const calculateImpactPercentage = (sell: TokenWithAmount, buy: TokenWithAmount): number => {
+  const buyUsd = calculateUsdAmount(buy);
+  const sellUsd = calculateUsdAmount(sell);
+
+  if (sellUsd === 0) { return 0; }
+
+  return (buyUsd - sellUsd) / sellUsd;
 }
