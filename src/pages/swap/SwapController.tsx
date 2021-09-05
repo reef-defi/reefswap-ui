@@ -10,7 +10,7 @@ import Card, {
   CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
 import CardSettings from '../../components/card/CardSettings';
-import TokenAmountField from '../../components/card/TokenAmountField';
+import TokenAmountField, { TokenAmountFieldImpactPrice, TokenAmountFieldMax } from '../../components/card/TokenAmountField';
 import TokenAmountView from '../../components/card/TokenAmountView';
 import { ConfirmLabel } from '../../components/label/Labels';
 import { LoadingButtonIconWithText } from '../../components/loading/Loading';
@@ -141,16 +141,17 @@ const SwapController = (): JSX.Element => {
         <CardSettings settings={settings} setSettings={setSettings} />
       </CardHeader>
 
-      <TokenAmountField
+      <TokenAmountFieldMax
         token={sell}
         id="sell-token-field"
         onAmountChange={setAmount(sell, buy, setSell, setBuy)}
         onTokenSelect={changeSellToken}
       />
       <SwitchTokenButton onClick={onSwitch} />
-      <TokenAmountField
+      <TokenAmountFieldImpactPrice
         token={buy}
         id="buy-token-field"
+        percentage={0.03214}
         onAmountChange={setAmount(buy, sell, setBuy, setSell)}
         onTokenSelect={changeBuyToken}
       />

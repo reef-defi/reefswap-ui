@@ -12,7 +12,7 @@ export const InputAmount = ({amount, onAmountChange, placeholder="", disabled=fa
     type="number"
     min={0}
     disabled={disabled}
-    value={amount}
+    value={disabled ? '' : amount}
     placeholder={placeholder}
     className="field-input ms-2 flex-grow-1 text-end"
     onChange={(event) => onAmountChange(event.target.value)}
