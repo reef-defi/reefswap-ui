@@ -121,3 +121,23 @@ export const toBalance = ({ balance, decimals }: Token): number => {
 export const poolRatio = ({ token1, token2 }: ReefswapPool): number => toBalance(token2) / toBalance(token1);
 
 export const ensureAmount = (token: TokenWithAmount): void => ensure(BigNumber.from(calculateAmount(token)).lte(token.balance), `Insufficient ${token.name} balance`);
+
+export const getOutputAmount = (inputAmount: number, pool: ReefswapPool): number => {
+  const reserve1 = convert2Normal(pool.token1.decimals, pool.reserve1);
+  const reserve2 = convert2Normal(pool.token2.decimals, pool.reserve2);
+
+  const numerator = inputAmount * reserve2 * 997;
+  const denominator = reserve1 * 1000 + inputAmount;
+
+  return numerator/denominator;
+};
+
+export const getInputAmount = (outputAmount: number, pool: ReefswapPool): number => {
+  const reserve1 = convert2Normal(pool.token1.decimals, pool.reserve1);
+  const reserve2 = convert2Normal(pool.token2.decimals, pool.reserve2);
+
+  const numerator = reserve1 * outputAmount * 1000;
+  const denominator = (reserve2 - outputAmount) * 997;
+
+  return numerator/denominator;
+}
