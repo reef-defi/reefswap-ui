@@ -4,8 +4,6 @@ import { Token, TokenWithAmount } from '../../api/rpc/tokens';
 import { showBalance, toBalance } from '../../utils/math';
 import { InputAmount } from '../inputs/Inputs';
 
-
-
 interface TokenAmountFieldProps {
   id?: string;
   token: TokenWithAmount;
@@ -44,8 +42,10 @@ const TokenAmountFieldBase: React.FC<TokenAmountFieldProps> = ({
   );
 };
 
-const TokenAmountField = ({id, token, placeholder, onTokenSelect, onAmountChange}: TokenAmountFieldProps) => {
-  const {amount, price, isEmpty} = token;
+const TokenAmountField = ({
+  id, token, placeholder, onTokenSelect, onAmountChange,
+}: TokenAmountFieldProps): JSX.Element => {
+  const { amount, price, isEmpty } = token;
   const amo = parseFloat(amount);
 
   return (
@@ -64,13 +64,14 @@ const TokenAmountField = ({id, token, placeholder, onTokenSelect, onAmountChange
       </small>
     </TokenAmountFieldBase>
   );
-}
+};
 
 export default TokenAmountField;
 
-
-export const TokenAmountFieldMax = ({id, token, placeholder, onTokenSelect, onAmountChange}: TokenAmountFieldProps) => {
-  const {amount, price, isEmpty} = token;
+export const TokenAmountFieldMax = ({
+  id, token, placeholder, onTokenSelect, onAmountChange,
+}: TokenAmountFieldProps): JSX.Element => {
+  const { amount, price, isEmpty } = token;
   const amo = parseFloat(amount);
 
   return (
@@ -83,31 +84,36 @@ export const TokenAmountFieldMax = ({id, token, placeholder, onTokenSelect, onAm
     >
       <small>
         {!isEmpty && `Balance: ${showBalance(token)}`}
-        {!isEmpty && <a className="text-primary text-decoration-none" onClick={() => onAmountChange(toBalance(token)+"")}>(Max)</a>}
+
+        {!isEmpty && <span className="text-primary text-decoration-none" role="button" onClick={() => onAmountChange(`${toBalance(token)}`)}>(Max)</span>}
       </small>
       <small>
         {!isEmpty && price !== 0 && amount !== '' && `~$ ${(amo * price).toFixed(4)}`}
       </small>
     </TokenAmountFieldBase>
   );
-}
+};
 
 interface TokenAmountFieldImpactPriceProps extends TokenAmountFieldProps {
   percentage: number;
 }
 
-const PercentageView = ({percentage}: {percentage: number}): JSX.Element => {
-  var color = "";
-  if (percentage > 0) { color = "text-success"; }
-  else if (percentage < -0.05) { color = "text-danger"; }
-  else { color = "text-warning"; }
+const PercentageView = ({ percentage }: {percentage: number}): JSX.Element => {
+  let color = '';
+  if (percentage > 0) { color = 'text-success'; } else if (percentage < -0.05) { color = 'text-danger'; } else { color = 'text-warning'; }
   return (
-    <span className={color}>({`${(percentage*100).toFixed(2)} %`})</span>
-  )
-}
+    <span className={color}>
+      (
+      {`${(percentage * 100).toFixed(2)} %`}
+      )
+    </span>
+  );
+};
 
-export const TokenAmountFieldImpactPrice = ({id, token, placeholder, percentage, onTokenSelect, onAmountChange}: TokenAmountFieldImpactPriceProps) => {
-  const {amount, price, isEmpty} = token;
+export const TokenAmountFieldImpactPrice = ({
+  id, token, placeholder, percentage, onTokenSelect, onAmountChange,
+}: TokenAmountFieldImpactPriceProps): JSX.Element => {
+  const { amount, price, isEmpty } = token;
   const amo = parseFloat(amount);
 
   const showUsd = !isEmpty && price !== 0 && amount !== '';
@@ -129,4 +135,4 @@ export const TokenAmountFieldImpactPrice = ({id, token, placeholder, percentage,
       </small>
     </TokenAmountFieldBase>
   );
-}
+};

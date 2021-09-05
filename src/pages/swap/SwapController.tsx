@@ -77,22 +77,22 @@ const SwapController = (): JSX.Element => {
     setToken2: setBuy,
   });
 
-  const setSellAmount = (amount: string) => {
-    const amo = pool && amount !== ""
+  const setSellAmount = (amount: string): void => {
+    const amo = pool && amount !== ''
       ? getOutputAmount(parseFloat(amount), pool).toFixed(4)
-      : "";
+      : '';
 
     setSell({ ...sell, amount });
     setBuy({ ...buy, amount: amo });
   };
-  const setBuyAmount = (amount: string) => {
-    const amo = pool && amount !== ""
+  const setBuyAmount = (amount: string): void => {
+    const amo = pool && amount !== ''
       ? getInputAmount(parseFloat(amount), pool).toFixed(4)
-      : "";
-    
-    setBuy({...buy, amount});
-    setSell({...sell, amount: amo});
-  }
+      : '';
+
+    setBuy({ ...buy, amount });
+    setSell({ ...sell, amount: amo });
+  };
 
   const changeBuyToken = (newToken: Token): void => setBuy({
     ...newToken, amount: '', price: 0, isEmpty: false,

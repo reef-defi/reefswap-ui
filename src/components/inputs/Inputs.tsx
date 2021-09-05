@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react';
 
 interface InputAmount {
   amount: string;
@@ -7,7 +7,9 @@ interface InputAmount {
   onAmountChange: (value: string) => void;
 }
 
-export const InputAmount = ({amount, onAmountChange, placeholder="", disabled=false} : InputAmount): JSX.Element => (
+export const InputAmount = ({
+  amount, onAmountChange, placeholder = '', disabled = false,
+} : InputAmount): JSX.Element => (
   <input
     type="number"
     min={0}

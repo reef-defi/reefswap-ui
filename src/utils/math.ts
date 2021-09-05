@@ -129,7 +129,7 @@ export const getOutputAmount = (inputAmount: number, pool: ReefswapPool): number
   const numerator = inputAmount * reserve2;
   const denominator = reserve1 + inputAmount;
 
-  return numerator/denominator;
+  return numerator / denominator;
 };
 
 export const getInputAmount = (outputAmount: number, pool: ReefswapPool): number => {
@@ -139,8 +139,8 @@ export const getInputAmount = (outputAmount: number, pool: ReefswapPool): number
   const numerator = reserve1 * outputAmount;
   const denominator = (reserve2 - outputAmount);
 
-  return numerator/denominator;
-}
+  return numerator / denominator;
+};
 
 export const calculateImpactPercentage = (sell: TokenWithAmount, buy: TokenWithAmount): number => {
   const buyUsd = calculateUsdAmount(buy);
@@ -149,4 +149,4 @@ export const calculateImpactPercentage = (sell: TokenWithAmount, buy: TokenWithA
   if (sellUsd === 0) { return 0; }
 
   return (buyUsd - sellUsd) / sellUsd;
-}
+};
