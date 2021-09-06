@@ -13,7 +13,7 @@ interface TokenAmountFieldProps {
 }
 
 const TokenAmountFieldBase: React.FC<TokenAmountFieldProps> = ({
-  id = 'exampleModal', token, onTokenSelect, onAmountChange, placeholder = '0,0', children,
+  id = 'exampleModal', token, onTokenSelect, onAmountChange, placeholder = '0.0', children,
 }): JSX.Element => {
   const {
     name, isEmpty, amount, iconUrl,
