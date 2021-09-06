@@ -68,11 +68,16 @@ export const UpdateTokensPriceHook = ({
           updateTokens(reefPrice / sellRatio, reefPrice / sellRatio * baseRatio);
         }
       } catch (error) {
+        console.error(error);
         updateTokens(0, 0);
       }
     };
     setPrevAddress1(token1.address);
     setPrevAddress2(token2.address);
     load();
+
+    return () => {
+      mounted.current = false;
+    }
   }, [pool]);
 };
