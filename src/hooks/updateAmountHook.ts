@@ -1,7 +1,9 @@
 import { useRef, useState, useEffect } from 'react';
 import { ReefswapPool } from '../api/rpc/pools';
 import { TokenWithAmount } from '../api/rpc/tokens';
-import { assertAmount, calculateAmount, calculatePoolRatio, getInputAmount, getOutputAmount } from '../utils/math';
+import {
+  assertAmount, calculateAmount, calculatePoolRatio, getInputAmount, getOutputAmount,
+} from '../utils/math';
 
 interface UpdateAmountHookInput {
   pool?: ReefswapPool;
@@ -31,7 +33,9 @@ export const UpdateSwapAmountHook = ({
   }, [token2.price, token1.price]);
 };
 
-export const UpdateLiquidityAmountHook = ({pool, token1, token2, setToken1, setToken2}: UpdateAmountHookInput): void => {
+export const UpdateLiquidityAmountHook = ({
+  pool, token1, token2, setToken1, setToken2,
+}: UpdateAmountHookInput): void => {
   const [prevAddress1, setPrevAddress1] = useState(token1.address);
   const [prevAddress2, setPrevAddress2] = useState(token2.address);
 
@@ -40,12 +44,12 @@ export const UpdateLiquidityAmountHook = ({pool, token1, token2, setToken1, setT
     const ratio = token2.price / token1.price;
     if (token1.address !== prevAddress1) {
       const amount = parseFloat(assertAmount(token2.amount)) * ratio;
-      setToken1({...token1, amount: amount === 0 ? "" : amount.toFixed(4)});
+      setToken1({ ...token1, amount: amount === 0 ? '' : amount.toFixed(4) });
     } else if (token2.address !== prevAddress2) {
       const amount = parseFloat(assertAmount(token1.amount)) / ratio;
-      setToken2({...token2, amount: amount === 0 ? '' : amount.toFixed(4)});
+      setToken2({ ...token2, amount: amount === 0 ? '' : amount.toFixed(4) });
     }
     setPrevAddress1(token1.address);
     setPrevAddress2(token2.address);
   }, [token1.price, token2.price]);
-}
+};

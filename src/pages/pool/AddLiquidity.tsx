@@ -13,7 +13,7 @@ import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import errorHandler, { errorToast } from '../../utils/errorHandler';
+import errorHandler from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
 import {
   TokenWithAmount, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
@@ -53,15 +53,16 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmCla
   return { isValid: true, text: 'Supply' };
 };
 
-const loadingStatus = (status: string, isPoolLoading: boolean, isPriceLoading: boolean) => {
-  if (isPoolLoading) {
-    return "Loading pool";
-  } else if (isPriceLoading) {
-    return "Loading prices";
-  } else {
-    return "";
+const loadingStatus = (status: string, isPoolLoading: boolean, isPriceLoading: boolean): string => {
+  if (status) {
+    return status;
+  } if (isPoolLoading) {
+    return 'Loading pool';
+  } if (isPriceLoading) {
+    return 'Loading prices';
   }
-}
+  return '';
+};
 
 const AddLiquidity = (): JSX.Element => {
   const history = useHistory();
@@ -96,7 +97,7 @@ const AddLiquidity = (): JSX.Element => {
     token1,
     token2,
     setToken1,
-    setToken2
+    setToken2,
   });
 
   const isLoading = isLiquidityLoading || isPoolLoading || isPriceLoading;
@@ -114,13 +115,13 @@ const AddLiquidity = (): JSX.Element => {
     if (isLoading) { return; }
     const newAmount = token1.price / token2.price * parseFloat(assertAmount(amount));
     setToken1({ ...token1, amount });
-    setToken2({...token2, amount: !amount ? '' : newAmount.toFixed(4)})
-  }
+    setToken2({ ...token2, amount: !amount ? '' : newAmount.toFixed(4) });
+  };
   const setAmount2 = (amount: string): void => {
     if (isLoading) { return; }
     const newAmount = token2.price / token1.price * parseFloat(assertAmount(amount));
     setToken2({ ...token2, amount });
-    setToken1({...token1, amount: !amount ? '' : newAmount.toFixed(4)});
+    setToken1({ ...token1, amount: !amount ? '' : newAmount.toFixed(4) });
   };
 
   const addLiquidityClick = async (): Promise<void> => {

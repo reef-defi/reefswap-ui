@@ -16,7 +16,7 @@ export const ReefPriceHook = (): ReefPriceOutput => {
         .then(() => retrieveReefCoingeckoPrice())
         .then((res) => {
           if (mounted.current) {
-            setPrice(res)
+            setPrice(res);
           }
         })
         .catch(() => setPrice(0)) // TODO try maybe nan?
