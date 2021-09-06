@@ -129,7 +129,7 @@ const getReserve = (pool: ReefswapPool, first=true) => first
 export const getOutputAmount = (token: TokenWithAmount, pool: ReefswapPool): number => {
   const inputAmount = parseFloat(assertAmount(token.amount)) * 997;
 
-  const [inputReserve, outputReserve] = token.address !== pool.token1.address
+  const [inputReserve, outputReserve] = token.address === pool.token1.address
     ? [getReserve(pool), getReserve(pool, false)]
     : [getReserve(pool, false), getReserve(pool)];
 
@@ -143,7 +143,7 @@ export const getOutputAmount = (token: TokenWithAmount, pool: ReefswapPool): num
 export const getInputAmount = (token: TokenWithAmount, pool: ReefswapPool): number => {
   const outputAmount = parseFloat(assertAmount(token.amount));
 
-  const [inputReserve, outputReserve] = token.address === pool.token1.address
+  const [inputReserve, outputReserve] = token.address !== pool.token1.address
     ? [getReserve(pool), getReserve(pool, false)]
     : [getReserve(pool, false), getReserve(pool)];
 
