@@ -42,7 +42,7 @@ const AppInitialization = (): JSX.Element => {
       await callback();
       setState(toSuccess());
     } catch (e) {
-      setState(toError(e.message));
+      setState(toError(e.message ? e.message : 'Can not connect to the chain, try connecting later...'));
     }
   };
 

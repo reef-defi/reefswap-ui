@@ -27,6 +27,7 @@ import {
 import { errorStatus } from '../../utils/utils';
 import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
 import { ReefswapPool } from '../../api/rpc/pools';
+import { UpdateSwapAmountOnPriceChange } from '../../hooks/updateSwapAmountOnPriceChange';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -47,6 +48,13 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
   return { isValid: true, text: 'Swap' };
 };
 
+const loadingStatus = (status: string, isPoolLoading: boolean, isPriceLoading: boolean): string => {
+  if (status) { return status; }
+  if (isPoolLoading) { return 'Loading pool'; }
+  if (isPriceLoading) { return 'Loading prices'; }
+  return '';
+};
+
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { tokens } = useAppSelector((state) => state.tokens);
@@ -63,13 +71,12 @@ const SwapController = (): JSX.Element => {
   const { pool, isPoolLoading } = LoadPoolHook(sell, buy);
 
   const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, pool);
-  const isLoading = isSwapLoading || isPoolLoading;
   const { percentage, deadline } = resolveSettings(settings);
 
   // Updating user token balance.. its a bit hecky
   UpdateBalanceHook(buy, setBuy);
   UpdateBalanceHook(sell, setSell);
-  UpdateTokensPriceHook({
+  const isPriceLoading = UpdateTokensPriceHook({
     pool,
     token1: sell,
     token2: buy,
@@ -77,9 +84,18 @@ const SwapController = (): JSX.Element => {
     setToken2: setBuy,
   });
 
+  const isLoading = isSwapLoading || isPoolLoading || isPriceLoading;
+  UpdateSwapAmountOnPriceChange({
+    pool,
+    buy,
+    sell,
+    setBuy,
+    setSell,
+  });
+
   const setSellAmount = (amount: string): void => {
     const amo = pool && amount !== ''
-      ? getOutputAmount(parseFloat(amount), pool).toFixed(4)
+      ? getOutputAmount({ ...sell, amount }, pool).toFixed(4)
       : '';
 
     setSell({ ...sell, amount });
@@ -87,7 +103,7 @@ const SwapController = (): JSX.Element => {
   };
   const setBuyAmount = (amount: string): void => {
     const amo = pool && amount !== ''
-      ? getInputAmount(parseFloat(amount), pool).toFixed(4)
+      ? getInputAmount({ ...buy, amount }, pool).toFixed(4)
       : '';
 
     setBuy({ ...buy, amount });
@@ -102,10 +118,10 @@ const SwapController = (): JSX.Element => {
   });
 
   const onSwitch = (): void => {
-    if (buy.isEmpty || isLoading) { return; }
+    if (buy.isEmpty || isLoading || !pool) { return; }
     const subSellState = { ...sell };
     setSell({ ...buy });
-    setBuy({ ...subSellState });
+    setBuy({ ...subSellState, amount: getOutputAmount(buy, pool).toFixed(4) });
   };
 
   const onSwap = async (): Promise<void> => {
@@ -128,6 +144,8 @@ const SwapController = (): JSX.Element => {
         evmAddress,
         calculateDeadline(deadline),
       );
+      setBuy(createEmptyTokenWithAmount());
+      setSell(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);
@@ -169,7 +187,7 @@ const SwapController = (): JSX.Element => {
           data-bs-target="#swapModalToggle"
           className="btn btn-reef btn-lg border-rad w-100"
         >
-          {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
+          {isLoading ? <LoadingButtonIconWithText text={loadingStatus(status, isPoolLoading, isPriceLoading)} /> : text}
         </button>
       </div>
       <ConfirmationModal id="swapModalToggle" title="Confirm Swap" confirmFun={onSwap}>
