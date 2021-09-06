@@ -27,6 +27,7 @@ import {
 import { errorStatus } from '../../utils/utils';
 import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
 import { ReefswapPool } from '../../api/rpc/pools';
+import { UpdateSwapAmountOnPriceChange } from '../../hooks/updateSwapAmountOnPriceChange';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -63,18 +64,26 @@ const SwapController = (): JSX.Element => {
   const { pool, isPoolLoading } = LoadPoolHook(sell, buy);
 
   const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, pool);
-  const isLoading = isSwapLoading || isPoolLoading;
   const { percentage, deadline } = resolveSettings(settings);
 
   // Updating user token balance.. its a bit hecky
   UpdateBalanceHook(buy, setBuy);
   UpdateBalanceHook(sell, setSell);
-  UpdateTokensPriceHook({
+  const pricesLoading = UpdateTokensPriceHook({
     pool,
     token1: sell,
     token2: buy,
     setToken1: setSell,
     setToken2: setBuy,
+  });
+
+  const isLoading = isSwapLoading || isPoolLoading || pricesLoading;
+  UpdateSwapAmountOnPriceChange({
+    pool,
+    buy,
+    sell,
+    setBuy,
+    setSell
   });
 
   const setSellAmount = (amount: string): void => {

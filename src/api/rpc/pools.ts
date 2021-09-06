@@ -37,7 +37,6 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
 
   const decimals = await contract.decimals();
   const reserves = await contract.getReserves();
-  // console.log("reserves: ", reserves);
   const totalSupply = await contract.totalSupply();
   const minimumLiquidity = await contract.MINIMUM_LIQUIDITY();
   const liquidity = await contract.balanceOf(await signer.getAddress());
