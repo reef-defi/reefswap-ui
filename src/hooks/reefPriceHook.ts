@@ -10,10 +10,15 @@ export const ReefPriceHook = (): ReefPriceOutput => {
 
   useEffect(() => {
     const load = async (): Promise<void> => {
+      mounted.current = true;
       Promise.resolve()
         .then(() => setIsLoading(true))
         .then(() => retrieveReefCoingeckoPrice())
-        .then((res) => mounted.current && setPrice(res))
+        .then((res) => {
+          if (mounted.current) {
+            setPrice(res);
+          }
+        })
         .catch(() => setPrice(0)) // TODO try maybe nan?
         .finally(() => setIsLoading(false));
     };

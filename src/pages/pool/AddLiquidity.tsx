@@ -13,7 +13,7 @@ import { setAllTokensAction } from '../../store/actions/tokens';
 import { setPools } from '../../store/actions/pools';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import errorHandler, { errorToast } from '../../utils/errorHandler';
+import errorHandler from '../../utils/errorHandler';
 import { loadPools } from '../../api/rpc/pools';
 import {
   TokenWithAmount, loadTokens, createEmptyTokenWithAmount, toTokenAmount, Token, approveTokenAmount,
@@ -21,6 +21,7 @@ import {
 import CardSettings from '../../components/card/CardSettings';
 import { getReefswapRouter } from '../../api/rpc/rpc';
 import {
+  assertAmount,
   calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculatePoolShare, calculatePoolSupply, ensureAmount,
 } from '../../utils/math';
 import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
@@ -28,7 +29,7 @@ import { ConfirmLabel } from '../../components/label/Labels';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
 import { LoadPoolHook } from '../../hooks/loadPoolHook';
 import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
-import { ensure } from '../../utils/utils';
+import { UpdateLiquidityAmountHook } from '../../hooks/updateAmountHook';
 
 const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,
@@ -52,6 +53,17 @@ const buttonStatus = (token1: TokenWithAmount, token2: TokenWithAmount, isEvmCla
   return { isValid: true, text: 'Supply' };
 };
 
+const loadingStatus = (status: string, isPoolLoading: boolean, isPriceLoading: boolean): string => {
+  if (status) {
+    return status;
+  } if (isPoolLoading) {
+    return 'Loading pool';
+  } if (isPriceLoading) {
+    return 'Loading prices';
+  }
+  return '';
+};
+
 const AddLiquidity = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -68,13 +80,19 @@ const AddLiquidity = (): JSX.Element => {
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
   const { deadline, percentage } = resolveSettings(settings);
 
-  // TODO pool overhaed
   const { pool, isPoolLoading } = LoadPoolHook(token1, token2);
   const newPoolSupply = calculatePoolSupply(token1, token2, pool);
 
   UpdateBalanceHook(token1, setToken1);
   UpdateBalanceHook(token2, setToken2);
-  UpdateTokensPriceHook({
+  const isPriceLoading = UpdateTokensPriceHook({
+    pool,
+    token1,
+    token2,
+    setToken1,
+    setToken2,
+  });
+  UpdateLiquidityAmountHook({
     pool,
     token1,
     token2,
@@ -82,7 +100,7 @@ const AddLiquidity = (): JSX.Element => {
     setToken2,
   });
 
-  const isLoading = isLiquidityLoading || isPoolLoading;
+  const isLoading = isLiquidityLoading || isPoolLoading || isPriceLoading;
   const { text, isValid } = buttonStatus(token1, token2, isEvmClaimed);
 
   const back = (): void => history.push(POOL_URL);
@@ -93,8 +111,18 @@ const AddLiquidity = (): JSX.Element => {
     ...newToken, amount: '', price: 0, isEmpty: false,
   });
 
-  const setAmount1 = (amount: string): void => setToken1({ ...token1, amount });
-  const setAmount2 = (amount: string): void => setToken2({ ...token2, amount });
+  const setAmount1 = (amount: string): void => {
+    if (isLoading) { return; }
+    const newAmount = token1.price / token2.price * parseFloat(assertAmount(amount));
+    setToken1({ ...token1, amount });
+    setToken2({ ...token2, amount: !amount ? '' : newAmount.toFixed(4) });
+  };
+  const setAmount2 = (amount: string): void => {
+    if (isLoading) { return; }
+    const newAmount = token2.price / token1.price * parseFloat(assertAmount(amount));
+    setToken2({ ...token2, amount });
+    setToken1({ ...token1, amount: !amount ? '' : newAmount.toFixed(4) });
+  };
 
   const addLiquidityClick = async (): Promise<void> => {
     try {
@@ -152,15 +180,15 @@ const AddLiquidity = (): JSX.Element => {
       <TokenAmountField
         token={token1}
         id="add-liquidity-token-1"
-        onTokenSelect={changeToken1}
         onAmountChange={setAmount1}
+        onTokenSelect={changeToken1}
       />
       <SwitchTokenButton disabled addIcon />
       <TokenAmountField
         token={token2}
         id="add-liquidity-token-2"
-        onTokenSelect={changeToken2}
         onAmountChange={setAmount2}
+        onTokenSelect={changeToken2}
       />
 
       <button
@@ -170,7 +198,7 @@ const AddLiquidity = (): JSX.Element => {
         data-bs-toggle="modal"
         data-bs-target="#supplyModalToggle"
       >
-        {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
+        {isLoading ? <LoadingButtonIconWithText text={loadingStatus(status, isPoolLoading, isPriceLoading)} /> : text}
       </button>
 
       <ConfirmationModal id="supplyModalToggle" title="Confirm Supply" confirmFun={addLiquidityClick}>
