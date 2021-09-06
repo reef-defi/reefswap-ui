@@ -79,7 +79,7 @@ const SwapController = (): JSX.Element => {
 
   const setSellAmount = (amount: string): void => {
     const amo = pool && amount !== ''
-      ? getOutputAmount(parseFloat(amount), pool).toFixed(4)
+      ? getOutputAmount({...sell, amount}, pool).toFixed(4)
       : '';
 
     setSell({ ...sell, amount });
@@ -87,7 +87,7 @@ const SwapController = (): JSX.Element => {
   };
   const setBuyAmount = (amount: string): void => {
     const amo = pool && amount !== ''
-      ? getInputAmount(parseFloat(amount), pool).toFixed(4)
+      ? getInputAmount({...buy, amount}, pool).toFixed(4)
       : '';
 
     setBuy({ ...buy, amount });
@@ -102,10 +102,10 @@ const SwapController = (): JSX.Element => {
   });
 
   const onSwitch = (): void => {
-    if (buy.isEmpty || isLoading) { return; }
+    if (buy.isEmpty || isLoading || !pool) { return; }
     const subSellState = { ...sell };
     setSell({ ...buy });
-    setBuy({ ...subSellState });
+    setBuy({ ...subSellState, amount: getOutputAmount(buy, pool).toFixed(4) });
   };
 
   const onSwap = async (): Promise<void> => {
@@ -128,6 +128,8 @@ const SwapController = (): JSX.Element => {
         evmAddress,
         calculateDeadline(deadline),
       );
+      setBuy(createEmptyTokenWithAmount());
+      setSell(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);
