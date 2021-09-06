@@ -27,7 +27,7 @@ import {
 import { errorStatus } from '../../utils/utils';
 import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
 import { ReefswapPool } from '../../api/rpc/pools';
-import { UpdateSwapAmountOnPriceChange } from '../../hooks/updateSwapAmountOnPriceChange';
+import { UpdateSwapAmountHook } from '../../hooks/updateAmountHook';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -85,15 +85,16 @@ const SwapController = (): JSX.Element => {
   });
 
   const isLoading = isSwapLoading || isPoolLoading || isPriceLoading;
-  UpdateSwapAmountOnPriceChange({
+  UpdateSwapAmountHook({
     pool,
-    buy,
-    sell,
-    setBuy,
-    setSell,
+    token2: buy,
+    token1: sell,
+    setToken2: setBuy,
+    setToken1: setSell,
   });
 
   const setSellAmount = (amount: string): void => {
+    if (isLoading) { return; }
     const amo = pool && amount !== ''
       ? getOutputAmount({ ...sell, amount }, pool).toFixed(4)
       : '';
@@ -102,6 +103,7 @@ const SwapController = (): JSX.Element => {
     setBuy({ ...buy, amount: amo });
   };
   const setBuyAmount = (amount: string): void => {
+    if (isLoading) { return; }
     const amo = pool && amount !== ''
       ? getInputAmount({ ...buy, amount }, pool).toFixed(4)
       : '';
