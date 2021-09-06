@@ -35,6 +35,7 @@ export const UpdateTokensPriceHook = ({
     const load = async (): Promise<void> => {
       if (!pool) { return; }
       try {
+        mounted.current = true;
         setIsLoading(true);
         const reefPrice = await retrieveReefCoingeckoPrice();
         const baseRatio = poolRatio(pool);
@@ -42,7 +43,7 @@ export const UpdateTokensPriceHook = ({
         if (token1.name === 'REEF') {
           updateTokens(reefPrice, reefPrice / baseRatio);
         } else if (token2.name === 'REEF') {
-          updateTokens(reefPrice * baseRatio, reefPrice);
+          updateTokens(reefPrice, reefPrice * baseRatio);
         } else {
           const sellPool = await poolContract(tokens[0], token1, signer, settings);
           const sellRatio = poolRatio(sellPool);
@@ -52,14 +53,10 @@ export const UpdateTokensPriceHook = ({
         console.error(error);
         updateTokens(0, 0);
       } finally {
-        setIsLoading(false);
+        ensureMount(setIsLoading, false);
       }
     };
     load();
-
-    return () => {
-      mounted.current = false;
-    };
   }, [pool]);
 
   return isLoading;
