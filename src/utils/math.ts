@@ -122,9 +122,9 @@ export const poolRatio = ({ token1, token2 }: ReefswapPool): number => toBalance
 
 export const ensureAmount = (token: TokenWithAmount): void => ensure(BigNumber.from(calculateAmount(token)).lte(token.balance), `Insufficient ${token.name} balance`);
 
-const getReserve = (pool: ReefswapPool, first=true) => first
+const getReserve = (pool: ReefswapPool, first = true): number => (first
   ? convert2Normal(pool.token1.decimals, pool.reserve1)
-  : convert2Normal(pool.token2.decimals, pool.reserve2);
+  : convert2Normal(pool.token2.decimals, pool.reserve2));
 
 export const getOutputAmount = (token: TokenWithAmount, pool: ReefswapPool): number => {
   const inputAmount = parseFloat(assertAmount(token.amount)) * 997;
@@ -132,7 +132,6 @@ export const getOutputAmount = (token: TokenWithAmount, pool: ReefswapPool): num
   const [inputReserve, outputReserve] = token.address === pool.token1.address
     ? [getReserve(pool), getReserve(pool, false)]
     : [getReserve(pool, false), getReserve(pool)];
-
 
   const numerator = inputAmount * outputReserve;
   const denominator = inputReserve * 1000 + inputAmount;
@@ -146,7 +145,6 @@ export const getInputAmount = (token: TokenWithAmount, pool: ReefswapPool): numb
   const [inputReserve, outputReserve] = token.address !== pool.token1.address
     ? [getReserve(pool), getReserve(pool, false)]
     : [getReserve(pool, false), getReserve(pool)];
-
 
   const numerator = inputReserve * outputAmount * 1000;
   const denominator = (outputReserve - outputAmount) * 997;

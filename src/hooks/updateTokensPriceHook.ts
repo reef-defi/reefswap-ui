@@ -27,8 +27,8 @@ export const UpdateTokensPriceHook = ({
   const ensureMount = ensureVoidRun(mounted.current);
 
   const updateTokens = (tokenPrice1: number, tokenPrice2: number): void => {
-    ensureMount(setToken1, {...token1, price: tokenPrice1});
-    ensureMount(setToken2, {...token2, price: tokenPrice2});
+    ensureMount(setToken1, { ...token1, price: tokenPrice1 });
+    ensureMount(setToken2, { ...token2, price: tokenPrice2 });
   };
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export const UpdateTokensPriceHook = ({
         setIsLoading(true);
         const reefPrice = await retrieveReefCoingeckoPrice();
         const baseRatio = poolRatio(pool);
-        
+
         if (token1.name === 'REEF') {
           updateTokens(reefPrice, reefPrice / baseRatio);
         } else if (token2.name === 'REEF') {
@@ -59,7 +59,7 @@ export const UpdateTokensPriceHook = ({
 
     return () => {
       mounted.current = false;
-    }
+    };
   }, [pool]);
 
   return isLoading;

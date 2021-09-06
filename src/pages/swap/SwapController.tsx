@@ -50,10 +50,10 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
 
 const loadingStatus = (status: string, isPoolLoading: boolean, isPriceLoading: boolean): string => {
   if (status) { return status; }
-  if (isPoolLoading) { return "Loading pool" }
-  if (isPriceLoading) { return "Loading prices" }
-  return "";
-}
+  if (isPoolLoading) { return 'Loading pool'; }
+  if (isPriceLoading) { return 'Loading prices'; }
+  return '';
+};
 
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -90,12 +90,12 @@ const SwapController = (): JSX.Element => {
     buy,
     sell,
     setBuy,
-    setSell
+    setSell,
   });
 
   const setSellAmount = (amount: string): void => {
     const amo = pool && amount !== ''
-      ? getOutputAmount({...sell, amount}, pool).toFixed(4)
+      ? getOutputAmount({ ...sell, amount }, pool).toFixed(4)
       : '';
 
     setSell({ ...sell, amount });
@@ -103,7 +103,7 @@ const SwapController = (): JSX.Element => {
   };
   const setBuyAmount = (amount: string): void => {
     const amo = pool && amount !== ''
-      ? getInputAmount({...buy, amount}, pool).toFixed(4)
+      ? getInputAmount({ ...buy, amount }, pool).toFixed(4)
       : '';
 
     setBuy({ ...buy, amount });

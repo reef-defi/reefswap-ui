@@ -47,8 +47,8 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
   const tokenBalance2 = await balanceOf(token2.address, address, signer);
 
   const [finalToken1, finalToken2] = token1.address !== address1
-    ? [{...token1, balance: tokenBalance1}, {...token2, balance: tokenBalance2}]
-    : [{...token2, balance: tokenBalance2}, {...token1, balance: tokenBalance1}];
+    ? [{ ...token1, balance: tokenBalance1 }, { ...token2, balance: tokenBalance2 }]
+    : [{ ...token2, balance: tokenBalance2 }, { ...token1, balance: tokenBalance1 }];
 
   return {
     contract,
