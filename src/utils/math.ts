@@ -122,22 +122,34 @@ export const poolRatio = ({ token1, token2 }: ReefswapPool): number => toBalance
 
 export const ensureAmount = (token: TokenWithAmount): void => ensure(BigNumber.from(calculateAmount(token)).lte(token.balance), `Insufficient ${token.name} balance`);
 
-export const getOutputAmount = (inputAmount: number, pool: ReefswapPool): number => {
-  const reserve1 = convert2Normal(pool.token1.decimals, pool.reserve1);
-  const reserve2 = convert2Normal(pool.token2.decimals, pool.reserve2);
+const getReserve = (pool: ReefswapPool, first=true) => first
+  ? convert2Normal(pool.token1.decimals, pool.reserve1)
+  : convert2Normal(pool.token2.decimals, pool.reserve2);
 
-  const numerator = inputAmount * reserve2;
-  const denominator = reserve1 + inputAmount;
+export const getOutputAmount = (token: TokenWithAmount, pool: ReefswapPool): number => {
+  const inputAmount = parseFloat(assertAmount(token.amount)) * 997;
+
+  const [inputReserve, outputReserve] = token.address !== pool.token1.address
+    ? [getReserve(pool), getReserve(pool, false)]
+    : [getReserve(pool, false), getReserve(pool)];
+
+
+  const numerator = inputAmount * outputReserve;
+  const denominator = inputReserve * 1000 + inputAmount;
 
   return numerator / denominator;
 };
 
-export const getInputAmount = (outputAmount: number, pool: ReefswapPool): number => {
-  const reserve1 = convert2Normal(pool.token1.decimals, pool.reserve1);
-  const reserve2 = convert2Normal(pool.token2.decimals, pool.reserve2);
+export const getInputAmount = (token: TokenWithAmount, pool: ReefswapPool): number => {
+  const outputAmount = parseFloat(assertAmount(token.amount));
 
-  const numerator = reserve1 * outputAmount;
-  const denominator = (reserve2 - outputAmount);
+  const [inputReserve, outputReserve] = token.address === pool.token1.address
+    ? [getReserve(pool), getReserve(pool, false)]
+    : [getReserve(pool, false), getReserve(pool)];
+
+
+  const numerator = inputReserve * outputAmount * 1000;
+  const denominator = (outputReserve - outputAmount) * 997;
 
   return numerator / denominator;
 };
