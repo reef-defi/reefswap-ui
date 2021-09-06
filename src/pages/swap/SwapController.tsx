@@ -48,6 +48,13 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
   return { isValid: true, text: 'Swap' };
 };
 
+const loadingStatus = (status: string, isPoolLoading: boolean, isPriceLoading: boolean): string => {
+  if (status) { return status; }
+  if (isPoolLoading) { return "Loading pool" }
+  if (isPriceLoading) { return "Loading prices" }
+  return "";
+}
+
 const SwapController = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { tokens } = useAppSelector((state) => state.tokens);
@@ -69,7 +76,7 @@ const SwapController = (): JSX.Element => {
   // Updating user token balance.. its a bit hecky
   UpdateBalanceHook(buy, setBuy);
   UpdateBalanceHook(sell, setSell);
-  const pricesLoading = UpdateTokensPriceHook({
+  const isPriceLoading = UpdateTokensPriceHook({
     pool,
     token1: sell,
     token2: buy,
@@ -77,7 +84,7 @@ const SwapController = (): JSX.Element => {
     setToken2: setBuy,
   });
 
-  const isLoading = isSwapLoading || isPoolLoading || pricesLoading;
+  const isLoading = isSwapLoading || isPoolLoading || isPriceLoading;
   UpdateSwapAmountOnPriceChange({
     pool,
     buy,
@@ -180,7 +187,7 @@ const SwapController = (): JSX.Element => {
           data-bs-target="#swapModalToggle"
           className="btn btn-reef btn-lg border-rad w-100"
         >
-          {isLoading ? <LoadingButtonIconWithText text={status} /> : text}
+          {isLoading ? <LoadingButtonIconWithText text={loadingStatus(status, isPoolLoading, isPriceLoading)} /> : text}
         </button>
       </div>
       <ConfirmationModal id="swapModalToggle" title="Confirm Swap" confirmFun={onSwap}>
