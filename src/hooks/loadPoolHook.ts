@@ -43,7 +43,7 @@ export const LoadPoolHook = (token1: Token, token2: Token): LoadPoolHookOutput =
     return (): void => {
       mounted.current = false;
     };
-  }, [token1.address, token2.address]);
+  }, [token1.address, token2.address, token1.balance, token2.balance]);
 
   return { pool, isPoolLoading: isLoading };
 };
