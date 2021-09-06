@@ -15,6 +15,11 @@
       "name": "REEF2",
       "address": "0x3C4Bf01eb3bd2B88E1aCE7fd76Ccb4F12d2867a8",
       "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/64x64/6951.png"
+    }, 
+    {
+      "name": "SWVE",
+      "address": "0xF7108a2737687f3780D7846852DEd6A75fADaC01",
+      "iconUrl": ""
     }
   ]
 }
