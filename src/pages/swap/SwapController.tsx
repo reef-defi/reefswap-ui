@@ -144,8 +144,6 @@ const SwapController = (): JSX.Element => {
         evmAddress,
         calculateDeadline(deadline),
       );
-      setBuy(createEmptyTokenWithAmount());
-      setSell(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);
