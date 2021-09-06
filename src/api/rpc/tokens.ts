@@ -5,7 +5,7 @@ import {
 } from './rpc';
 import testnetTokens from '../../validated-tokens-testnet.json';
 import mainnetTokens from '../../validated-tokens-mainnet.json';
-import { toGasLimitObj, TokenState } from '../../store/internalStore';
+import { TokenState } from '../../store/internalStore';
 import { calculateAmount } from '../../utils/math';
 
 interface ValidatedToken {

@@ -7,7 +7,7 @@ import { approveTokenAmount, Token, TokenWithAmount } from './tokens';
 import { ReefswapPair } from '../../assets/abi/ReefswapPair';
 import { toGasLimitObj } from '../../store/internalStore';
 import { ensure, uniqueCombinations } from '../../utils/utils';
-import { calculateAmount } from '../../utils/math';
+import { calculateAmount, convert2Normal } from '../../utils/math';
 
 const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -37,12 +37,19 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
 
   const decimals = await contract.decimals();
   const reserves = await contract.getReserves();
+  // console.log("reserves: ", reserves);
   const totalSupply = await contract.totalSupply();
   const minimumLiquidity = await contract.MINIMUM_LIQUIDITY();
   const liquidity = await contract.balanceOf(await signer.getAddress());
 
+  const address1 = await contract.token1();
+
   const tokenBalance1 = await balanceOf(token1.address, address, signer);
   const tokenBalance2 = await balanceOf(token2.address, address, signer);
+
+  const [finalToken1, finalToken2] = token1.address !== address1
+    ? [{...token1, balance: tokenBalance1}, {...token2, balance: tokenBalance2}]
+    : [{...token2, balance: tokenBalance2}, {...token1, balance: tokenBalance1}];
 
   return {
     contract,
@@ -53,8 +60,8 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
     totalSupply: totalSupply.toString(),
     userPoolBalance: liquidity.toString(),
     minimumLiquidity: minimumLiquidity.toString(),
-    token1: { ...token1, balance: tokenBalance1 },
-    token2: { ...token2, balance: tokenBalance2 },
+    token1: finalToken1,
+    token2: finalToken2,
   };
 };
 
