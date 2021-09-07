@@ -29,91 +29,58 @@ type State =
 const AppInitialization = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
-  const { reloadPool } = useAppSelector((state) => state.pools);
-  const { tokens, reloadTokens } = useAppSelector((state) => state.tokens);
-  const { selectedAccount, accounts } = useAppSelector((state) => state.accounts);
-
   const [state, setState] = useState<State>(toLoadingMessage(''));
 
   const message = (msg: string): void => setState(toLoadingMessage(msg));
-  const loader = async (callback: () => Promise<void>): Promise<void> => {
-    try {
-      message('');
-      await callback();
-      setState(toSuccess());
-    } catch (e) {
-      setState(toError(e.message ? e.message : 'Can not connect to the chain, try connecting later...'));
-    }
-  };
 
   // Initial setup
   useEffect(() => {
     const load = async (): Promise<void> => {
-      message('Connecting to Polkadot extension...');
-      const inj = await web3Enable('Reefswap');
-      ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
-
-      message('Retrieving accounts...');
-      const web3accounts = await web3Accounts();
-      ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
-
-      message('Connecting to chain...');
-      const provider = new Provider({
-        provider: new WsProvider(settings.rpcUrl),
-      });
-      await provider.api.isReadyOrError;
-
-      message('Creating signers...');
-      const signers = await accountsToSigners(
-        web3accounts,
-        provider,
-        inj[0].signer,
-      );
-
-      const signerPointer = getSignerLocalPointer();
-      const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
-      message('Loading tokens...');
-      const verifiedTokens = await loadVerifiedERC20Tokens(settings);
-      const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);
-
-      message('Loading pools...');
-      const pools = await loadPools(newTokens, signers[selectedSigner].signer, settings);
-
-      dispatch(setPools(pools));
-      dispatch(setAllTokensAction(newTokens));
-      dispatch(utilsSetAccounts(signers));
-      // Make sure selecting account is after setting signers
-      // Else error will occure
-      dispatch(utilsSetSelectedAccount(selectedSigner));
+      try {
+        message('Connecting to Polkadot extension...');
+        const inj = await web3Enable('Reefswap');
+        ensure(inj.length > 0, 'Reefswap can not be access Polkadot-Extension. Please install Polkadot-Extension in your browser to use Reefswap.');
+  
+        message('Retrieving accounts...');
+        const web3accounts = await web3Accounts();
+        ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
+  
+        message('Connecting to chain...');
+        const provider = new Provider({
+          provider: new WsProvider(settings.rpcUrl),
+        });
+        await provider.api.isReadyOrError;
+  
+        message('Creating signers...');
+        const signers = await accountsToSigners(
+          web3accounts,
+          provider,
+          inj[0].signer,
+        );
+  
+        const signerPointer = getSignerLocalPointer();
+        const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
+        message('Loading tokens...');
+        const verifiedTokens = await loadVerifiedERC20Tokens(settings);
+        const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);
+  
+        message('Loading pools...');
+        const pools = await loadPools(newTokens, signers[selectedSigner].signer, settings);
+  
+        dispatch(setPools(pools));
+        dispatch(setAllTokensAction(newTokens));
+        dispatch(utilsSetAccounts(signers));
+        // Make sure selecting account is after setting signers
+        // Else error will occure
+        dispatch(utilsSetSelectedAccount(selectedSigner));
+        setState(toSuccess());
+      } catch (e) {
+        setState(toError(e.message ? e.message : 'Can not connect to the chain, try connecting later...'));
+      }
     };
 
-    loader(load);
+    load();
   }, [settings]);
-
-  // Reload tokens
-  useEffect(() => {
-    if (selectedAccount === -1) { return; }
-    const { signer } = accounts[selectedAccount];
-
-    const tokenLoader = async (): Promise<void> => {
-      message('Loading token balances...');
-      const newTokens = await loadTokens(tokens, signer);
-
-      dispatch(setAllTokensAction(newTokens));
-    };
-
-    const poolLoader = async (): Promise<void> => {
-      message('Loading pools...');
-      const pools = await loadPools(tokens, signer, settings);
-
-      dispatch(setPools(pools));
-    };
-
-    loader(async () => {
-      if (reloadTokens) { await tokenLoader(); }
-      if (reloadPool) { await poolLoader(); }
-    });
-  }, [selectedAccount, reloadTokens, reloadPool]);
 
   return (
     <>
