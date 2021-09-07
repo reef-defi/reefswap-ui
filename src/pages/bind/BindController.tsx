@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import Card, { CardTitle } from '../../components/card/Card';
 import { LoadingButtonIcon } from '../../components/loading/Loading';
-import { utilsSetSelectedAccount } from '../../store/actions/accounts';
 import { ensure } from '../../utils/utils';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { bindSigner } from '../../api/rpc/accounts';
-import { reloadTokensAction } from '../../store/actions/tokens';
-import { reloadPool } from '../../store/actions/pools';
+import { appReload } from '../../store/actions/settings';
 
 const BindController = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -22,12 +20,8 @@ const BindController = (): JSX.Element => {
       ensure(!isEvmClaimed, 'Account is already binded!');
       setIsLoading(true);
       await bindSigner(signer);
-      // Forcing token balance update
-      dispatch(utilsSetSelectedAccount(0));
-      dispatch(utilsSetSelectedAccount(selectedAccount));
-      dispatch(reloadTokensAction());
-      dispatch(reloadPool());
-      toast.success('Account binded successfully');
+      toast.success('Account binded successfully! Reloading application');
+      dispatch(appReload());
     } catch (error) {
       errorToast(error.message);
     } finally {

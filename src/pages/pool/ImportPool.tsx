@@ -7,7 +7,7 @@ import Card, {
   CardBack, CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
 import { ReducerState } from '../../store';
-import { reloadPool } from '../../store/actions/pools';
+import { appReload } from '../../store/actions/settings';
 import { useAppDispatch } from '../../store/hooks';
 import { POOL_URL } from '../../utils/urls';
 
@@ -22,7 +22,7 @@ const ImportPool = (): JSX.Element => {
   const [token2, setToken2] = useState(createEmptyToken());
 
   const importPool = (): void => {
-    dispatch(reloadPool());
+    dispatch(appReload());
     history.push(POOL_URL);
   };
 
