@@ -1,5 +1,5 @@
 import { Token } from '../../api/rpc/tokens';
-import { ADD_TOKEN, RELOAD_TOKENS, SET_ALL_TOKENS } from '../actionCreator';
+import { ADD_TOKEN, SET_ALL_TOKENS } from '../actionCreator';
 
 interface AddToken {
   type: typeof ADD_TOKEN;
@@ -11,13 +11,8 @@ interface SetAllTokens {
   tokens: Token[]
 }
 
-interface ReloadTokens {
-  type: typeof RELOAD_TOKENS;
-}
-
 export type TokensAction =
   | AddToken
-  | ReloadTokens
   | SetAllTokens;
 
 export const addTokenAction = (token: Token): AddToken => ({
@@ -28,8 +23,4 @@ export const addTokenAction = (token: Token): AddToken => ({
 export const setAllTokensAction = (tokens: Token[]): SetAllTokens => ({
   type: SET_ALL_TOKENS,
   tokens,
-});
-
-export const reloadTokensAction = (): ReloadTokens => ({
-  type: RELOAD_TOKENS,
 });
