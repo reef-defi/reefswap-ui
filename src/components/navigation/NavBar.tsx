@@ -17,28 +17,7 @@ import { NavButton } from '../buttons/Button';
 
 const NavBar = (): JSX.Element => {
   const { pathname } = useLocation();
-  const {provider} = useAppSelector((state) => state.settings);
-  const {accounts, selectedAccount} = useAppSelector((state) => state.accounts);
-
-  const [balance, setBalance] = useState("- REEF");
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        if (selectedAccount === -1 || !provider) { return; }
-        const {address} = accounts[selectedAccount];
-        const providerBalance = await provider.api.derive.balances.all(address); 
-        const freeBalance = providerBalance.freeBalance.toHuman();
-        const result = freeBalance !== "0" 
-          ? freeBalance.slice(0, freeBalance.indexOf("."))
-          : freeBalance;
-        setBalance(`${result} REEF`);
-      } catch (error) {}
-    }
-
-    const interval = setInterval(() => load(), 1000);
-    return () => clearInterval(interval);
-  }, [selectedAccount]);
+  const {balance} = useAppSelector((state) => state.accounts);
 
   return (
     <nav className="container-fluid m-1 mt-3 row w-auto">
