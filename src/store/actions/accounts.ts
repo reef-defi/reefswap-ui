@@ -1,7 +1,7 @@
-import { Signer } from '@reef-defi/evm-provider';
+import { Signer, TestAccountSigningKey } from '@reef-defi/evm-provider';
 import {
   SET_ACCOUNT,
-  SET_ACCOUNTS, SET_SELECTED_ACCOUNT,
+  SET_ACCOUNTS, SET_SELECTED_ACCOUNT, SET_SIGNING_KEY,
 } from '../actionCreator';
 
 export interface ReefswapSigner {
@@ -28,9 +28,15 @@ interface SetAccountAction {
   signer: ReefswapSigner;
 }
 
+interface SetSigningKeyAction {
+  type: typeof SET_SIGNING_KEY;
+  signingKey: TestAccountSigningKey;
+}
+
 export type UtilsActions =
   | SetAccountAction
   | SetAccountsAction
+  | SetSigningKeyAction
   | SetSelectedAccount;
 
 
@@ -38,6 +44,11 @@ export const settingsSetAccount = (signer: ReefswapSigner, index: number): SetAc
   type: SET_ACCOUNT,
   index,
   signer
+});
+
+export const settingsSetSigningKey = (signingKey: TestAccountSigningKey): SetSigningKeyAction => ({
+  type: SET_SIGNING_KEY,
+  signingKey
 });
 
 export const utilsSetAccounts = (accounts: ReefswapSigner[]): SetAccountsAction => ({

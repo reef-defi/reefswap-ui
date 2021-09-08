@@ -1,6 +1,7 @@
 // Accounts
 export const SET_ACCOUNT = 'SET_ACCOUNT';
 export const SET_ACCOUNTS = 'SET_ACCOUNTS';
+export const SET_SIGNING_KEY = 'SET_SIGNING_KEY';
 export const SET_SELECTED_ACCOUNT = 'SET_SELECTED_ACCOUNT';
 
 // Tokens
