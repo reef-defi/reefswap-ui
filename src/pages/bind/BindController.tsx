@@ -25,7 +25,7 @@ const BindController = (): JSX.Element => {
       await bindSigner(signer.signer);
       const newTokens = await loadTokens(tokens, signer.signer);
       dispatch(setAllTokensAction(newTokens));
-      dispatch(accountsSetAccount({...signer, isEvmClaimed: true}, selectedAccount));
+      dispatch(accountsSetAccount({...signer, isEvmClaimed: true}));
       toast.success('Account binded successfully! Reloading application');
     } catch (error) {
       errorToast(error.message);
@@ -51,7 +51,7 @@ const BindController = (): JSX.Element => {
 
       <button
         type="button"
-        className="btn btn-reef w-100 border-rad mt-2"
+        className="btn btn-reef btn-lg w-100 border-rad mt-2"
         onClick={onBind}
         disabled={signer.isEvmClaimed || isLoading}
       >

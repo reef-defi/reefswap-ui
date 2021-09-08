@@ -10,7 +10,6 @@ import TokenAmountField from '../../components/card/TokenAmountField';
 import { LoadingButtonIconWithText } from '../../components/loading/Loading';
 import { POOL_URL } from '../../utils/urls';
 import { setAllTokensAction } from '../../store/actions/tokens';
-import { setPools } from '../../store/actions/pools';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import errorHandler from '../../utils/errorHandler';
@@ -148,8 +147,6 @@ const AddLiquidity = (): JSX.Element => {
         evmAddress,
         calculateDeadline(deadline),
       );
-      const pools = await loadPools(tokens, signer, networkSettings);
-      dispatch(setPools(pools));
       toast.success(`${token1.name}/${token2.name} supply added successfully!`);
     } catch (error) {
       const message = errorHandler(error.message)
