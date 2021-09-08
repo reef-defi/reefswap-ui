@@ -1,14 +1,14 @@
-import { TestAccountSigningKey } from '@reef-defi/evm-provider';
+import { Signer } from '@reef-defi/evm-provider';
 import {
   SET_ACCOUNT,
-  SET_ACCOUNTS, SET_SELECTED_ACCOUNT, SET_SIGNING_KEY,
+  SET_ACCOUNTS, SET_SELECTED_ACCOUNT, SET_DEDICATED_SIGNER,
 } from '../actionCreator';
 import { ReefswapSigner, UtilsActions } from '../actions/accounts';
 
 export interface UtilsReducer {
   selectedAccount: number;
   accounts: ReefswapSigner[];
-  signingKey?: TestAccountSigningKey;
+  dedicatedSigner?: Signer;
 }
 
 const defaultUtilsState: UtilsReducer = {
@@ -25,7 +25,7 @@ export const utilsReducer = (state = defaultUtilsState, action: UtilsActions): U
         ...state.accounts.slice(action.index+1, state.accounts.length)
       ]
     };
-    case SET_SIGNING_KEY: return {...state, signingKey: action.signingKey};
+    case SET_DEDICATED_SIGNER: return {...state, dedicatedSigner: action.dedicatedSigner};
     case SET_ACCOUNTS: return { ...state, accounts: action.accounts };
     case SET_SELECTED_ACCOUNT: return { ...state, selectedAccount: action.index };
     default: return state;
