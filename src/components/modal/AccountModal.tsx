@@ -43,7 +43,7 @@ const AccountModal = (): JSX.Element => {
 
   const onCopy = (): void => {
     setToggle('Address copied!');
-    setTimeout(() => setToggle('Copy address'), 2000);
+    setTimeout(() => setToggle('Copy address'), 1000);
   };
 
   return (
@@ -116,7 +116,7 @@ const AccountModal = (): JSX.Element => {
                 <CloseIcon />
               </button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body px-0">
               <ul className="list-group overflow-scroll" style={{ height: '300px' }}>
                 {accountsView}
               </ul>

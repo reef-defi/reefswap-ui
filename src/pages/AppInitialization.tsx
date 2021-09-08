@@ -43,7 +43,7 @@ const AppInitialization = (): JSX.Element => {
     const load = async (): Promise<void> => {
       try {
         mounted.current = true;
-        message('Connecting to chain...');
+        message(`Connecting to ${settings.name.replace(/\b\w/g, l => l.toUpperCase())} chain...`);
         const newProvider = new Provider({
           provider: new WsProvider(settings.rpcUrl),
         });
@@ -51,11 +51,11 @@ const AppInitialization = (): JSX.Element => {
 
         message('Connecting to Polkadot extension...');
         const inj = await web3Enable('Reefswap');
-        ensure(inj.length > 0, 'Reefswap can not be access Polkadot-Extension. Please install Polkadot-Extension in your browser to use Reefswap.');
+        ensure(inj.length > 0, 'Reefswap can not be access Polkadot-Extension. Please install <a href="https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-extension/" target="_blank">Polkadot-Extension</a> in your browser and refresh the page to use Reefswap.');
 
         message('Retrieving accounts...');
         const web3accounts = await web3Accounts();
-        ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
+        ensure(web3accounts.length > 0, 'Reefswap requires at least one account Polkadot-extension. Please create or import account/s and refresh the page.');
 
         message('Creating signers...');
         const signers = await accountsToSigners(
@@ -81,7 +81,11 @@ const AppInitialization = (): JSX.Element => {
         }
       } catch (e) {
         if (mounted.current) {
-          setState(toError(e.message ? e.message : 'Can not connect to the chain, try connecting later...'));
+          if (e.message) {
+            setState(toError("Polkadot extension", e.message));
+          } else {
+            setState(toError("RPC", 'Can not connect to the chain, try connecting later...'));
+          }
         }
       }
     };
@@ -96,7 +100,7 @@ const AppInitialization = (): JSX.Element => {
     <>
       {state._type === 'SuccessState' && <ContentController /> }
       {state._type === 'LoadingMessageState' && <LoadingWithText text={state.message} />}
-      {state._type === 'ErrorState' && <ErrorCard title="Polkadot extension" message={state.message} />}
+      {state._type === 'ErrorState' && <ErrorCard title={state.title} message={state.message} />}
     </>
   );
 };

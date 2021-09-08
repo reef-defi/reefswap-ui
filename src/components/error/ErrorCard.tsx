@@ -9,7 +9,7 @@ interface ErrorCardProps {
 const ErrorCard = ({ title, message } : ErrorCardProps): JSX.Element => (
   <Card>
     <h5 className="card-title">{title}</h5>
-    <p className="card-text text-danger">{message}</p>
+    <p className="card-text text-danger" dangerouslySetInnerHTML={{ __html: message }} />
   </Card>
 );
 
