@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   BIND_URL, POOL_URL, SETTINGS_URL, SWAP_URL,
@@ -6,30 +6,16 @@ import {
 import './NavBar.css';
 
 import logo from '../../assets/logo.png';
-import { showBalance } from '../../utils/math';
 import { useAppSelector } from '../../store/hooks';
 import {
   BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon,
 } from '../card/Icons';
 import AccountModal from '../modal/AccountModal';
-
-interface ButtonProps {
-  to: string;
-  name: string;
-  selected: boolean;
-}
-
-const Button = ({ to, name, selected = false }: ButtonProps): JSX.Element => (
-  <Link to={to} className={`border-rad h-100 fs-6 fw-bold px-3 py-2 ${selected ? 'nav-selected' : 'nav-button'}`}>{name}</Link>
-);
+import { NavButton } from '../buttons/Button';
 
 const NavBar = (): JSX.Element => {
   const { pathname } = useLocation();
-  const { tokens } = useAppSelector((state) => state.tokens);
-
-  const balance = tokens.length
-    ? showBalance(tokens.find((token) => token.name === 'REEF')!, 0)
-    : '';
+  const { balance } = useAppSelector((state) => state.accounts);
 
   return (
     <nav className="container-fluid m-1 mt-3 row w-auto">
@@ -41,9 +27,9 @@ const NavBar = (): JSX.Element => {
       <div className="col-sm-4 p-0">
         <div className="d-flex justify-content-center">
           <div className="d-flex w-auto nav-selection border-rad">
-            <Button to={SWAP_URL} name="Swap" selected={pathname.startsWith(SWAP_URL)} />
-            <Button to={POOL_URL} name="Pool" selected={pathname.startsWith(POOL_URL)} />
-            <Button to={BIND_URL} name="Bind" selected={pathname.startsWith(BIND_URL)} />
+            <NavButton to={SWAP_URL} name="Swap" selected={pathname.startsWith(SWAP_URL)} />
+            <NavButton to={POOL_URL} name="Pool" selected={pathname.startsWith(POOL_URL)} />
+            <NavButton to={BIND_URL} name="Bind" selected={pathname.startsWith(BIND_URL)} />
           </div>
         </div>
       </div>

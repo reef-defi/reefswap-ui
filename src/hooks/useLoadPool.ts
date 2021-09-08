@@ -8,7 +8,7 @@ interface LoadPoolHookOutput {
   isPoolLoading: boolean;
 }
 
-export const LoadPoolHook = (token1: Token, token2: Token): LoadPoolHookOutput => {
+export const useLoadPool = (token1: Token, token2: Token): LoadPoolHookOutput => {
   const mounted = useRef(true);
 
   const networkSettings = useAppSelector((state) => state.settings);

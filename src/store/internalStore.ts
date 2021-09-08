@@ -1,6 +1,9 @@
 interface Message {
   message: string;
 }
+interface TitleMessage extends Message {
+  title: string;
+}
 
 interface Content <Type> {
   content: Type;
@@ -21,7 +24,7 @@ export type PhantomState <Type, Data> = {_type: Type} & Data;
 export type InitialState = PhantomState<'InitialState', unknown>;
 export type LoadingState = PhantomState<'LoadingState', unknown>;
 export type SuccessState = PhantomState<'SuccessState', unknown>;
-export type ErrorState = PhantomState<'ErrorState', Message>;
+export type ErrorState = PhantomState<'ErrorState', TitleMessage>;
 export type LoadingMessageState = PhantomState<'LoadingMessageState', Message>;
 export type SuccessContentState <Type> = PhantomState<'SuccessContentState', Content<Type>>;
 
@@ -29,7 +32,7 @@ export type SuccessContentState <Type> = PhantomState<'SuccessContentState', Con
 export const toInit = (): InitialState => ({ _type: 'InitialState' });
 export const toLoading = (): LoadingState => ({ _type: 'LoadingState' });
 export const toSuccess = (): SuccessState => ({ _type: 'SuccessState' });
-export const toError = (message: string): ErrorState => ({ message, _type: 'ErrorState' });
+export const toError = (title: string, message: string): ErrorState => ({ message, title, _type: 'ErrorState' });
 export const toLoadingMessage = (message: string): LoadingMessageState => ({ message, _type: 'LoadingMessageState' });
 export const toSuccessContent = <T, > (content: T): SuccessContentState<T> => ({ content, _type: 'SuccessContentState' });
 

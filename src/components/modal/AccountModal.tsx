@@ -2,9 +2,8 @@ import Identicon from '@polkadot/react-identicon';
 import React, { useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ReactTooltip from 'react-tooltip';
-import { utilsSetSelectedAccount } from '../../store/actions/accounts';
-import { reloadPool } from '../../store/actions/pools';
-import { reloadTokensAction } from '../../store/actions/tokens';
+import { accountsSetSelectedAccount } from '../../store/actions/accounts';
+import { appReload } from '../../store/actions/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { saveSignerLocalPointer } from '../../store/localStore';
 import { trim } from '../../utils/utils';
@@ -26,9 +25,8 @@ const AccountModal = (): JSX.Element => {
 
   const selectAccount = (index: number): void => {
     saveSignerLocalPointer(index);
-    dispatch(utilsSetSelectedAccount(index));
-    dispatch(reloadTokensAction());
-    dispatch(reloadPool());
+    dispatch(accountsSetSelectedAccount(index));
+    dispatch(appReload());
   };
 
   const accountsView = accounts
@@ -45,7 +43,7 @@ const AccountModal = (): JSX.Element => {
 
   const onCopy = (): void => {
     setToggle('Address copied!');
-    setTimeout(() => setToggle('Copy address'), 2000);
+    setTimeout(() => setToggle('Copy address'), 1000);
   };
 
   return (
@@ -118,7 +116,7 @@ const AccountModal = (): JSX.Element => {
                 <CloseIcon />
               </button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body px-0">
               <ul className="list-group overflow-scroll" style={{ height: '300px' }}>
                 {accountsView}
               </ul>

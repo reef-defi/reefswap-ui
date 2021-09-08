@@ -15,8 +15,8 @@ import TokenAmountView from '../../components/card/TokenAmountView';
 import { ConfirmLabel } from '../../components/label/Labels';
 import { LoadingButtonIconWithText } from '../../components/loading/Loading';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
-import { LoadPoolHook } from '../../hooks/loadPoolHook';
-import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
+import { useLoadPool } from '../../hooks/useLoadPool';
+import { useUpdateBalance } from '../../hooks/useUpdateBalance';
 import { setAllTokensAction } from '../../store/actions/tokens';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
@@ -25,9 +25,9 @@ import {
   calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateImpactPercentage, calculateUsdAmount, convert2Normal, ensureAmount, getInputAmount, getOutputAmount, minimumRecieveAmount, transformAmount,
 } from '../../utils/math';
 import { errorStatus } from '../../utils/utils';
-import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
+import { useUpdateTokensPrice } from '../../hooks/useUpdateTokensPrice';
 import { ReefswapPool } from '../../api/rpc/pools';
-import { UpdateSwapAmountHook } from '../../hooks/updateAmountHook';
+import { useUpdateSwapAmount } from '../../hooks/useUpdateAmount';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
   if (!isEvmClaimed) {
@@ -68,15 +68,15 @@ const SwapController = (): JSX.Element => {
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-  const { pool, isPoolLoading } = LoadPoolHook(sell, buy);
+  const { pool, isPoolLoading } = useLoadPool(sell, buy);
 
   const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, pool);
   const { percentage, deadline } = resolveSettings(settings);
 
   // Updating user token balance.. its a bit hecky
-  UpdateBalanceHook(buy, setBuy);
-  UpdateBalanceHook(sell, setSell);
-  const isPriceLoading = UpdateTokensPriceHook({
+  useUpdateBalance(buy, setBuy);
+  useUpdateBalance(sell, setSell);
+  const isPriceLoading = useUpdateTokensPrice({
     pool,
     token1: sell,
     token2: buy,
@@ -85,7 +85,7 @@ const SwapController = (): JSX.Element => {
   });
 
   const isLoading = isSwapLoading || isPoolLoading || isPriceLoading;
-  UpdateSwapAmountHook({
+  useUpdateSwapAmount({
     pool,
     token2: buy,
     token1: sell,

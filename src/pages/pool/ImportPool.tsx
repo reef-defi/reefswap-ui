@@ -7,13 +7,10 @@ import Card, {
   CardBack, CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
 import { ReducerState } from '../../store';
-import { reloadPool } from '../../store/actions/pools';
-import { useAppDispatch } from '../../store/hooks';
 import { POOL_URL } from '../../utils/urls';
 
 const ImportPool = (): JSX.Element => {
   const history = useHistory();
-  const dispatch = useAppDispatch();
   const back = (): void => history.push(POOL_URL);
 
   const { tokens } = useSelector((state: ReducerState) => state.tokens);
@@ -22,7 +19,6 @@ const ImportPool = (): JSX.Element => {
   const [token2, setToken2] = useState(createEmptyToken());
 
   const importPool = (): void => {
-    dispatch(reloadPool());
     history.push(POOL_URL);
   };
 

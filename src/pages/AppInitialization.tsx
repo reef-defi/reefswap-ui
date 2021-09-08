@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { WsProvider } from '@polkadot/api';
 import { Provider } from '@reef-defi/evm-provider';
@@ -6,20 +6,20 @@ import { LoadingWithText } from '../components/loading/Loading';
 import ErrorCard from '../components/error/ErrorCard';
 import ContentController from './ContentController';
 import {
-  utilsSetAccounts,
-  utilsSetSelectedAccount,
+  accountsSetAccounts,
+  accountsSetSelectedAccount,
 } from '../store/actions/accounts';
 import { setAllTokensAction } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
-import { setPools } from '../store/actions/pools';
 import {
   ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess,
 } from '../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { accountsToSigners } from '../api/rpc/accounts';
-import { loadPools } from '../api/rpc/pools';
 import { loadVerifiedERC20Tokens, loadTokens } from '../api/rpc/tokens';
 import { getSignerLocalPointer } from '../store/localStore';
+import { useUpdateAccountBalance } from '../hooks/useUpdateAccountBalance';
+import { useUpdatePools } from '../hooks/useUpdatePools';
 
 type State =
   | ErrorState
@@ -27,99 +27,80 @@ type State =
   | LoadingMessageState;
 
 const AppInitialization = (): JSX.Element => {
+  const mounted = useRef(true);
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
-  const { reloadPool } = useAppSelector((state) => state.pools);
-  const { tokens, reloadTokens } = useAppSelector((state) => state.tokens);
-  const { selectedAccount, accounts } = useAppSelector((state) => state.accounts);
 
   const [state, setState] = useState<State>(toLoadingMessage(''));
+  const [provider, setProvider] = useState<Provider>();
 
   const message = (msg: string): void => setState(toLoadingMessage(msg));
-  const loader = async (callback: () => Promise<void>): Promise<void> => {
-    try {
-      message('');
-      await callback();
-      setState(toSuccess());
-    } catch (e) {
-      setState(toError(e.message ? e.message : 'Can not connect to the chain, try connecting later...'));
-    }
-  };
 
+  useUpdateAccountBalance(provider);
+  useUpdatePools();
   // Initial setup
   useEffect(() => {
     const load = async (): Promise<void> => {
-      message('Connecting to Polkadot extension...');
-      const inj = await web3Enable('Reefswap');
-      ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
+      try {
+        mounted.current = true;
+        message(`Connecting to ${settings.name.replace(/\b\w/g, (l) => l.toUpperCase())} chain...`);
+        const newProvider = new Provider({
+          provider: new WsProvider(settings.rpcUrl),
+        });
+        await newProvider.api.isReadyOrError;
 
-      message('Retrieving accounts...');
-      const web3accounts = await web3Accounts();
-      ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
+        message('Connecting to Polkadot extension...');
+        const inj = await web3Enable('Reefswap');
+        ensure(inj.length > 0, 'Reefswap can not be access Polkadot-Extension. Please install <a href="https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-extension/" target="_blank">Polkadot-Extension</a> in your browser and refresh the page to use Reefswap.');
 
-      message('Connecting to chain...');
-      const provider = new Provider({
-        provider: new WsProvider(settings.rpcUrl),
-      });
-      await provider.api.isReadyOrError;
+        message('Retrieving accounts...');
+        const web3accounts = await web3Accounts();
+        ensure(web3accounts.length > 0, 'Reefswap requires at least one account Polkadot-extension. Please create or import account/s and refresh the page.');
 
-      message('Creating signers...');
-      const signers = await accountsToSigners(
-        web3accounts,
-        provider,
-        inj[0].signer,
-      );
+        message('Creating signers...');
+        const signers = await accountsToSigners(
+          web3accounts,
+          newProvider,
+          inj[0].signer,
+        );
 
-      const signerPointer = getSignerLocalPointer();
-      const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
-      message('Loading tokens...');
-      const verifiedTokens = await loadVerifiedERC20Tokens(settings);
-      const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);
+        const signerPointer = getSignerLocalPointer();
+        const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
+        message('Loading tokens...');
+        const verifiedTokens = await loadVerifiedERC20Tokens(settings);
+        const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);
 
-      message('Loading pools...');
-      const pools = await loadPools(newTokens, signers[selectedSigner].signer, settings);
-
-      dispatch(setPools(pools));
-      dispatch(setAllTokensAction(newTokens));
-      dispatch(utilsSetAccounts(signers));
-      // Make sure selecting account is after setting signers
-      // Else error will occure
-      dispatch(utilsSetSelectedAccount(selectedSigner));
+        if (mounted.current) {
+          setProvider(newProvider);
+          dispatch(setAllTokensAction(newTokens));
+          dispatch(accountsSetAccounts(signers));
+          // Make sure selecting account is after setting signers
+          // Else error will occure
+          dispatch(accountsSetSelectedAccount(selectedSigner));
+          setState(toSuccess());
+        }
+      } catch (e) {
+        if (mounted.current) {
+          if (e.message) {
+            setState(toError('Polkadot extension', e.message));
+          } else {
+            setState(toError('RPC', 'Can not connect to the chain, try connecting later...'));
+          }
+        }
+      }
     };
 
-    loader(load);
-  }, [settings]);
-
-  // Reload tokens
-  useEffect(() => {
-    if (selectedAccount === -1) { return; }
-    const { signer } = accounts[selectedAccount];
-
-    const tokenLoader = async (): Promise<void> => {
-      message('Loading token balances...');
-      const newTokens = await loadTokens(tokens, signer);
-
-      dispatch(setAllTokensAction(newTokens));
+    load();
+    return () => {
+      mounted.current = false;
     };
-
-    const poolLoader = async (): Promise<void> => {
-      message('Loading pools...');
-      const pools = await loadPools(tokens, signer, settings);
-
-      dispatch(setPools(pools));
-    };
-
-    loader(async () => {
-      if (reloadTokens) { await tokenLoader(); }
-      if (reloadPool) { await poolLoader(); }
-    });
-  }, [selectedAccount, reloadTokens, reloadPool]);
+  }, [settings.rpcUrl, settings.reload]);
 
   return (
     <>
       {state._type === 'SuccessState' && <ContentController /> }
       {state._type === 'LoadingMessageState' && <LoadingWithText text={state.message} />}
-      {state._type === 'ErrorState' && <ErrorCard title="Polkadot extension" message={state.message} />}
+      {state._type === 'ErrorState' && <ErrorCard title={state.title} message={state.message} />}
     </>
   );
 };

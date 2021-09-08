@@ -1,6 +1,7 @@
 import { Signer } from '@reef-defi/evm-provider';
 import {
-  SET_ACCOUNTS, SET_SELECTED_ACCOUNT,
+  SET_ACCOUNT,
+  SET_ACCOUNTS, SET_ACCOUNT_BALANCE, SET_SELECTED_ACCOUNT,
 } from '../actionCreator';
 
 export interface ReefswapSigner {
@@ -16,21 +17,43 @@ interface SetAccountsAction {
   accounts: ReefswapSigner[];
 }
 
-interface SetSelectedAccount {
+interface SetSelectedAccountAction {
   type: typeof SET_SELECTED_ACCOUNT;
   index: number;
 }
 
-export type UtilsActions =
-  | SetAccountsAction
-  | SetSelectedAccount;
+interface SetAccountAction {
+  type: typeof SET_ACCOUNT;
+  signer: ReefswapSigner;
+}
 
-export const utilsSetAccounts = (accounts: ReefswapSigner[]): SetAccountsAction => ({
+interface SetAccountBalanceAction {
+  type: typeof SET_ACCOUNT_BALANCE;
+  balance: string;
+}
+
+export type UtilsActions =
+  | SetAccountAction
+  | SetAccountsAction
+  | SetAccountBalanceAction
+  | SetSelectedAccountAction;
+
+export const accountsSetAccount = (signer: ReefswapSigner): SetAccountAction => ({
+  type: SET_ACCOUNT,
+  signer,
+});
+
+export const accountsSetAccounts = (accounts: ReefswapSigner[]): SetAccountsAction => ({
   type: SET_ACCOUNTS,
   accounts,
 });
 
-export const utilsSetSelectedAccount = (index: number): SetSelectedAccount => ({
+export const accountsSetAccountBalance = (balance: string): SetAccountBalanceAction => ({
+  type: SET_ACCOUNT_BALANCE,
+  balance,
+});
+
+export const accountsSetSelectedAccount = (index: number): SetSelectedAccountAction => ({
   type: SET_SELECTED_ACCOUNT,
   index,
 });

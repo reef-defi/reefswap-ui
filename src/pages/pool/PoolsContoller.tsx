@@ -1,15 +1,19 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { LoadingWithText } from '../../components/loading/Loading';
 import { useAppSelector } from '../../store/hooks';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
 import PoolManager from './PoolManager';
 
 const PoolsContoller = (): JSX.Element => {
   const history = useHistory();
-  const { pools } = useAppSelector((state) => state.pools);
+  const { pools, isLoading } = useAppSelector((state) => state.pools);
 
   const onImportPoolClick = (): void => history.push(IMPORT_POOL_URL);
   const onAddLiquidityClick = (): void => history.push(ADD_LIQUIDITY_URL);
+
+  const isEmpty = !isLoading && pools.length === 0;
+  const isFull = !isLoading && pools.length > 0;
 
   const poolsView = pools
     .map(({
@@ -42,15 +46,20 @@ const PoolsContoller = (): JSX.Element => {
         </div>
       </div>
 
-      { pools.length
-        ? (
-          <div className="row overflow-auto" style={{ maxHeight: '500px' }}>
-            <ul className="list-group list-group-full col-12">
-              {poolsView}
-            </ul>
-          </div>
-        )
-        : <div>No pool was found, you can import desired pool or add liquidity!</div>}
+      { isLoading && (
+      <div className="mt-5">
+        <LoadingWithText text="Loading pools..." />
+      </div>
+      )}
+      { isEmpty && <div>No pool was found, you can import desired pool or add liquidity!</div> }
+      { isFull
+        && (
+        <div className="row overflow-auto" style={{ maxHeight: '500px' }}>
+          <ul className="list-group list-group-full col-12">
+            {poolsView}
+          </ul>
+        </div>
+        )}
     </div>
   );
 };

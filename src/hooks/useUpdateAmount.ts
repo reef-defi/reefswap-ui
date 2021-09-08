@@ -13,7 +13,7 @@ interface UpdateAmountHookInput {
   setToken2: (value: TokenWithAmount) => void;
 }
 
-export const UpdateSwapAmountHook = ({
+export const useUpdateSwapAmount = ({
   pool, token2, token1, setToken1: setSell, setToken2: setBuy,
 }: UpdateAmountHookInput): void => {
   const [prevBuyAddress, setPrevBuyAddress] = useState(token2.address);
