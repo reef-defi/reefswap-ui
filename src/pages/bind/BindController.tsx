@@ -6,22 +6,27 @@ import { ensure } from '../../utils/utils';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { bindSigner } from '../../api/rpc/accounts';
-import { appReload } from '../../store/actions/settings';
+import { accountsSetAccount } from '../../store/actions/accounts';
+import { loadTokens } from '../../api/rpc/tokens';
+import { setAllTokensAction } from '../../store/actions/tokens';
 
 const BindController = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
-  const { signer, isEvmClaimed } = accounts[selectedAccount];
+  const signer = accounts[selectedAccount];
 
   const [isLoading, setIsLoading] = useState(false);
 
   const onBind = async (): Promise<void> => {
     try {
-      ensure(!isEvmClaimed, 'Account is already binded!');
+      ensure(!signer.isEvmClaimed, 'Account is already binded!');
       setIsLoading(true);
-      await bindSigner(signer);
+      await bindSigner(signer.signer);
+      const newTokens = await loadTokens(tokens, signer.signer);
+      dispatch(setAllTokensAction(newTokens));
+      dispatch(accountsSetAccount({...signer, isEvmClaimed: true}, selectedAccount));
       toast.success('Account binded successfully! Reloading application');
-      dispatch(appReload());
     } catch (error) {
       errorToast(error.message);
     } finally {
@@ -29,7 +34,7 @@ const BindController = (): JSX.Element => {
     }
   };
 
-  const buttonText = isEvmClaimed
+  const buttonText = signer.isEvmClaimed
     ? 'Selected account is binded'
     : 'Bind';
 
@@ -48,7 +53,7 @@ const BindController = (): JSX.Element => {
         type="button"
         className="btn btn-reef w-100 border-rad mt-2"
         onClick={onBind}
-        disabled={isEvmClaimed || isLoading}
+        disabled={signer.isEvmClaimed || isLoading}
       >
         { isLoading ? <LoadingButtonIcon /> : buttonText }
       </button>
