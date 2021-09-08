@@ -18,9 +18,8 @@ export const accountToSigner = async (account: InjectedAccountWithMeta, provider
   };
 }
 
-export const accountsToSigners = async (accounts: InjectedAccountWithMeta[], provider: Provider, sign: InjectedSigner): Promise<ReefswapSigner[]> => Promise.all(
-  accounts.map((account) => accountToSigner(account, provider, sign))
-);
+export const accountsToSigners = async (accounts: InjectedAccountWithMeta[], provider: Provider, sign: InjectedSigner): Promise<ReefswapSigner[]> => 
+  Promise.all(accounts.map((account) => accountToSigner(account, provider, sign)));
 
 export const bindSigner = async (signer: Signer): Promise<void> => {
   const hasEvmAddress = await signer.isClaimed();

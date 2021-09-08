@@ -80,7 +80,7 @@ const AppInitialization = (): JSX.Element => {
     };
 
     load();
-  }, [settings]);
+  }, [settings.rpcUrl]);
 
   return (
     <>
