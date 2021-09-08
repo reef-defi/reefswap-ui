@@ -1,7 +1,7 @@
 import { Signer } from '@reef-defi/evm-provider';
 import { BigNumber } from 'ethers';
 import {
-  getContract, getReefswapRouter, ReefNetwork,
+  getContract, ReefNetwork,
 } from './rpc';
 import testnetTokens from '../../validated-tokens-testnet.json';
 import mainnetTokens from '../../validated-tokens-mainnet.json';
@@ -25,6 +25,8 @@ export interface TokenWithAmount extends Token {
   price: number;
   isEmpty: boolean;
 }
+
+
 
 export const createEmptyToken = (): Token => ({
   name: 'Select token',
