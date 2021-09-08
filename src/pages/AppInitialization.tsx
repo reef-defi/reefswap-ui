@@ -6,8 +6,8 @@ import { LoadingWithText } from '../components/loading/Loading';
 import ErrorCard from '../components/error/ErrorCard';
 import ContentController from './ContentController';
 import {
-  utilsSetAccounts,
-  utilsSetSelectedAccount,
+  accountsSetAccounts,
+  accountsSetSelectedAccount,
 } from '../store/actions/accounts';
 import { setAllTokensAction } from '../store/actions/tokens';
 import { ensure } from '../utils/utils';
@@ -20,6 +20,7 @@ import { accountsToSigners } from '../api/rpc/accounts';
 import { loadPools } from '../api/rpc/pools';
 import { loadVerifiedERC20Tokens, loadTokens } from '../api/rpc/tokens';
 import { getSignerLocalPointer } from '../store/localStore';
+import { settingsSetProvider } from '../store/actions/settings';
 
 type State =
   | ErrorState
@@ -58,6 +59,8 @@ const AppInitialization = (): JSX.Element => {
           inj[0].signer,
         );
   
+        provider.getBalance
+
         const signerPointer = getSignerLocalPointer();
         const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
         message('Loading tokens...');
@@ -69,10 +72,11 @@ const AppInitialization = (): JSX.Element => {
   
         dispatch(setPools(pools));
         dispatch(setAllTokensAction(newTokens));
-        dispatch(utilsSetAccounts(signers));
+        dispatch(accountsSetAccounts(signers));
+        dispatch(settingsSetProvider(provider));
         // Make sure selecting account is after setting signers
         // Else error will occure
-        dispatch(utilsSetSelectedAccount(selectedSigner));
+        dispatch(accountsSetSelectedAccount(selectedSigner));
         setState(toSuccess());
       } catch (e) {
         setState(toError(e.message ? e.message : 'Can not connect to the chain, try connecting later...'));
@@ -80,7 +84,7 @@ const AppInitialization = (): JSX.Element => {
     };
 
     load();
-  }, [settings.rpcUrl]);
+  }, [settings.rpcUrl, settings.reload]);
 
   return (
     <>

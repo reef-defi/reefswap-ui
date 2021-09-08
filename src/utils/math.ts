@@ -99,7 +99,16 @@ export const calculatePoolShare = (pool?: ReefswapPool): number => {
   return (userSupply) / totalSupply * 100;
 };
 
-export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 4): string => {
+interface ToBalance {
+  balance: BigNumber;
+  decimals: number;
+}
+
+interface ShowBalance extends ToBalance {
+  name: string
+}
+
+export const showBalance = ({ decimals, balance, name }: ShowBalance, decimalPoints = 4): string => {
   const balanceStr = balance.toString();
   if (balanceStr === '0') { return `${balanceStr} ${name}`; }
   const headLength = Math.max(balanceStr.length - decimals, 0);
@@ -109,7 +118,8 @@ export const showBalance = ({ decimals, balance, name }: Token, decimalPoints = 
   return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
 };
 
-export const toBalance = ({ balance, decimals }: Token): number => {
+
+export const toBalance = ({ balance, decimals }: ToBalance): number => {
   const num = balance.toString();
   const diff = num.length - decimals;
   const fullNum = diff <= 0

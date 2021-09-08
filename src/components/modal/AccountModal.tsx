@@ -2,7 +2,7 @@ import Identicon from '@polkadot/react-identicon';
 import React, { useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ReactTooltip from 'react-tooltip';
-import { utilsSetSelectedAccount } from '../../store/actions/accounts';
+import { accountsSetSelectedAccount } from '../../store/actions/accounts';
 import { appReload } from '../../store/actions/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { saveSignerLocalPointer } from '../../store/localStore';
@@ -25,7 +25,7 @@ const AccountModal = (): JSX.Element => {
 
   const selectAccount = (index: number): void => {
     saveSignerLocalPointer(index);
-    dispatch(utilsSetSelectedAccount(index));
+    dispatch(accountsSetSelectedAccount(index));
     dispatch(appReload());
   };
 
