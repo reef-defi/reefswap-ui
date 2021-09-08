@@ -14,7 +14,7 @@ interface UpdateTokensPriceHook {
   setToken2: (token: TokenWithAmount) => void;
 }
 
-export const UpdateTokensPriceHook = ({
+export const useUpdateTokensPrice = ({
   pool, token1, token2, setToken1, setToken2,
 }: UpdateTokensPriceHook): boolean => {
   const settings = useAppSelector((state) => state.settings);

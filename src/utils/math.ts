@@ -118,7 +118,6 @@ export const showBalance = ({ decimals, balance, name }: ShowBalance, decimalPoi
   return tail.length ? `${head}.${tail} ${name}` : `${head} ${name}`;
 };
 
-
 export const toBalance = ({ balance, decimals }: ToBalance): number => {
   const num = balance.toString();
   const diff = num.length - decimals;

@@ -3,7 +3,7 @@ import { retrieveReefCoingeckoPrice } from '../api/prices';
 
 type ReefPriceOutput = [number, boolean]
 
-export const ReefPriceHook = (): ReefPriceOutput => {
+export const useReefPrice = (): ReefPriceOutput => {
   const mounted = useRef(true);
   const [price, setPrice] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);

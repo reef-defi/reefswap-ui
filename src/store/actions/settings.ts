@@ -16,9 +16,8 @@ export type SettingsActions =
   | SetNetworkAction;
 
 export const appReload = (): ReloadAction => ({
-  type: RELOAD_APP
+  type: RELOAD_APP,
 });
-
 
 export const settingsSetNetwork = (name: AvailableNetworks): SetNetworkAction => ({
   type: SET_CHAIN_URL,

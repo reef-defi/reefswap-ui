@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createEmptyToken, loadToken, Token } from '../api/rpc/tokens';
 import { useAppSelector } from '../store/hooks';
 
-export const FindOrLoadTokenHook = (address: string): [Token, boolean] => {
+export const useFindOrLoadToken = (address: string): [Token, boolean] => {
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
 

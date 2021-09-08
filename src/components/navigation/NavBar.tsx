@@ -13,11 +13,9 @@ import {
 import AccountModal from '../modal/AccountModal';
 import { NavButton } from '../buttons/Button';
 
-
-
 const NavBar = (): JSX.Element => {
   const { pathname } = useLocation();
-  const {balance} = useAppSelector((state) => state.accounts);
+  const { balance } = useAppSelector((state) => state.accounts);
 
   return (
     <nav className="container-fluid m-1 mt-3 row w-auto">

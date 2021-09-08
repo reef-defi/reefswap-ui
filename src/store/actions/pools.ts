@@ -15,7 +15,6 @@ interface LoadingPoolsAction {
   type: typeof LOADING_POOLS;
 }
 
-
 export type PoolsActions =
   | AddPoolAction
   | SetPoolsAction
@@ -32,6 +31,5 @@ export const addPool = (pool: ReefswapPool): AddPoolAction => ({
 });
 
 export const loadingPools = (): LoadingPoolsAction => ({
-  type: LOADING_POOLS
-})
-
+  type: LOADING_POOLS,
+});

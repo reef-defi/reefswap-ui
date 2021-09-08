@@ -25,7 +25,7 @@ const BindController = (): JSX.Element => {
       await bindSigner(signer.signer);
       const newTokens = await loadTokens(tokens, signer.signer);
       dispatch(setAllTokensAction(newTokens));
-      dispatch(accountsSetAccount({...signer, isEvmClaimed: true}));
+      dispatch(accountsSetAccount({ ...signer, isEvmClaimed: true }));
       toast.success('Account binded successfully! Reloading application');
     } catch (error) {
       errorToast(error.message);

@@ -9,7 +9,7 @@ export const SET_ALL_TOKENS = 'SET_ALL_TOKENS';
 export const ADD_TOKEN = 'ADD_TOKEN';
 
 // Settings
-export const RELOAD_APP = "RELOAD_APP";
+export const RELOAD_APP = 'RELOAD_APP';
 export const SET_CHAIN_URL = 'SET_CHAIN_URL';
 
 // Pools

@@ -12,8 +12,8 @@ import { DownIcon, PlusIcon } from '../../components/card/Icons';
 import { ConfirmLabel } from '../../components/label/Labels';
 import { LoadingButtonIconWithText } from '../../components/loading/Loading';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
-import { FindOrLoadTokenHook } from '../../hooks/findOrLoadTokenHook';
-import { LoadPoolHook } from '../../hooks/loadPoolHook';
+import { useFindOrLoadToken } from '../../hooks/useFindOrLoadToken';
+import { useLoadPool } from '../../hooks/useLoadPool';
 import { useAppSelector } from '../../store/hooks';
 import { defaultSettings, resolveSettings } from '../../store/internalStore';
 import errorHandler, { errorToast } from '../../utils/errorHandler';
@@ -56,9 +56,9 @@ const RemoveLiquidity = (): JSX.Element => {
   const [settings, setSettings] = useState(defaultSettings());
   const [percentageAmount, setPercentageAmount] = useState(0);
 
-  const [token1, isToken1Loading] = FindOrLoadTokenHook(address1);
-  const [token2, isToken2Loading] = FindOrLoadTokenHook(address2);
-  const { pool, isPoolLoading } = LoadPoolHook(token1, token2);
+  const [token1, isToken1Loading] = useFindOrLoadToken(address1);
+  const [token2, isToken2Loading] = useFindOrLoadToken(address2);
+  const { pool, isPoolLoading } = useLoadPool(token1, token2);
 
   const isLoading = isRemoving
   || isToken1Loading

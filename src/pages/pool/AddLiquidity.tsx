@@ -23,12 +23,12 @@ import {
   assertAmount,
   calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculatePoolShare, calculatePoolSupply, ensureAmount,
 } from '../../utils/math';
-import { UpdateBalanceHook } from '../../hooks/updateBalanceHook';
+import { useUpdateBalance } from '../../hooks/useUpdateBalance';
 import { ConfirmLabel } from '../../components/label/Labels';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
-import { LoadPoolHook } from '../../hooks/loadPoolHook';
-import { UpdateTokensPriceHook } from '../../hooks/updateTokensPriceHook';
-import { UpdateLiquidityAmountHook } from '../../hooks/updateAmountHook';
+import { useLoadPool } from '../../hooks/useLoadPool';
+import { useUpdateTokensPrice } from '../../hooks/useUpdateTokensPrice';
+import { UpdateLiquidityAmountHook } from '../../hooks/useUpdateAmount';
 
 const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,
@@ -79,12 +79,12 @@ const AddLiquidity = (): JSX.Element => {
   const [token1, setToken1] = useState(toTokenAmount(tokens[0], { amount: '', price: 0, index: 0 }));
   const { deadline, percentage } = resolveSettings(settings);
 
-  const { pool, isPoolLoading } = LoadPoolHook(token1, token2);
+  const { pool, isPoolLoading } = useLoadPool(token1, token2);
   const newPoolSupply = calculatePoolSupply(token1, token2, pool);
 
-  UpdateBalanceHook(token1, setToken1);
-  UpdateBalanceHook(token2, setToken2);
-  const isPriceLoading = UpdateTokensPriceHook({
+  useUpdateBalance(token1, setToken1);
+  useUpdateBalance(token2, setToken2);
+  const isPriceLoading = useUpdateTokensPrice({
     pool,
     token1,
     token2,

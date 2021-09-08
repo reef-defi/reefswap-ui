@@ -26,8 +26,6 @@ export interface TokenWithAmount extends Token {
   isEmpty: boolean;
 }
 
-
-
 export const createEmptyToken = (): Token => ({
   name: 'Select token',
   address: '',

@@ -18,8 +18,8 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { accountsToSigners } from '../api/rpc/accounts';
 import { loadVerifiedERC20Tokens, loadTokens } from '../api/rpc/tokens';
 import { getSignerLocalPointer } from '../store/localStore';
-import { updateAccountBalanceHook } from '../hooks/updateAccountBalanceHook';
-import { updatePoolsHook } from '../hooks/updatePoolsHook';
+import { useUpdateAccountBalance } from '../hooks/useUpdateAccountBalance';
+import { useUpdatePools } from '../hooks/useUpdatePools';
 
 type State =
   | ErrorState
@@ -36,23 +36,23 @@ const AppInitialization = (): JSX.Element => {
 
   const message = (msg: string): void => setState(toLoadingMessage(msg));
 
-  updateAccountBalanceHook(provider);
-  updatePoolsHook();
+  useUpdateAccountBalance(provider);
+  useUpdatePools();
   // Initial setup
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
         mounted.current = true;
         message('Connecting to chain...');
-        const provider = new Provider({
+        const newProvider = new Provider({
           provider: new WsProvider(settings.rpcUrl),
         });
-        await provider.api.isReadyOrError;
+        await newProvider.api.isReadyOrError;
 
         message('Connecting to Polkadot extension...');
         const inj = await web3Enable('Reefswap');
         ensure(inj.length > 0, 'Reefswap can not be access Polkadot-Extension. Please install Polkadot-Extension in your browser to use Reefswap.');
-  
+
         message('Retrieving accounts...');
         const web3accounts = await web3Accounts();
         ensure(web3accounts.length > 0, 'To use Reefswap you need to create Polkadot account in Polkadot-extension!');
@@ -60,10 +60,10 @@ const AppInitialization = (): JSX.Element => {
         message('Creating signers...');
         const signers = await accountsToSigners(
           web3accounts,
-          provider,
+          newProvider,
           inj[0].signer,
         );
-  
+
         const signerPointer = getSignerLocalPointer();
         const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
         message('Loading tokens...');
@@ -71,7 +71,7 @@ const AppInitialization = (): JSX.Element => {
         const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);
 
         if (mounted.current) {
-          setProvider(provider);
+          setProvider(newProvider);
           dispatch(setAllTokensAction(newTokens));
           dispatch(accountsSetAccounts(signers));
           // Make sure selecting account is after setting signers
@@ -89,7 +89,7 @@ const AppInitialization = (): JSX.Element => {
     load();
     return () => {
       mounted.current = false;
-     };
+    };
   }, [settings.rpcUrl, settings.reload]);
 
   return (

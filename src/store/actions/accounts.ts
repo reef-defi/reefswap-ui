@@ -32,17 +32,15 @@ interface SetAccountBalanceAction {
   balance: string;
 }
 
-
 export type UtilsActions =
   | SetAccountAction
   | SetAccountsAction
   | SetAccountBalanceAction
   | SetSelectedAccountAction;
 
-
 export const accountsSetAccount = (signer: ReefswapSigner): SetAccountAction => ({
   type: SET_ACCOUNT,
-  signer
+  signer,
 });
 
 export const accountsSetAccounts = (accounts: ReefswapSigner[]): SetAccountsAction => ({
@@ -52,7 +50,7 @@ export const accountsSetAccounts = (accounts: ReefswapSigner[]): SetAccountsActi
 
 export const accountsSetAccountBalance = (balance: string): SetAccountBalanceAction => ({
   type: SET_ACCOUNT_BALANCE,
-  balance
+  balance,
 });
 
 export const accountsSetSelectedAccount = (index: number): SetSelectedAccountAction => ({

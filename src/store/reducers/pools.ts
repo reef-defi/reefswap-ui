@@ -16,7 +16,7 @@ export const poolsReducer = (state = defaultPoolsState, action: PoolsActions): P
   switch (action.type) {
     case SET_POOLS: return { ...state, pools: [...action.pools], isLoading: false };
     case ADD_POOL: return { ...state, pools: [...state.pools, { ...action.pool }] };
-    case LOADING_POOLS: return {...state, isLoading: true};
+    case LOADING_POOLS: return { ...state, isLoading: true };
     default: return state;
   }
 };
