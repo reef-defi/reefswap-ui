@@ -43,7 +43,7 @@ const AppInitialization = (): JSX.Element => {
     const load = async (): Promise<void> => {
       try {
         mounted.current = true;
-        message(`Connecting to ${settings.name.replace(/\b\w/g, l => l.toUpperCase())} chain...`);
+        message(`Connecting to ${settings.name.replace(/\b\w/g, (l) => l.toUpperCase())} chain...`);
         const newProvider = new Provider({
           provider: new WsProvider(settings.rpcUrl),
         });
@@ -82,9 +82,9 @@ const AppInitialization = (): JSX.Element => {
       } catch (e) {
         if (mounted.current) {
           if (e.message) {
-            setState(toError("Polkadot extension", e.message));
+            setState(toError('Polkadot extension', e.message));
           } else {
-            setState(toError("RPC", 'Can not connect to the chain, try connecting later...'));
+            setState(toError('RPC', 'Can not connect to the chain, try connecting later...'));
           }
         }
       }
