@@ -23,5 +23,5 @@ export const useUpdateAccountBalance = (provider?: Provider): void => {
 
     const interval = setInterval(() => load(), 1000);
     return () => clearInterval(interval);
-  }, [selectedAccount]);
+  }, [provider, selectedAccount]);
 };
