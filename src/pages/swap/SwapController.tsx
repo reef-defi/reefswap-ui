@@ -29,6 +29,25 @@ import { useUpdateTokensPrice } from '../../hooks/useUpdateTokensPrice';
 import { ReefswapPool } from '../../api/rpc/pools';
 import { useUpdateSwapAmount } from '../../hooks/useUpdateAmount';
 
+const isLiquiditySufficient = (sell: TokenWithAmount, buy: TokenWithAmount, pool: ReefswapPool): boolean => {
+  const balance1 = BigNumber.from(pool.token1.balance);
+  const balance2 = BigNumber.from(pool.token2.balance);
+  const reserved1 = BigNumber.from(pool.reserve1);
+  const reserved2 = BigNumber.from(pool.reserve2);
+  const amountOut1 = BigNumber.from(calculateAmount(sell));
+  const amountOut2 = BigNumber.from(calculateAmount(buy));
+
+  const amountIn1 = balance1.sub(reserved1.sub(amountOut1));
+  const amountIn2 = balance2.sub(reserved2.sub(amountOut2));
+
+  const balanceAdjuster1 = balance1.mul(1000).sub(amountIn1.mul(3));
+  const balanceAdjuster2 = balance2.mul(1000).sub(amountIn2.mul(3));
+
+  const reserved = reserved1.mul(reserved2).mul(1000 ** 2);
+  const balance = balanceAdjuster1.mul(balanceAdjuster2);
+  return balance.gte(reserved);
+};
+
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
   if (!isEvmClaimed) {
     return errorStatus('Bind account');
@@ -44,6 +63,8 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
     return errorStatus(`Missing ${buy.name} amount`);
   } if (parseFloat(sell.amount) > convert2Normal(sell.decimals, sell.balance.toString())) {
     return errorStatus(`Insufficient ${sell.name} token balance`);
+  } if (!isLiquiditySufficient(sell, buy, pool)) {
+    return errorStatus('Insufficient pool liquidity');
   }
   return { isValid: true, text: 'Swap' };
 };
