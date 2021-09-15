@@ -17,7 +17,6 @@ export interface ReefswapPool {
   decimals: number;
   reserve1: string;
   reserve2: string;
-  contract: Contract;
   totalSupply: string;
   poolAddress: string;
   userPoolBalance: string;
@@ -46,16 +45,19 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
   const tokenBalance1 = await balanceOf(token1.address, address, signer);
   const tokenBalance2 = await balanceOf(token2.address, address, signer);
 
-  const [finalToken1, finalToken2] = token1.address !== address1
+  const [finalToken1, finalToken2] = token1.address === address1
     ? [{ ...token1, balance: tokenBalance1 }, { ...token2, balance: tokenBalance2 }]
     : [{ ...token2, balance: tokenBalance2 }, { ...token1, balance: tokenBalance1 }];
 
+  const [finalReserve1, finalReserve2] = token1.address === address1
+    ? [reserves[0], reserves[1]]
+    : [reserves[1], reserves[0]];
+
   return {
-    contract,
     poolAddress: address,
     decimals: parseInt(decimals, 10),
-    reserve1: reserves[0].toString(),
-    reserve2: reserves[1].toString(),
+    reserve1: finalReserve1.toString(),
+    reserve2: finalReserve2.toString(),
     totalSupply: totalSupply.toString(),
     userPoolBalance: liquidity.toString(),
     minimumLiquidity: minimumLiquidity.toString(),
@@ -64,17 +66,14 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
   };
 };
 
-const ensurePoolBalance = async (pool: ReefswapPool, signer: Signer): Promise<void> => {
-  const signerAddress = await signer.getAddress();
-  const amount = await pool.contract.balanceOf(signerAddress);
-  const balance = BigNumber.from(amount.toString());
-  ensure(balance.gt(BigNumber.from(0)), 'Signer not in pool!');
+const ensurePoolBalance = async (pool: ReefswapPool): Promise<void> => {
+  ensure(BigNumber.from(pool.userPoolBalance).gt(BigNumber.from(0)), 'Signer not in pool!');
 };
 
 export const isSignerInPool = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<boolean> => {
   try {
     const pool = await poolContract(token1, token2, signer, network);
-    await ensurePoolBalance(pool, signer);
+    await ensurePoolBalance(pool);
     return true;
   } catch (_) {
     return false;
@@ -83,7 +82,6 @@ export const isSignerInPool = async (token1: Token, token2: Token, signer: Signe
 
 export const loadPools = async (tokens: Token[], signer: Signer, network: ReefNetwork): Promise<ReefswapPool[]> => {
   const tokenCombinations = uniqueCombinations(tokens);
-
   const pools: ReefswapPool[] = [];
   for (let index = 0; index < tokenCombinations.length; index += 1) {
     try {
@@ -91,11 +89,9 @@ export const loadPools = async (tokens: Token[], signer: Signer, network: ReefNe
       /* eslint-disable no-await-in-loop */
       const pool = await poolContract(token1, token2, signer, network);
       /* eslint-disable no-await-in-loop */
-      await ensurePoolBalance(pool, signer);
+      // await ensurePoolBalance(pool);
       pools.push(pool);
-    } catch (e) {
-
-    }
+    } catch (e) { }
   }
   return pools;
 };
