@@ -18,6 +18,6 @@ export const useUpdatePools = (): void => {
       .then(() => loadPools(tokens, signer, settings))
       .then((res) => dispatch(setPools(res)))
       .catch(() => dispatch(setPools([])));
-
+  // TODO even tho we would not need selectedAccount dependenci, cause tokens are dependent on it, we need it to fix loading between networks. Debug why is that so?
   }, [tokens, selectedAccount]);
 };
