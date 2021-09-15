@@ -12,13 +12,12 @@ export const useUpdatePools = (): void => {
   useAsyncEffect(async () => {
     if (selectedAccount === -1) { return; }
     const { signer } = accounts[selectedAccount];
+    
     await Promise.resolve()
       .then(() => dispatch(loadingPools()))
       .then(() => loadPools(tokens, signer, settings))
       .then((res) => dispatch(setPools(res)))
-      .catch((error) => {
-        console.error(error);
-        dispatch(setPools([]));
-      });
-  }, [tokens]);
+      .catch(() => dispatch(setPools([])));
+
+  }, [tokens, selectedAccount]);
 };

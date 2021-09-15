@@ -4,6 +4,7 @@ import { LoadingWithText } from '../../components/loading/Loading';
 import { useAppSelector } from '../../store/hooks';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
 import PoolManager from './PoolManager';
+import { BigNumber } from "ethers";
 
 const PoolsContoller = (): JSX.Element => {
   const history = useHistory();
@@ -12,19 +13,18 @@ const PoolsContoller = (): JSX.Element => {
   const onImportPoolClick = (): void => history.push(IMPORT_POOL_URL);
   const onAddLiquidityClick = (): void => history.push(ADD_LIQUIDITY_URL);
 
-  const isEmpty = !isLoading && pools.length === 0;
   const isFull = !isLoading && pools.length > 0;
 
   const poolsView = pools
+    .filter(({userPoolBalance}) => BigNumber.from(userPoolBalance).gt(0))
     .map(({
-      token1, token2, userPoolBalance: liquidity, poolAddress, contract, totalSupply, reserve1, reserve2, decimals, minimumLiquidity,
+      token1, token2, userPoolBalance: liquidity, poolAddress, totalSupply, reserve1, reserve2, decimals, minimumLiquidity,
     }) => (
       <li key={poolAddress} className="list-item mt-2">
         <PoolManager
           token1={token1}
           token2={token2}
           decimals={decimals}
-          contract={contract}
           reserve1={reserve1}
           reserve2={reserve2}
           totalSupply={totalSupply}
@@ -34,6 +34,8 @@ const PoolsContoller = (): JSX.Element => {
         />
       </li>
     ));
+
+  const isEmpty = !isLoading && poolsView.length === 0;
 
   return (
     <div>
