@@ -5,13 +5,16 @@ import { LoadingWithText } from '../../components/loading/Loading';
 import { useAppSelector } from '../../store/hooks';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
 import PoolManager from './PoolManager';
+import { useLoadPools } from '../../hooks/useLoadPools';
 
 const PoolsContoller = (): JSX.Element => {
   const history = useHistory();
-  const { pools, isLoading } = useAppSelector((state) => state.pools);
+  const {tokens} = useAppSelector((state) => state.tokens);
 
   const onImportPoolClick = (): void => history.push(IMPORT_POOL_URL);
   const onAddLiquidityClick = (): void => history.push(ADD_LIQUIDITY_URL);
+
+  const [pools, isLoading] = useLoadPools(tokens);
 
   const isFull = !isLoading && pools.length > 0;
 
