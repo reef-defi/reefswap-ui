@@ -29,34 +29,35 @@ import { useUpdateTokensPrice } from '../../hooks/useUpdateTokensPrice';
 import { ReefswapPool } from '../../api/rpc/pools';
 import { useUpdateSwapAmount } from '../../hooks/useUpdateAmount';
 
-
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
   try {
-    ensure(isEvmClaimed, "Bind account");
-    ensure(!sell.isEmpty, "Select sell token");
-    ensure(!buy.isEmpty, "Select buy token");
-    ensure(!!pool, "Invalid pair");
+    ensure(isEvmClaimed, 'Bind account');
+    ensure(!sell.isEmpty, 'Select sell token');
+    ensure(!buy.isEmpty, 'Select buy token');
+    ensure(!!pool, 'Invalid pair');
     ensure(sell.amount.length !== 0, `Missing ${sell.name} amount`);
     ensure(buy.amount.length !== 0, `Missing ${buy.name} amount`);
     ensure(parseFloat(sell.amount) > 0, `Missing ${sell.name} amount`);
     ensure(parseFloat(sell.amount) <= convert2Normal(sell.decimals, sell.balance.toString()), `Insufficient ${sell.name} balance`);
 
     // Because of aboves ensure pool would not need explenation mark. Typescript broken...
-    const { token1, token2, reserve1, reserve2 } = pool!;
+    const {
+      token1, token2, reserve1, reserve2,
+    } = pool!;
     const amountOut1 = BigNumber.from(calculateAmount(sell));
     const amountOut2 = BigNumber.from(calculateAmount(buy));
-    const reserved1 = BigNumber.from(reserve1)//.sub(amountOut1);
-    const reserved2 = BigNumber.from(reserve2)//.sub(amountOut2);
-    
+    const reserved1 = BigNumber.from(reserve1);// .sub(amountOut1);
+    const reserved2 = BigNumber.from(reserve2);// .sub(amountOut2);
+
     const amountIn1 = token1.balance.gt(reserved1.sub(amountOut1))
       ? token1.balance.sub(reserved1.sub(amountOut1))
       : BigNumber.from(0);
-    
+
     const amountIn2 = token2.balance.gt(reserved2.sub(amountOut2))
       ? token2.balance.sub(reserved2.sub(amountOut2))
       : BigNumber.from(0);
 
-    ensure(amountIn1.gt(0) || amountIn2.gt(0), "Insufficient amounts");
+    ensure(amountIn1.gt(0) || amountIn2.gt(0), 'Insufficient amounts');
 
     // WIP checking for ReefswapV2: K error
     // Temporary solution was with `swapExactTokensForTokensSupportingFeeOnTransferTokens` function!
@@ -69,9 +70,9 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
     // const balance = balanceAdjuster1.mul(balanceAdjuster2);
     // ensure(balance.gte(reserved), 'Deliquified pool');
     // ensure(amountOut1.eq(amountIn1) && amountOut2.eq(amountIn2), 'Deliquified pool')
-    return { isValid: true, text: 'Swap'};
+    return { isValid: true, text: 'Swap' };
   } catch (e) {
-    return { isValid: false, text: e.message};
+    return { isValid: false, text: e.message };
   }
 };
 
@@ -95,13 +96,12 @@ const SwapController = (): JSX.Element => {
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
 
-
   const { pool, isPoolLoading } = useLoadPool(sell, buy);
 
   const { percentage, deadline } = resolveSettings(settings);
   const { text, isValid } = useMemo(
     () => swapStatus(sell, buy, isEvmClaimed, pool),
-    [sell, buy, percentage, isEvmClaimed, pool]
+    [sell, buy, percentage, isEvmClaimed, pool],
   );
 
   // console.log(pool?.poolAddress);
@@ -178,7 +178,7 @@ const SwapController = (): JSX.Element => {
         [sell.address, buy.address],
         evmAddress,
         calculateDeadline(deadline),
-        
+
       );
       toast.success('Swap complete!');
     } catch (error) {

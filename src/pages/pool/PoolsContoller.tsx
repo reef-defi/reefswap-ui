@@ -1,10 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { BigNumber } from 'ethers';
 import { LoadingWithText } from '../../components/loading/Loading';
 import { useAppSelector } from '../../store/hooks';
 import { ADD_LIQUIDITY_URL, IMPORT_POOL_URL } from '../../utils/urls';
 import PoolManager from './PoolManager';
-import { BigNumber } from "ethers";
 
 const PoolsContoller = (): JSX.Element => {
   const history = useHistory();
@@ -16,7 +16,7 @@ const PoolsContoller = (): JSX.Element => {
   const isFull = !isLoading && pools.length > 0;
 
   const poolsView = pools
-    .filter(({userPoolBalance}) => BigNumber.from(userPoolBalance).gt(0))
+    .filter(({ userPoolBalance }) => BigNumber.from(userPoolBalance).gt(0))
     .map(({
       token1, token2, userPoolBalance: liquidity, poolAddress, totalSupply, reserve1, reserve2, decimals, minimumLiquidity,
     }) => (
