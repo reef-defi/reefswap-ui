@@ -19,7 +19,6 @@ import { accountsToSigners } from '../api/rpc/accounts';
 import { loadVerifiedERC20Tokens, loadTokens } from '../api/rpc/tokens';
 import { getSignerLocalPointer } from '../store/localStore';
 import { useUpdateAccountBalance } from '../hooks/useUpdateAccountBalance';
-import { useUpdatePools } from '../hooks/useUpdatePools';
 
 type State =
   | ErrorState
@@ -37,7 +36,6 @@ const AppInitialization = (): JSX.Element => {
   const message = (msg: string): void => setState(toLoadingMessage(msg));
 
   useUpdateAccountBalance(provider);
-  useUpdatePools();
   // Initial setup
   useEffect(() => {
     const load = async (): Promise<void> => {
