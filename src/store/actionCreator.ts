@@ -5,8 +5,8 @@ export const SET_ACCOUNT_BALANCE = 'SET_ACCOUNT_BALANCE';
 export const SET_SELECTED_ACCOUNT = 'SET_SELECTED_ACCOUNT';
 
 // Tokens
-export const SET_ALL_TOKENS = 'SET_ALL_TOKENS';
 export const ADD_TOKEN = 'ADD_TOKEN';
+export const SET_ALL_TOKENS = 'SET_ALL_TOKENS';
 
 // Settings
 export const RELOAD_APP = 'RELOAD_APP';

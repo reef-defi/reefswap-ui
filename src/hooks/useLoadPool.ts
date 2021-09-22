@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { poolContract, ReefswapPool } from '../api/rpc/pools';
 import { Token } from '../api/rpc/tokens';
 import { useAppSelector } from '../store/hooks';
+import { ensureVoidRun } from '../utils/utils';
 
 interface LoadPoolHookOutput {
   pool?: ReefswapPool;
@@ -18,11 +19,8 @@ export const useLoadPool = (token1: Token, token2: Token): LoadPoolHookOutput =>
   const [isLoading, setIsLoading] = useState(false);
 
   const { signer } = accounts[selectedAccount];
-
-  const ensureMounted = <T, >(fun: (obj: T) => void, obj: T): void => {
-    mounted.current && fun(obj);
-  };
-
+  const ensureMounted = ensureVoidRun(mounted.current);
+  
   useEffect(() => {
     const load = async (): Promise<void> => {
       if (!token1.address || !token2.address) { return; }
