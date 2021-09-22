@@ -3,7 +3,6 @@ import { Contract, BigNumber } from 'ethers';
 import { ERC20 } from '../../assets/abi/ERC20';
 import ReefswapFactory from '../../assets/abi/ReefswapFactory';
 import ReefswapRouter from '../../assets/abi/ReefswapRouter';
-import { Token } from './tokens';
 
 export type AvailableNetworks = 'mainnet' | 'testnet';
 export interface ReefNetwork {
@@ -59,14 +58,3 @@ export const balanceOf = async (address: string, balanceAddress: string, signer:
 
 export const getReefswapRouter = (network: ReefNetwork, signer: Signer): Contract => new Contract(network.routerAddress, ReefswapRouter, signer);
 export const getReefswapFactory = (network: ReefNetwork, signer: Signer): Contract => new Contract(network.factoryAddress, ReefswapFactory, signer);
-
-export const calculateFee = (token: Token, feeRation = 0.03): Token => {
-  const mm = Math.min(Math.max(feeRation, 0), 100);
-  const fee = Math.round(mm * 100);
-  const fullAmount = BigNumber.from(token.balance);
-  const feeAmount = fullAmount
-    .div(BigNumber.from(100))
-    .sub(BigNumber.from(fee));
-  const balance = fullAmount.add(feeAmount);
-  return { ...token, balance };
-};
