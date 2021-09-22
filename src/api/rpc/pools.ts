@@ -88,8 +88,6 @@ export const loadPools = async (tokens: Token[], signer: Signer, network: ReefNe
       const [token1, token2] = tokenCombinations[index];
       /* eslint-disable no-await-in-loop */
       const pool = await poolContract(token1, token2, signer, network);
-      /* eslint-disable no-await-in-loop */
-      // await ensurePoolBalance(pool);
       pools.push(pool);
     } catch (e) { }
   }
