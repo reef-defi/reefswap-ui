@@ -13,7 +13,7 @@ const findDecimalPoint = (amount: string): number => {
 };
 
 export const transformAmount = (decimals: number, amount: string): string => {
-  if (!amount) { return '0'; }
+  if (!amount) { return '0'.repeat(decimals); }
   const addZeros = findDecimalPoint(amount);
   const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
   return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));

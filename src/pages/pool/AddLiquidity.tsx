@@ -28,7 +28,7 @@ import { ConfirmLabel } from '../../components/label/Labels';
 import ConfirmationModal from '../../components/modal/ConfirmationModal';
 import { useLoadPool } from '../../hooks/useLoadPool';
 import { useUpdateTokensPrice } from '../../hooks/useUpdateTokensPrice';
-import { UpdateLiquidityAmountHook } from '../../hooks/useUpdateAmount';
+import { useUpdateLiquidityAmount } from '../../hooks/useUpdateAmount';
 
 const errorStatus = (text: string): ButtonStatus => ({
   isValid: false,
@@ -91,7 +91,7 @@ const AddLiquidity = (): JSX.Element => {
     setToken1,
     setToken2,
   });
-  UpdateLiquidityAmountHook({
+  useUpdateLiquidityAmount({
     pool,
     token1,
     token2,

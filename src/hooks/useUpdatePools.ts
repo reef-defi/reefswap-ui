@@ -12,13 +12,12 @@ export const useUpdatePools = (): void => {
   useAsyncEffect(async () => {
     if (selectedAccount === -1) { return; }
     const { signer } = accounts[selectedAccount];
+
     await Promise.resolve()
       .then(() => dispatch(loadingPools()))
       .then(() => loadPools(tokens, signer, settings))
       .then((res) => dispatch(setPools(res)))
-      .catch((error) => {
-        console.error(error);
-        dispatch(setPools([]));
-      });
-  }, [tokens]);
+      .catch(() => dispatch(setPools([])));
+  // TODO even tho we would not need selectedAccount dependenci, cause tokens are dependent on it, we need it to fix loading between networks. Debug why is that so?
+  }, [tokens, selectedAccount]);
 };

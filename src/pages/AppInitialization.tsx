@@ -42,7 +42,6 @@ const AppInitialization = (): JSX.Element => {
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
-        mounted.current = true;
         message(`Connecting to ${settings.name.replace(/\b\w/g, (l) => l.toUpperCase())} chain...`);
         const newProvider = new Provider({
           provider: new WsProvider(settings.rpcUrl),
@@ -70,22 +69,18 @@ const AppInitialization = (): JSX.Element => {
         const verifiedTokens = await loadVerifiedERC20Tokens(settings);
         const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);
 
-        if (mounted.current) {
-          setProvider(newProvider);
-          dispatch(setAllTokensAction(newTokens));
-          dispatch(accountsSetAccounts(signers));
-          // Make sure selecting account is after setting signers
-          // Else error will occure
-          dispatch(accountsSetSelectedAccount(selectedSigner));
-          setState(toSuccess());
-        }
+        setProvider(newProvider);
+        dispatch(accountsSetAccounts(signers));
+        dispatch(setAllTokensAction(newTokens));
+        // Make sure selecting account is after setting signers
+        // Else error will occure
+        dispatch(accountsSetSelectedAccount(selectedSigner));
+        setState(toSuccess());
       } catch (e) {
-        if (mounted.current) {
-          if (e.message) {
-            setState(toError('Polkadot extension', e.message));
-          } else {
-            setState(toError('RPC', 'Can not connect to the chain, try connecting later...'));
-          }
+        if (e.message) {
+          setState(toError('Polkadot extension', e.message));
+        } else {
+          setState(toError('RPC', 'Can not connect to the chain, try connecting later...'));
         }
       }
     };

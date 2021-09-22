@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { BigNumber } from 'ethers';
 import { getReefswapRouter } from '../../api/rpc/rpc';
@@ -10,7 +10,7 @@ import Card, {
   CardHeader, CardHeaderBlank, CardTitle,
 } from '../../components/card/Card';
 import CardSettings from '../../components/card/CardSettings';
-import TokenAmountField, { TokenAmountFieldImpactPrice, TokenAmountFieldMax } from '../../components/card/TokenAmountField';
+import { TokenAmountFieldImpactPrice, TokenAmountFieldMax } from '../../components/card/TokenAmountField';
 import TokenAmountView from '../../components/card/TokenAmountView';
 import { ConfirmLabel } from '../../components/label/Labels';
 import { LoadingButtonIconWithText } from '../../components/loading/Loading';
@@ -24,52 +24,56 @@ import { errorToast } from '../../utils/errorHandler';
 import {
   calculateAmount, calculateAmountWithPercentage, calculateDeadline, calculateImpactPercentage, calculateUsdAmount, convert2Normal, ensureAmount, getInputAmount, getOutputAmount, minimumRecieveAmount, transformAmount,
 } from '../../utils/math';
-import { errorStatus } from '../../utils/utils';
+import { ensure } from '../../utils/utils';
 import { useUpdateTokensPrice } from '../../hooks/useUpdateTokensPrice';
 import { ReefswapPool } from '../../api/rpc/pools';
 import { useUpdateSwapAmount } from '../../hooks/useUpdateAmount';
 
-const isLiquiditySufficient = (sell: TokenWithAmount, buy: TokenWithAmount, pool: ReefswapPool): boolean => {
-  const { token1, token2 } = pool;
-  const reserved1 = BigNumber.from(pool.reserve1);
-  const reserved2 = BigNumber.from(pool.reserve2);
-  const amountOut1 = BigNumber.from(calculateAmount(sell));
-  const amountOut2 = BigNumber.from(calculateAmount(buy));
-
-  const amountIn1 = token1.balance.gt(reserved1.sub(amountOut1))
-    ? token1.balance.sub(reserved1.sub(amountOut1))
-    : BigNumber.from(0);
-
-  const amountIn2 = token2.balance.gt(reserved2.sub(amountOut2))
-    ? token2.balance.sub(reserved2.sub(amountOut2))
-    : BigNumber.from(0);
-  const balanceAdjuster1 = token1.balance.mul(1000).sub(amountIn1.mul(3));
-  const balanceAdjuster2 = token2.balance.mul(1000).sub(amountIn2.mul(3));
-
-  const reserved = reserved1.mul(reserved2).mul(1000 ** 2);
-  const balance = balanceAdjuster1.mul(balanceAdjuster2);
-  return true; // balance.gte(reserved);
-};
-
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
-  if (!isEvmClaimed) {
-    return errorStatus('Bind account');
-  } if (sell.isEmpty) {
-    return errorStatus('Select sell token');
-  } if (buy.isEmpty) {
-    return errorStatus('Select buy token');
-  } if (!pool) {
-    return errorStatus('Invalid pair');
-  } if (sell.amount.length === 0) {
-    return errorStatus(`Missing ${sell.name} amount`);
-  } if (buy.amount.length === 0) {
-    return errorStatus(`Missing ${buy.name} amount`);
-  } if (parseFloat(sell.amount) > convert2Normal(sell.decimals, sell.balance.toString())) {
-    return errorStatus(`Insufficient ${sell.name} token balance`);
-  } if (!isLiquiditySufficient(sell, buy, pool)) {
-    return errorStatus('Insufficient pool liquidity');
+  try {
+    ensure(isEvmClaimed, 'Bind account');
+    ensure(!sell.isEmpty, 'Select sell token');
+    ensure(!buy.isEmpty, 'Select buy token');
+    ensure(!!pool, 'Invalid pair');
+    ensure(sell.amount.length !== 0, `Missing ${sell.name} amount`);
+    ensure(buy.amount.length !== 0, `Missing ${buy.name} amount`);
+    ensure(parseFloat(sell.amount) > 0, `Missing ${sell.name} amount`);
+    ensure(parseFloat(sell.amount) <= convert2Normal(sell.decimals, sell.balance.toString()), `Insufficient ${sell.name} balance`);
+
+    // Because of aboves ensure pool would not need explenation mark. Typescript broken...
+    const {
+      token1, token2, reserve1, reserve2,
+    } = pool!;
+    const amountOut1 = BigNumber.from(calculateAmount(sell));
+    const amountOut2 = BigNumber.from(calculateAmount(buy));
+    const reserved1 = BigNumber.from(reserve1);// .sub(amountOut1);
+    const reserved2 = BigNumber.from(reserve2);// .sub(amountOut2);
+
+    const amountIn1 = token1.balance.gt(reserved1.sub(amountOut1))
+      ? token1.balance.sub(reserved1.sub(amountOut1))
+      : BigNumber.from(0);
+
+    const amountIn2 = token2.balance.gt(reserved2.sub(amountOut2))
+      ? token2.balance.sub(reserved2.sub(amountOut2))
+      : BigNumber.from(0);
+
+    ensure(amountIn1.gt(0) || amountIn2.gt(0), 'Insufficient amounts');
+
+    // WIP checking for ReefswapV2: K error
+    // Temporary solution was with `swapExactTokensForTokensSupportingFeeOnTransferTokens` function!
+    // Error still arives when using `swapExactTokensForTokens`
+
+    // const balanceAdjuster1 = token1.balance.mul(1000).sub(amountIn1.mul(3));
+    // const balanceAdjuster2 = token2.balance.mul(1000).sub(amountIn2.mul(3));
+
+    // const reserved = reserved1.mul(reserved2).mul(1000 ** 2);
+    // const balance = balanceAdjuster1.mul(balanceAdjuster2);
+    // ensure(balance.gte(reserved), 'Deliquified pool');
+    // ensure(amountOut1.eq(amountIn1) && amountOut2.eq(amountIn2), 'Deliquified pool')
+    return { isValid: true, text: 'Swap' };
+  } catch (e) {
+    return { isValid: false, text: e.message };
   }
-  return { isValid: true, text: 'Swap' };
 };
 
 const loadingStatus = (status: string, isPoolLoading: boolean, isPriceLoading: boolean): string => {
@@ -94,8 +98,13 @@ const SwapController = (): JSX.Element => {
 
   const { pool, isPoolLoading } = useLoadPool(sell, buy);
 
-  const { text, isValid } = swapStatus(sell, buy, isEvmClaimed, pool);
   const { percentage, deadline } = resolveSettings(settings);
+  const { text, isValid } = useMemo(
+    () => swapStatus(sell, buy, isEvmClaimed, pool),
+    [sell, buy, percentage, isEvmClaimed, pool],
+  );
+
+  // console.log(pool?.poolAddress);
 
   // Updating user token balance.. its a bit hecky
   useUpdateBalance(buy, setBuy);
@@ -163,17 +172,19 @@ const SwapController = (): JSX.Element => {
       await approveTokenAmount(sell, networkSettings.routerAddress, signer);
 
       setStatus('Executing swap');
-      await reefswapRouter.swapExactTokensForTokens(
+      await reefswapRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
         sellAmount,
         minBuyAmount,
         [sell.address, buy.address],
         evmAddress,
         calculateDeadline(deadline),
+
       );
       toast.success('Swap complete!');
     } catch (error) {
       errorToast(error.message);
     } finally {
+      // TODO move this out!
       const newTokens = await loadTokens(tokens, signer);
       dispatch(setAllTokensAction(newTokens));
       setIsSwapLoading(false);

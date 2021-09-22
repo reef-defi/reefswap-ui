@@ -33,7 +33,7 @@ export const useUpdateSwapAmount = ({
   }, [token2.price, token1.price]);
 };
 
-export const UpdateLiquidityAmountHook = ({
+export const useUpdateLiquidityAmount = ({
   pool, token1, token2, setToken1, setToken2,
 }: UpdateAmountHookInput): void => {
   const [prevAddress1, setPrevAddress1] = useState(token1.address);
