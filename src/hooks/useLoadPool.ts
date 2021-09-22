@@ -20,7 +20,7 @@ export const useLoadPool = (token1: Token, token2: Token): LoadPoolHookOutput =>
 
   const { signer } = accounts[selectedAccount];
   const ensureMounted = ensureVoidRun(mounted.current);
-  
+
   useEffect(() => {
     const load = async (): Promise<void> => {
       if (!token1.address || !token2.address) { return; }

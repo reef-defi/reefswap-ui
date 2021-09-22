@@ -9,7 +9,7 @@ import { useLoadPools } from '../../hooks/useLoadPools';
 
 const PoolsContoller = (): JSX.Element => {
   const history = useHistory();
-  const {tokens} = useAppSelector((state) => state.tokens);
+  const { tokens } = useAppSelector((state) => state.tokens);
 
   const onImportPoolClick = (): void => history.push(IMPORT_POOL_URL);
   const onAddLiquidityClick = (): void => history.push(ADD_LIQUIDITY_URL);

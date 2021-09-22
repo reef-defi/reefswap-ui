@@ -21,19 +21,18 @@ export const useLoadPools = (tokens: Token[]): [ReefswapPool[], boolean] => {
   const ensureMounted = ensureVoidRun(mounted.current);
 
   useEffect(() => {
-    const load = async (): Promise<void> =>
-      Promise.resolve()
-        .then(() => {mounted.current = true;})
-        .then(() => setIsLoading(true))
-        .then(() => loadPools(tokens, signer, networkSettings))
-        .then((res) => ensureMounted(setPools, res))
-        .catch(() => ensureMounted(setPools, []))
-        .finally(() => ensureMounted(setIsLoading, false));
+    const load = async (): Promise<void> => Promise.resolve()
+      .then(() => { mounted.current = true; })
+      .then(() => setIsLoading(true))
+      .then(() => loadPools(tokens, signer, networkSettings))
+      .then((res) => ensureMounted(setPools, res))
+      .catch(() => ensureMounted(setPools, []))
+      .finally(() => ensureMounted(setIsLoading, false));
 
     load();
     return () => {
       mounted.current = false;
-    }
+    };
   }, [tokens]);
 
   return [pools, isLoading];
