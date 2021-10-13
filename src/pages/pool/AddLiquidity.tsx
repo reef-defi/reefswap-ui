@@ -120,7 +120,7 @@ const AddLiquidity = (): JSX.Element => {
   };
   const setAmount2 = (amount: string): void => {
     if (isLoading) { return; }
-    setToken2({...token2, amount });
+    setToken2({ ...token2, amount });
     if (token1.price && token2.price) {
       const newAmount = token2.price / token1.price * parseFloat(assertAmount(amount));
       setToken1({ ...token1, amount: !newAmount ? '' : newAmount.toFixed(4) });
