@@ -5,6 +5,8 @@ import {
   assertAmount, getInputAmount, getOutputAmount,
 } from '../utils/math';
 
+export type SwapFocus = 'buy' | 'sell';
+
 interface UpdateAmountHookInput {
   pool?: ReefswapPool;
   token1: TokenWithAmount;
@@ -13,23 +15,21 @@ interface UpdateAmountHookInput {
   setToken2: (value: TokenWithAmount) => void;
 }
 
-export const useUpdateSwapAmount = ({
-  pool, token2, token1, setToken1: setSell, setToken2: setBuy,
-}: UpdateAmountHookInput): void => {
-  const [prevBuyAddress, setPrevBuyAddress] = useState(token2.address);
-  const [prevSellAddress, setPrevSellAddress] = useState(token1.address);
+interface SwapAmountHookInput extends UpdateAmountHookInput {
+  focus: SwapFocus;
+}
 
+export const useUpdateSwapAmount = ({
+  pool, token2, token1, setToken1: setSell, setToken2: setBuy, focus,
+}: SwapAmountHookInput): void => {
   useEffect(() => {
     if (!pool || token2.price === 0 || token1.price === 0) { return; }
 
-    if (token2.address !== prevBuyAddress) {
+    if (focus === 'sell') {
       setBuy({ ...token2, amount: getOutputAmount(token1, pool).toFixed(4) });
-    } else if (token1.address !== prevSellAddress) {
+    } else {
       setSell({ ...token1, amount: getInputAmount(token2, pool).toFixed(4) });
     }
-
-    setPrevBuyAddress(token2.address);
-    setPrevSellAddress(token1.address);
   }, [token2.price, token1.price]);
 };
 

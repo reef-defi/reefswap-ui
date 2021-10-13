@@ -27,7 +27,7 @@ import {
 import { ensure } from '../../utils/utils';
 import { useUpdateTokensPrice } from '../../hooks/useUpdateTokensPrice';
 import { ReefswapPool } from '../../api/rpc/pools';
-import { useUpdateSwapAmount } from '../../hooks/useUpdateAmount';
+import { SwapFocus, useUpdateSwapAmount } from '../../hooks/useUpdateAmount';
 
 const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: boolean, pool?: ReefswapPool): ButtonStatus => {
   try {
@@ -95,6 +95,7 @@ const SwapController = (): JSX.Element => {
   const [status, setStatus] = useState('');
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
+  const [focus, setFocus] = useState<SwapFocus>('sell');
 
   const { pool, isPoolLoading } = useLoadPool(sell, buy);
 
@@ -104,9 +105,6 @@ const SwapController = (): JSX.Element => {
     [sell, buy, percentage, isEvmClaimed, pool],
   );
 
-  // console.log(pool?.poolAddress);
-
-  // Updating user token balance.. its a bit hecky
   useUpdateBalance(buy, setBuy);
   useUpdateBalance(sell, setSell);
   const isPriceLoading = useUpdateTokensPrice({
@@ -120,6 +118,7 @@ const SwapController = (): JSX.Element => {
   const isLoading = isSwapLoading || isPoolLoading || isPriceLoading;
   useUpdateSwapAmount({
     pool,
+    focus,
     token2: buy,
     token1: sell,
     setToken2: setBuy,
@@ -128,6 +127,7 @@ const SwapController = (): JSX.Element => {
 
   const setSellAmount = (amount: string): void => {
     if (isLoading) { return; }
+    setFocus('sell');
     const amo = pool && amount !== ''
       ? getOutputAmount({ ...sell, amount }, pool).toFixed(4)
       : '';
@@ -137,6 +137,7 @@ const SwapController = (): JSX.Element => {
   };
   const setBuyAmount = (amount: string): void => {
     if (isLoading) { return; }
+    setFocus('buy');
     const amo = pool && amount !== ''
       ? getInputAmount({ ...buy, amount }, pool).toFixed(4)
       : '';
@@ -145,19 +146,31 @@ const SwapController = (): JSX.Element => {
     setSell({ ...sell, amount: amo });
   };
 
-  const changeBuyToken = (newToken: Token): void => setBuy({
-    ...newToken, amount: '', price: 0, isEmpty: false,
-  });
-  const changeSellToken = (newToken: Token): void => setSell({
-    ...newToken, amount: '', price: 0, isEmpty: false,
-  });
-
   const onSwitch = (): void => {
-    if (buy.isEmpty || isLoading || !pool) { return; }
-    const subSellState = { ...sell };
-    setSell({ ...buy });
-    setBuy({ ...subSellState, amount: getOutputAmount(buy, pool).toFixed(4) });
+    if (isLoading) { return; }
+    if (focus === 'buy') {
+      const subSell = { ...sell };
+      setSell({ ...buy });
+      setBuy({ ...subSell, amount: '' });
+      setFocus('sell');
+    } else {
+      const subBuy = { ...buy };
+      setBuy({ ...sell });
+      setSell({ ...subBuy, amount: '' });
+      setFocus('buy');
+    }
   };
+
+  const changeBuyToken = (newToken: Token): void => (newToken.address !== sell.address
+    ? setBuy({
+      ...newToken, amount: '', price: 0, isEmpty: false,
+    })
+    : onSwitch());
+  const changeSellToken = (newToken: Token): void => (newToken.address !== buy.address
+    ? setSell({
+      ...newToken, amount: '', price: 0, isEmpty: false,
+    })
+    : onSwitch());
 
   const onSwap = async (): Promise<void> => {
     if (!isValid) { return; }
