@@ -160,7 +160,7 @@ const SwapController = (): JSX.Element => {
       setFocus('buy');
     }
   };
-  
+
   const changeBuyToken = (newToken: Token): void => (newToken.address !== sell.address
     ? setBuy({
       ...newToken, amount: '', price: 0, isEmpty: false,

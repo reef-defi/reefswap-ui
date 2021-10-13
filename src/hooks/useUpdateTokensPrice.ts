@@ -43,7 +43,7 @@ export const useUpdateTokensPrice = ({
         if (token1.name === 'REEF') {
           updateTokens(reefPrice, reefPrice / baseRatio);
         } else if (token2.name === 'REEF') {
-          updateTokens(reefPrice/baseRatio, reefPrice);
+          updateTokens(reefPrice / baseRatio, reefPrice);
         } else {
           const sellPool = await poolContract(tokens[0], token1, signer, settings);
           const sellRatio = poolRatio(sellPool);
