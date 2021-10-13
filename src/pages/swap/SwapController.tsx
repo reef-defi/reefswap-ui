@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { BigNumber } from 'ethers';
 import { getReefswapRouter } from '../../api/rpc/rpc';
@@ -151,16 +151,16 @@ const SwapController = (): JSX.Element => {
     if (focus === 'buy') {
       const subSell = { ...sell };
       setSell({ ...buy });
-      setBuy({ ...subSell, amount: '' });
+      setBuy({ ...subSell, amount: '', price: 0 });
       setFocus('sell');
     } else {
       const subBuy = { ...buy };
       setBuy({ ...sell });
-      setSell({ ...subBuy, amount: '' });
+      setSell({ ...subBuy, amount: '', price: 0 });
       setFocus('buy');
     }
   };
-
+  
   const changeBuyToken = (newToken: Token): void => (newToken.address !== sell.address
     ? setBuy({
       ...newToken, amount: '', price: 0, isEmpty: false,
