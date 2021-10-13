@@ -20,9 +20,8 @@ interface SwapAmountHookInput extends UpdateAmountHookInput {
 }
 
 export const useUpdateSwapAmount = ({
-  pool, token2, token1, setToken1: setSell, setToken2: setBuy, focus
+  pool, token2, token1, setToken1: setSell, setToken2: setBuy, focus,
 }: SwapAmountHookInput): void => {
-
   useEffect(() => {
     if (!pool || token2.price === 0 || token1.price === 0) { return; }
 

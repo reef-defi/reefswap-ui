@@ -95,7 +95,7 @@ const SwapController = (): JSX.Element => {
   const [status, setStatus] = useState('');
   const [settings, setSettings] = useState(defaultSettings());
   const [isSwapLoading, setIsSwapLoading] = useState(false);
-  const [focus, setFocus] = useState<SwapFocus>("sell");
+  const [focus, setFocus] = useState<SwapFocus>('sell');
 
   const { pool, isPoolLoading } = useLoadPool(sell, buy);
 
@@ -137,7 +137,7 @@ const SwapController = (): JSX.Element => {
   };
   const setBuyAmount = (amount: string): void => {
     if (isLoading) { return; }
-    setFocus("buy");
+    setFocus('buy');
     const amo = pool && amount !== ''
       ? getInputAmount({ ...buy, amount }, pool).toFixed(4)
       : '';
@@ -150,24 +150,27 @@ const SwapController = (): JSX.Element => {
     if (isLoading) { return; }
     if (focus === 'buy') {
       const subSell = { ...sell };
-      setSell({...buy});
-      setBuy({...subSell, amount: ''});
+      setSell({ ...buy });
+      setBuy({ ...subSell, amount: '' });
       setFocus('sell');
     } else {
-      const subBuy = {...buy};
-      setBuy({...sell});
-      setSell({...subBuy, amount: ''});
+      const subBuy = { ...buy };
+      setBuy({ ...sell });
+      setSell({ ...subBuy, amount: '' });
       setFocus('buy');
     }
   };
 
-  const changeBuyToken = (newToken: Token): void => newToken.address !== sell.address 
-    ? setBuy({...newToken, amount: '', price: 0, isEmpty: false })
-    : onSwitch();
-  const changeSellToken = (newToken: Token): void => newToken.address !== buy.address 
-    ? setSell({...newToken, amount: '', price: 0, isEmpty: false})
-    : onSwitch();
-
+  const changeBuyToken = (newToken: Token): void => (newToken.address !== sell.address
+    ? setBuy({
+      ...newToken, amount: '', price: 0, isEmpty: false,
+    })
+    : onSwitch());
+  const changeSellToken = (newToken: Token): void => (newToken.address !== buy.address
+    ? setSell({
+      ...newToken, amount: '', price: 0, isEmpty: false,
+    })
+    : onSwitch());
 
   const onSwap = async (): Promise<void> => {
     if (!isValid) { return; }
