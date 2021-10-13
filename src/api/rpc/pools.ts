@@ -66,20 +66,6 @@ export const poolContract = async (token1: Token, token2: Token, signer: Signer,
   };
 };
 
-const ensurePoolBalance = async (pool: ReefswapPool): Promise<void> => {
-  ensure(BigNumber.from(pool.userPoolBalance).gt(BigNumber.from(0)), 'Signer not in pool!');
-};
-
-export const isSignerInPool = async (token1: Token, token2: Token, signer: Signer, network: ReefNetwork): Promise<boolean> => {
-  try {
-    const pool = await poolContract(token1, token2, signer, network);
-    await ensurePoolBalance(pool);
-    return true;
-  } catch (_) {
-    return false;
-  }
-};
-
 export const loadPools = async (tokens: Token[], signer: Signer, network: ReefNetwork): Promise<ReefswapPool[]> => {
   const tokenCombinations = uniqueCombinations(tokens);
   const pools: ReefswapPool[] = [];
