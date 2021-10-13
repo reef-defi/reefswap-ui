@@ -1,8 +1,8 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ReefswapPool } from '../api/rpc/pools';
 import { TokenWithAmount } from '../api/rpc/tokens';
 import {
-  assertAmount, calculateAmount, calculatePoolRatio, getInputAmount, getOutputAmount,
+  assertAmount, getInputAmount, getOutputAmount,
 } from '../utils/math';
 
 interface UpdateAmountHookInput {
@@ -41,6 +41,7 @@ export const useUpdateLiquidityAmount = ({
 
   useEffect(() => {
     if (!pool || token1.price === 0 || token2.price === 0) { return; }
+
     const ratio = token2.price / token1.price;
     if (token1.address !== prevAddress1) {
       const amount = parseFloat(assertAmount(token2.amount)) * ratio;
