@@ -112,15 +112,19 @@ const AddLiquidity = (): JSX.Element => {
 
   const setAmount1 = (amount: string): void => {
     if (isLoading) { return; }
-    const newAmount = token1.price / token2.price * parseFloat(assertAmount(amount));
     setToken1({ ...token1, amount });
-    setToken2({ ...token2, amount: !amount ? '' : newAmount.toFixed(4) });
+    if (token1.price && token2.price) {
+      const newAmount = token2.price / token1.price * parseFloat(assertAmount(amount));
+      setToken2({ ...token2, amount: !newAmount ? '' : newAmount.toFixed(4) });
+    }
   };
   const setAmount2 = (amount: string): void => {
     if (isLoading) { return; }
-    const newAmount = token2.price / token1.price * parseFloat(assertAmount(amount));
-    setToken2({ ...token2, amount });
-    setToken1({ ...token1, amount: !amount ? '' : newAmount.toFixed(4) });
+    setToken2({...token2, amount });
+    if (token1.price && token2.price) {
+      const newAmount = token2.price / token1.price * parseFloat(assertAmount(amount));
+      setToken1({ ...token1, amount: !newAmount ? '' : newAmount.toFixed(4) });
+    }
   };
 
   const addLiquidityClick = async (): Promise<void> => {
