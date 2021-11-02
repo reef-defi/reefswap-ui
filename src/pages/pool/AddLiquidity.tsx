@@ -152,7 +152,7 @@ const AddLiquidity = (): JSX.Element => {
         calculateDeadline(deadline),
       );
       toast.success(`${token1.name}/${token2.name} supply added successfully!`);
-    } catch (error) {
+    } catch (error: any) {
       const message = errorHandler(error.message)
         .replace('first', token1.name)
         .replace('second', token2.name);

@@ -74,7 +74,7 @@ const AppInitialization = (): JSX.Element => {
         // Else error will occure
         dispatch(accountsSetSelectedAccount(selectedSigner));
         setState(toSuccess());
-      } catch (e) {
+      } catch (e: any) {
         if (e.message) {
           setState(toError('Polkadot extension', e.message));
         } else {

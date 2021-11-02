@@ -71,7 +71,7 @@ const swapStatus = (sell: TokenWithAmount, buy: TokenWithAmount, isEvmClaimed: b
     // ensure(balance.gte(reserved), 'Deliquified pool');
     // ensure(amountOut1.eq(amountIn1) && amountOut2.eq(amountIn2), 'Deliquified pool')
     return { isValid: true, text: 'Swap' };
-  } catch (e) {
+  } catch (e: any) {
     return { isValid: false, text: e.message };
   }
 };
@@ -194,7 +194,7 @@ const SwapController = (): JSX.Element => {
 
       );
       toast.success('Swap complete!');
-    } catch (error) {
+    } catch (error: any) {
       errorToast(error.message);
     } finally {
       // TODO move this out!
