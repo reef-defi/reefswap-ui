@@ -48,7 +48,7 @@ const AppInitialization = (): JSX.Element => {
 
         message('Connecting to Polkadot extension...');
         const inj = await web3Enable('Reefswap');
-        ensure(inj.length > 0, 'Reefswap can not be access Polkadot-Extension. Please install <a href="https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-extension/" target="_blank">Polkadot-Extension</a> in your browser and refresh the page to use Reefswap.');
+        ensure(inj.length > 0, 'Reefswap can not access Polkadot-Extension. Please install <a href="https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-extension/" target="_blank">Polkadot-Extension</a> in your browser and refresh the page to use Reefswap.');
 
         message('Retrieving accounts...');
         const web3accounts = await web3Accounts();
