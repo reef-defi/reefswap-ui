@@ -82,7 +82,6 @@ const AddLiquidity = (): JSX.Element => {
   const { pool, isPoolLoading } = useLoadPool(token1, token2);
   const newPoolSupply = calculatePoolSupply(token1, token2, pool);
 
-
   useUpdateBalance(token1, setToken1);
   useUpdateBalance(token2, setToken2);
   const isPriceLoading = useUpdateTokensPrice({
@@ -152,8 +151,8 @@ const AddLiquidity = (): JSX.Element => {
         evmAddress,
         calculateDeadline(deadline),
       );
-      setToken1({...token1, amount: ""});
-      setToken2({...token2, amount: ""});
+      setToken1({ ...token1, amount: '' });
+      setToken2({ ...token2, amount: '' });
       toast.success(`${token1.name}/${token2.name} supply added successfully!`);
     } catch (error: any) {
       const message = errorHandler(error.message)

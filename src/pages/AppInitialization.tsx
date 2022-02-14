@@ -61,7 +61,7 @@ const AppInitialization = (): JSX.Element => {
           inj[0].signer,
         );
 
-        const signers = dropDuplicates(signersInitial, "address");
+        const signers = dropDuplicates(signersInitial, 'address');
 
         const signerPointer = getSignerLocalPointer();
         const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
