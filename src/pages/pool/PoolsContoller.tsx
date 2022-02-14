@@ -19,7 +19,7 @@ const PoolsContoller = (): JSX.Element => {
   const isFull = !isLoading && pools.length > 0;
 
   const poolsView = pools
-    .filter(({ userPoolBalance }) => BigNumber.from(userPoolBalance).gt(0))
+    // .filter(({ userPoolBalance }) => BigNumber.from(userPoolBalance).gt(0))
     .map(({
       token1, token2, userPoolBalance: liquidity, poolAddress, totalSupply, reserve1, reserve2, decimals, minimumLiquidity,
     }) => (

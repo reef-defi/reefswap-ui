@@ -30,3 +30,21 @@ export const ensureVoidRun = (canRun: boolean) => <I, >(fun: (obj: I) => void, o
     fun(obj);
   }
 };
+
+export const dropDuplicates = <Obj, Key extends keyof Obj>(
+  objects: Obj[],
+  key: Key,
+): Obj[] => {
+  const existingKeys = new Set<Obj[Key]>();
+  const filtered: Obj[] = [];
+
+  for (let index = objects.length - 1; index >= 0; index -= 1) {
+    const obj = objects[index];
+    if (!existingKeys.has(obj[key])) {
+      filtered.push(obj);
+      existingKeys.add(obj[key]);
+    }
+  }
+
+  return filtered;
+};

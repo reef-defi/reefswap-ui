@@ -10,7 +10,7 @@ import {
   accountsSetSelectedAccount,
 } from '../store/actions/accounts';
 import { setAllTokensAction } from '../store/actions/tokens';
-import { ensure } from '../utils/utils';
+import { dropDuplicates, ensure } from '../utils/utils';
 import {
   ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess,
 } from '../store/internalStore';
@@ -55,11 +55,13 @@ const AppInitialization = (): JSX.Element => {
         ensure(web3accounts.length > 0, 'Reefswap requires at least one account Polkadot-extension. Please create or import account/s and refresh the page.');
 
         message('Creating signers...');
-        const signers = await accountsToSigners(
+        const signersInitial = await accountsToSigners(
           web3accounts,
           newProvider,
           inj[0].signer,
         );
+
+        const signers = dropDuplicates(signersInitial, 'address');
 
         const signerPointer = getSignerLocalPointer();
         const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
