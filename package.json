@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@polkadot/extension-dapp": "^0.38.6",
-    "@polkadot/react-identicon": "^0.84.1",
-    "@reef-defi/evm-provider": "^1.0.2",
+    "@reef-defi/extension-dapp": "^0.41.2",
+    "@reef-defi/react-lib": "^1.0.45",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -24,7 +23,6 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-toastify": "^7.0.4",
-    "react-tooltip": "^4.2.21",
     "redux": "^4.1.0",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.3.0",
@@ -32,8 +30,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "webpack-dev-server",
+    "build": "webpack build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint --fix --ext .ts,.tsx ./src/"
@@ -51,17 +49,37 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
     "@types/react-copy-to-clipboard": "^5.0.1",
     "@types/react-redux": "^7.1.16",
     "@types/redux": "^3.6.0",
     "@types/redux-thunk": "^2.1.0",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
+    "babel-loader": "^8.2.5",
+    "css-loader": "^6.7.1",
     "eslint": "^7.29.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0"
-  }
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "json-loader": "^0.5.7",
+    "react-icons": "^4.3.1",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.3.0",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.8.1",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "resolutions": {
+    "@types/react": "17.0.2",
+    "@types/react-dom": "17.0.2"
+  }  
 }
