@@ -1,3 +1,4 @@
+import { reefTokenWithAmount, utils } from '@reef-defi/react-lib';
 import { ButtonStatus } from '../components/buttons/Button';
 
 export const trim = (value: string, size = 19): string => (value.length < size
@@ -47,4 +48,14 @@ export const dropDuplicates = <Obj, Key extends keyof Obj>(
   }
 
   return filtered;
+};
+
+const reefToken = reefTokenWithAmount();
+
+export const getIconUrl = (tokenAddress: string): string => {
+  if (tokenAddress === reefToken.address) {
+    return reefToken.iconUrl;
+  }
+  const lastNr = utils.getHashSumLastNr(tokenAddress);
+  return `/icons/token-icon-${lastNr}.png`;
 };

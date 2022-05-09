@@ -1,16 +1,11 @@
 import { Signer } from '@reef-defi/evm-provider';
+import { ReefSigner } from '@reef-defi/react-lib';
 import {
   SET_ACCOUNT,
   SET_ACCOUNTS, SET_ACCOUNT_BALANCE, SET_SELECTED_ACCOUNT,
 } from '../actionCreator';
 
-export interface ReefswapSigner {
-  signer: Signer;
-  name: string;
-  address: string;
-  evmAddress: string;
-  isEvmClaimed: boolean;
-}
+export type ReefswapSigner = ReefSigner;
 
 interface SetAccountsAction {
   type: typeof SET_ACCOUNTS;

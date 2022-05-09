@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { WsProvider } from '@polkadot/api';
 import { Provider } from '@reef-defi/evm-provider';
@@ -15,25 +15,40 @@ import {
   ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess,
 } from '../store/internalStore';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { accountsToSigners } from '../api/rpc/accounts';
-import { loadVerifiedERC20Tokens, loadTokens } from '../api/rpc/tokens';
 import { getSignerLocalPointer } from '../store/localStore';
 import { useUpdateAccountBalance } from '../hooks/useUpdateAccountBalance';
+import { ApolloClient, InMemoryCache, ApolloProvider} from "@apollo/client";
+import { hooks, rpc } from '@reef-defi/react-lib';
 
 type State =
   | ErrorState
   | SuccessState
   | LoadingMessageState;
 
+
 const AppInitialization = (): JSX.Element => {
   const mounted = useRef(true);
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
-
+  const {accounts, selectedAccount} = useAppSelector((state) => state.accounts);
   const [state, setState] = useState<State>(toLoadingMessage(''));
   const [provider, setProvider] = useState<Provider>();
 
   const message = (msg: string): void => setState(toLoadingMessage(msg));
+  
+  const signer = accounts.length > selectedAccount ? accounts[selectedAccount] : undefined;
+
+
+  const apolloClient = useMemo(() => new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: settings.reefscanUrl
+  }), [settings.reefscanUrl]);
+
+  const tokens = hooks.useAllTokens(signer?.address, apolloClient);
+  
+  useEffect(() => {
+    dispatch(setAllTokensAction(tokens));
+  }, [tokens]);
 
   useUpdateAccountBalance(provider);
   // Initial setup
@@ -51,27 +66,13 @@ const AppInitialization = (): JSX.Element => {
         ensure(inj.length > 0, 'Reefswap can not access Polkadot-Extension. Please install <a href="https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-extension/" target="_blank">Polkadot-Extension</a> in your browser and refresh the page to use Reefswap.');
 
         message('Retrieving accounts...');
-        const web3accounts = await web3Accounts();
-        ensure(web3accounts.length > 0, 'Reefswap requires at least one account Polkadot-extension. Please create or import account/s and refresh the page.');
-
-        message('Creating signers...');
-        const signersInitial = await accountsToSigners(
-          web3accounts,
-          newProvider,
-          inj[0].signer,
-        );
-
-        const signers = dropDuplicates(signersInitial, 'address');
-
+        const signers = await rpc.getExtensionSigners(inj, newProvider);
         const signerPointer = getSignerLocalPointer();
         const selectedSigner = signers.length >= signerPointer ? signerPointer : 0;
-        message('Loading tokens...');
-        const verifiedTokens = await loadVerifiedERC20Tokens(settings);
-        const newTokens = await loadTokens(verifiedTokens, signers[selectedSigner].signer);
 
         setProvider(newProvider);
         dispatch(accountsSetAccounts(signers));
-        dispatch(setAllTokensAction(newTokens));
+
         // Make sure selecting account is after setting signers
         // Else error will occure
         dispatch(accountsSetSelectedAccount(selectedSigner));
@@ -92,11 +93,11 @@ const AppInitialization = (): JSX.Element => {
   }, [settings.rpcUrl, settings.reload]);
 
   return (
-    <>
+    <ApolloProvider client={apolloClient}>
       {state._type === 'SuccessState' && <ContentController /> }
       {state._type === 'LoadingMessageState' && <LoadingWithText text={state.message} />}
       {state._type === 'ErrorState' && <ErrorCard title={state.title} message={state.message} />}
-    </>
+    </ApolloProvider>
   );
 };
 

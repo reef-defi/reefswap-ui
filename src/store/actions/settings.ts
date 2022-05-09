@@ -1,4 +1,3 @@
-import { Provider } from '@reef-defi/evm-provider';
 import { AvailableNetworks } from '../../api/rpc/rpc';
 import { RELOAD_APP, SET_CHAIN_URL } from '../actionCreator';
 

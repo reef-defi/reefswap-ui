@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { errorToast } from '../../utils/errorHandler';
 import { bindSigner } from '../../api/rpc/accounts';
 import { accountsSetAccount } from '../../store/actions/accounts';
-import { loadTokens } from '../../api/rpc/tokens';
 import { setAllTokensAction } from '../../store/actions/tokens';
 
 const BindController = (): JSX.Element => {
@@ -23,8 +22,6 @@ const BindController = (): JSX.Element => {
       ensure(!signer.isEvmClaimed, 'Account is already binded!');
       setIsLoading(true);
       await bindSigner(signer.signer);
-      const newTokens = await loadTokens(tokens, signer.signer);
-      dispatch(setAllTokensAction(newTokens));
       dispatch(accountsSetAccount({ ...signer, isEvmClaimed: true }));
       toast.success('Account binded successfully! Reloading application');
     } catch (error: any) {

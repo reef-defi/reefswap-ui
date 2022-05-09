@@ -4,6 +4,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './assets/index.css';
 import 'react-toastify/dist/ReactToastify.css';
+import '@reef-defi/react-lib/dist/index.css';
 
 ReactDOM.render(
   <React.StrictMode>

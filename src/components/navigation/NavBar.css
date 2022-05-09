@@ -32,3 +32,133 @@
 .nav-acc-button {
   border-color: white;
 }
+
+.navigation {
+  min-height: 60px;
+  background-color: #f3f0f8;
+  box-shadow: 0.2em 0.2em 1.5em #e2def1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navigation + * {
+  width: 100%;
+  max-width: calc(1500px + 3.5rem * 2);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.navigation__wrapper {
+  max-width: 1500px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navigation_menu-items {
+  display: flex;
+  margin: 0;
+  align-items: center;
+  list-style: none;
+  font-size: small;
+  padding-right: 40px;
+}
+.navigation_menu-items_menu-item {
+  color: #8d8995;
+  font-weight: 700;
+}
+
+.navigation_menu-items_menu-item + .navigation_menu-items_menu-item {
+  margin-left: 30px;
+}
+
+.navigation_menu-items_menu-item_link {
+  text-decoration: none;
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.navigation_menu-items_menu-item_link:hover,
+.navigation_menu-items_menu-item--active .navigation_menu-items_menu-item_link {
+  color: var(--primary);
+}
+
+.nav-account {
+  background: linear-gradient( 0deg, rgb(250 248 255) 0%, rgb(217 211 235) 100%);
+  height: 2.5em;
+  background-color: #f3f0f8;
+  box-shadow: 0.2em 0.2em 1.5em #e2def1;
+  padding:0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  border-radius: 99px;
+}
+
+.nav-account > div:first-child {
+  margin: 0 !important;
+  padding: 0 11px 0 19px;
+  font-size: 1rem !important;
+  line-height: 1.1;
+  font-weight: 900;
+  color: #a93185;
+  background: linear-gradient(to right, #a93185, #5531a9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.nav-account > div:first-child::before {
+  content: "";
+  height: 19px;
+  min-height: 19px;
+  min-width: 19px;
+  width: 19px;
+  display: block;
+  background-image: url('https://s2.coinmarketcap.com/static/img/coins/64x64/6951.png');
+  background-size: contain;
+  margin: 0 8px 0 -7px;
+}
+
+.nav-account > .btn {
+  background: var(--gradient);
+  font-size: 0.938rem;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.nav-account > .btn svg {
+  width: 19px !important;
+  height: 22px !important;
+  font-size: 14px;
+  transform: translateY(2px);
+  margin-left: -4px;
+  margin-right: 4px;
+}
+
+.logo-btn {
+  height: 44px;
+  width: 100%;
+  border: none;
+  background: none;
+}
+
+.logo-w {
+  width: 6em;
+  min-width: 6em;
+}
+
+.no-break-text {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+

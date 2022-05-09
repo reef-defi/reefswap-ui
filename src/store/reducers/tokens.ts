@@ -1,4 +1,4 @@
-import { Token } from '../../api/rpc/tokens';
+import { Token } from '@reef-defi/react-lib';
 import { ADD_TOKEN, SET_ALL_TOKENS } from '../actionCreator';
 import { TokensAction } from '../actions/tokens';
 

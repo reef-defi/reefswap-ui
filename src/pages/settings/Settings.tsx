@@ -10,7 +10,7 @@ const Settings = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const { name } = useAppSelector((state) => state.settings);
-  const [networkName, setNetworkName] = useState(name);
+  const [networkName, setNetworkName] = useState<AvailableNetworks>(name as AvailableNetworks);
 
   const applyChanges = (): void => {
     dispatch(settingsSetNetwork(networkName));
