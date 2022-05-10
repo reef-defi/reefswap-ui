@@ -8,7 +8,6 @@ export interface SettingsReducer extends ReefNetwork {
 
 const defaultSettings: SettingsReducer = {
   ...reefNetworks.mainnet,
-  graphqlUrl: reefNetworks.mainnet.graphqlUrl.replace("wss", "https"),
   reload: false,
 };
 
@@ -22,11 +21,7 @@ export const settingsReducer = (
     case SET_CHAIN_URL:
       return {
         ...state,
-        ...reefNetworks[action.name],
-        graphqlUrl: reefNetworks[action.name].graphqlUrl.replace(
-          "wss",
-          "https"
-        ),
+        ...reefNetworks[action.name]
       };
     default:
       return state;

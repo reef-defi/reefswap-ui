@@ -9,8 +9,7 @@ import {
   accountsSetAccounts,
   accountsSetSelectedAccount,
 } from '../store/actions/accounts';
-import { setAllTokensAction } from '../store/actions/tokens';
-import { dropDuplicates, ensure } from '../utils/utils';
+import { ensure } from '../utils/utils';
 import {
   ErrorState, LoadingMessageState, SuccessState, toError, toLoadingMessage, toSuccess,
 } from '../store/internalStore';
@@ -19,6 +18,8 @@ import { getSignerLocalPointer } from '../store/localStore';
 import { useUpdateAccountBalance } from '../hooks/useUpdateAccountBalance';
 import { ApolloClient, InMemoryCache, ApolloProvider} from "@apollo/client";
 import { hooks, rpc } from '@reef-defi/react-lib';
+import { setAllTokensAction } from '../store/actions/tokens';
+import {createApolloClient} from "./../utils/apollo";
 
 type State =
   | ErrorState
@@ -27,6 +28,7 @@ type State =
 
 
 const AppInitialization = (): JSX.Element => {
+  console.log("App initialization --------------")
   const mounted = useRef(true);
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.settings);
@@ -35,15 +37,9 @@ const AppInitialization = (): JSX.Element => {
   const [provider, setProvider] = useState<Provider>();
 
   const message = (msg: string): void => setState(toLoadingMessage(msg));
-  
+  const apolloClient = createApolloClient(settings.graphqlUrl);
+
   const signer = accounts.length > selectedAccount ? accounts[selectedAccount] : undefined;
-
-
-  const apolloClient = useMemo(() => new ApolloClient({
-    cache: new InMemoryCache(),
-    uri: settings.graphqlUrl
-  }), [settings.graphqlUrl]);
-
   const tokens = hooks.useAllTokens(signer?.address, apolloClient);
 
   useEffect(() => {
@@ -54,6 +50,7 @@ const AppInitialization = (): JSX.Element => {
   // Initial setup
   useEffect(() => {
     const load = async (): Promise<void> => {
+      console.log("Loading: " + settings.rpcUrl)
       try {
         message(`Connecting to ${settings.name.replace(/\b\w/g, (l) => l.toUpperCase())} chain...`);
         const newProvider = new Provider({
@@ -87,10 +84,7 @@ const AppInitialization = (): JSX.Element => {
     };
 
     load();
-    return () => {
-      mounted.current = false;
-    };
-  }, [settings.rpcUrl, settings.reload]);
+  }, [settings.rpcUrl]);
 
   return (
     <ApolloProvider client={apolloClient}>

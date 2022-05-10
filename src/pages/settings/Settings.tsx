@@ -4,7 +4,7 @@ import { AvailableNetworks } from '../../api/rpc/rpc';
 import Card, { CardTitle } from '../../components/card/Card';
 import { settingsSetNetwork } from '../../store/actions/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { SWAP_URL } from '../../utils/urls';
+import { defaultSwapUrl } from '../../utils/urls';
 
 const Settings = (): JSX.Element => {
   const history = useHistory();
@@ -14,7 +14,7 @@ const Settings = (): JSX.Element => {
 
   const applyChanges = (): void => {
     dispatch(settingsSetNetwork(networkName));
-    history.push(SWAP_URL);
+    history.push(defaultSwapUrl);
   };
 
   return (

@@ -31,10 +31,6 @@ const AddLiquidity = (): JSX.Element => {
       ? addressReplacer(ADD_LIQUIDITY_URL, address, address2)
       : addressReplacer(ADD_LIQUIDITY_URL, address1, address),
   );
-
-  if (state !== "Success") {
-    return (<div />);
-  }
   
   return (
     <Components.AddLiquidity

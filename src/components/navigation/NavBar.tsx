@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  BIND_URL, defaultSwapUrl, POOLS_URL, POOL_URL, SETTINGS_URL, SWAP_URL,
+  BIND_URL, defaultSwapUrl, POOLS_URL, SETTINGS_URL,
 } from '../../utils/urls';
 import './NavBar.css';
 
@@ -37,8 +37,8 @@ const NavBar = (): JSX.Element => {
       <div className="col-sm-4 p-0">
         <div className="d-flex justify-content-center">
           <div className="d-flex w-auto nav-selection border-rad">
-            <NavButton to={defaultSwapUrl} name="Swap" selected={pathname.startsWith(SWAP_URL)} />
-            <NavButton to={POOLS_URL} name="Pool" selected={pathname.startsWith(POOLS_URL)} />
+            <NavButton to={defaultSwapUrl} name="Swap" selected={pathname.startsWith('/swap')} />
+            <NavButton to={POOLS_URL} name="Pool" selected={pathname.startsWith('/pool')} />
             <NavButton to={BIND_URL} name="Bind" selected={pathname.startsWith(BIND_URL)} />
           </div>
         </div>

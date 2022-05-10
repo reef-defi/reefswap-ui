@@ -8,17 +8,19 @@ import { errorToast } from '../../utils/errorHandler';
 import { bindSigner } from '../../api/rpc/accounts';
 import { accountsSetAccount } from '../../store/actions/accounts';
 import { setAllTokensAction } from '../../store/actions/tokens';
+import { ReefSigner } from '@reef-defi/react-lib';
 
 const BindController = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { tokens } = useAppSelector((state) => state.tokens);
   const { accounts, selectedAccount } = useAppSelector((state) => state.accounts);
-  const signer = accounts[selectedAccount];
+  const signer: ReefSigner|undefined = accounts.length > selectedAccount ? accounts[selectedAccount] : undefined;
 
   const [isLoading, setIsLoading] = useState(false);
 
   const onBind = async (): Promise<void> => {
     try {
+      if(!signer) {return;}
       ensure(!signer.isEvmClaimed, 'Account is already binded!');
       setIsLoading(true);
       await bindSigner(signer.signer);
@@ -31,7 +33,7 @@ const BindController = (): JSX.Element => {
     }
   };
 
-  const buttonText = signer.isEvmClaimed
+  const buttonText = signer?.isEvmClaimed
     ? 'Selected account is binded'
     : 'Bind';
 
@@ -50,7 +52,7 @@ const BindController = (): JSX.Element => {
         type="button"
         className="btn btn-reef btn-lg w-100 border-rad mt-2"
         onClick={onBind}
-        disabled={signer.isEvmClaimed || isLoading}
+        disabled={signer?.isEvmClaimed || isLoading}
       >
         { isLoading ? <LoadingButtonIcon /> : buttonText }
       </button>

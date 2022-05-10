@@ -127,7 +127,6 @@
 }
 
 .nav-account > .btn {
-  background: var(--gradient);
   font-size: 0.938rem;
   display: flex;
   flex-flow: row nowrap;

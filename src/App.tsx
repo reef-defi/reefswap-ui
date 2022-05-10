@@ -8,38 +8,23 @@ import {
 import NavBar from './components/navigation/NavBar';
 import AppInitialization from './pages/AppInitialization';
 import { store } from './store';
-import { SETTINGS_URL } from './utils/urls';
+import { defaultSwapUrl, INITIALIZED_URLS, SETTINGS_URL } from './utils/urls';
 import Settings from './pages/settings/Settings';
 
 toast.configure();
 
 const App = (): JSX.Element => (
-  <Router>
-    <StoreProvider store={store}>
-      <div className="w-100 h-100 d-flex flex-column">
-        <NavBar />
+  <div className="w-100 h-100 d-flex flex-column">
+    <NavBar />
 
-        <div className="container-fluid m-4 w-100 d-flex justify-content-center">
-          <Switch>
-            <Route exact path={SETTINGS_URL} component={Settings} />
-            <Route path="/" component={AppInitialization} />
-          </Switch>
-        </div>
-
-        <ToastContainer
-          draggable
-          newestOnTop
-          closeOnClick
-          hideProgressBar
-          position={toast.POSITION.BOTTOM_LEFT}
-          autoClose={5000}
-          rtl={false}
-          pauseOnFocusLoss={false}
-          pauseOnHover={false}
-        />
-      </div>
-    </StoreProvider>
-  </Router>
+    <div className="container-fluid m-4 w-100 d-flex justify-content-center">
+      <Switch>
+        <Route path={INITIALIZED_URLS} component={AppInitialization}/>
+        <Route exact path={SETTINGS_URL} component={Settings} />
+        <Route path="/" render={() => <Redirect to={defaultSwapUrl}/>} />
+      </Switch>
+    </div>
+  </div>
 );
 
 export default App;

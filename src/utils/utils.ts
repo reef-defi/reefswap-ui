@@ -59,3 +59,4 @@ export const getIconUrl = (tokenAddress: string): string => {
   const lastNr = utils.getHashSumLastNr(tokenAddress);
   return `/icons/token-icon-${lastNr}.png`;
 };
+

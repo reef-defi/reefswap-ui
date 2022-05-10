@@ -31,7 +31,7 @@ const SwapController = (): JSX.Element => {
   });
 
   if (state !== 'Success') {
-    return <div />;
+    return <div />
   }
 
   return (

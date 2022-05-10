@@ -32,11 +32,6 @@ const RemoveLiquidity = (): JSX.Element => {
     return <Redirect to={POOLS_URL} />;
   }
 
-
-  if (state !== 'Success' || !network) {
-    return <div />;
-  }
-
   return (
     <Components.RemoveLiquidityComponent
       token1={token1}
