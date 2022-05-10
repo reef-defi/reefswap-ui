@@ -11,13 +11,12 @@ import Pools from './pool/Pools';
 import RemoveLiquidity from './pool/RemoveLiquidity';
 import SwapController from './swap/SwapController';
 
-console.log(defaultSwapUrl);
 const ContentController = (): JSX.Element => (
   <Switch>
     <Route exact path={BIND_URL} component={BindController} />
     <Route exact path={IMPORT_POOL_URL} component={ImportPool} />
-    
     <Route exact path={POOLS_URL} component={Pools} />
+    
     <Route path={POOL_URL} component={Pool} />
     <Route path={SWAP_URL} component={SwapController} />
     <Route path={ADD_LIQUIDITY_URL} component={AddLiquidity} />

@@ -5,7 +5,7 @@ import {
 } from '../../utils/urls';
 import './NavBar.css';
 
-import logo from '../../assets/logo.png';
+import logo from './../../assets/logo.png';
 import { useAppSelector } from '../../store/hooks';
 import {
   BookIcon, ChatIcon, CodeIcon, GearIcon, InfoIcon,
@@ -30,7 +30,7 @@ const NavBar = (): JSX.Element => {
   return (
     <nav className="container-fluid m-1 mt-3 row w-auto">
       <div className="col-md-4 col-sm-1 p-0">
-        <Link to={SWAP_URL}>
+        <Link to={defaultSwapUrl}>
           <img src={logo} alt="Not found!" />
         </Link>
       </div>
@@ -55,7 +55,7 @@ const NavBar = (): JSX.Element => {
               reefscanUrl={network.reefscanUrl}
             />
           </nav>
-          {/* <div className="d-flex nav-acc border-rad">
+          <div className="d-flex nav-acc border-rad">
             <div className="dropdown">
               <button className="btn btn-secondary d-flex flex-column no-shadow nav-acc-button border-rad" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                 ...
@@ -93,7 +93,7 @@ const NavBar = (): JSX.Element => {
                 </li>
               </ul>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </nav>

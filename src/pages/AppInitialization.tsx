@@ -41,11 +41,11 @@ const AppInitialization = (): JSX.Element => {
 
   const apolloClient = useMemo(() => new ApolloClient({
     cache: new InMemoryCache(),
-    uri: settings.reefscanUrl
-  }), [settings.reefscanUrl]);
+    uri: settings.graphqlUrl
+  }), [settings.graphqlUrl]);
 
   const tokens = hooks.useAllTokens(signer?.address, apolloClient);
-  
+
   useEffect(() => {
     dispatch(setAllTokensAction(tokens));
   }, [tokens]);
